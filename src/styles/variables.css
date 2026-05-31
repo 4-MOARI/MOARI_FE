@@ -1,0 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* 메인 색상 */
+  --color-primary: #534AB7;
+  --color-primary-dark: #1F116D;
+  --color-primary-light: #8A38F5;
+  --color-primary-bg: #EEEDFE;
+
+  /* 텍스트 색상 */
+  --color-text-primary: #111827;
+  --color-text-secondary: #6B7280;
+  --color-text-dark: #414141;
+  --color-text-light: #959595;
+
+  /* 모집 상태 */
+  --color-recruiting-text: #3B6D11;
+  --color-recruiting-bg: #EAF3DE;
+  --color-closed-text: #414141;
+  --color-closed-bg: #F3F4F6;
+
+  /* 별점 */
+  --color-star: #EF9F27;
+
+  /* 찜 */
+  --color-favourite: #D4537E;
+
+  /* 기타 */
+  --color-white: #FFFFFF;
+  --color-error: #C24141; /* 삭제, 신고 텍스트 */
+  --color-error-bg: #FFEBEB; /* 삭제, 신고 배경*/
+
+
+  /* 폰트 */
+  --font-family: 'Inter', sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 20px;
+  --font-size-xl: 24px;
+  --font-size-xxl: 32px;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* 간격 */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  /* 테두리 둥글기 */
+  --border-radius-sm: 8px;
+  --border-radius-md: 17px;
+  --border-radius-lg: 24px;
+  --border-radius-full: 999px;
+
+  /* 그림자 */
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  /* 입력창 */
+  --input-border: #D1D5DB;
+  --input-bg: #FFFFFF;
+  --input-focus-border: var(--color-primary);
+}
