@@ -1,0 +1,34 @@
+.header-switch {
+  display: flex;
+  align-items: center;
+
+  padding: 3px;
+
+  border-radius: 999px;
+
+  background-color: #f8f8f8;
+
+  height: 40px;
+}
+
+.switch-button {
+  border: none;
+  background: transparent;
+
+  padding: 8px 16px;
+
+  border-radius: 999px;
+
+  cursor: pointer;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  color: #6B7280;
+}
+
+.switch-button.active {
+  background-color: var(--color-primary);
+
+  color: var(--color-white);
+}
