@@ -67,11 +67,6 @@
   overflow-y: auto;
 }
 
-/* 스크롤바 숨김 */
-.review-list::-webkit-scrollbar {
-  display: none;
-}
-
 /* 리뷰 더보기 버튼 */
 .review-more-button {
   display: inline-flex;

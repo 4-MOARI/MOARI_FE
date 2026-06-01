@@ -1,19 +1,44 @@
-// src/api/reviewApi.js
-
 import apiClient from './axios';
 
-// 리뷰 등록
-export const createReview = async ({
+/**
+ * 리뷰 목록 조회
+ */
+export const getClubReviews = async (
+  clubId
+) => {
+
+  const response = await apiClient.get(
+    `/clubs/${clubId}/reviews`
+  );
+
+  return response.data;
+};
+
+/**
+ * 리뷰 작성
+ */
+export const createReview = async (
   clubId,
-  rating,
-  content,
-}) => {
+  reviewData
+) => {
+
   const response = await apiClient.post(
     `/clubs/${clubId}/reviews`,
-    {
-      rating,
-      content,
-    }
+    reviewData
+  );
+
+  return response.data;
+};
+
+/**
+ * 리뷰 삭제
+ */
+export const deleteReview = async (
+  reviewId
+) => {
+
+  const response = await apiClient.delete(
+    `/reviews/${reviewId}`
   );
 
   return response.data;
