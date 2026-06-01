@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Heart, Star, UserRound } from 'lucide-react';
+import { UserRound } from 'lucide-react';
 
+import ClubCard from '../../components/club/ClubCard/ClubCard';
 import Header from '../../components/common/Header/Header';
 import Pagination from '../../components/common/Pagination/Pagination';
 import { getMyClubs, getMyProfile } from '../../api/userApi';
@@ -21,80 +22,6 @@ function MyPageMenuItem({ children, active }) {
     <button className={`mypage-menu-item${active ? ' active' : ''}`}>
       {children}
     </button>
-  );
-}
-
-function StatusBadge({ isRecruiting }) {
-  return (
-    <span className={`club-status${isRecruiting ? ' recruiting' : ' closed'}`}>
-      {isRecruiting ? '모집중' : '마감'}
-    </span>
-  );
-}
-
-function Rating({ value }) {
-  const rating = Number(value || 0);
-  const filledCount = Math.round(rating);
-
-  return (
-    <span className="club-rating" aria-label={`평점 ${rating}`}>
-      {Array.from({ length: 5 }).map((_, index) => (
-        <Star
-          key={index}
-          size={13}
-          fill={index < filledCount ? 'currentColor' : 'none'}
-          strokeWidth={1.8}
-        />
-      ))}
-      <span>({rating.toFixed(1)})</span>
-    </span>
-  );
-}
-
-function ClubImage({ club }) {
-  const imageUrl = club.profileImageUrl || club.coverImageUrl;
-
-  if (imageUrl) {
-    return (
-      <img
-        className="club-card-image"
-        src={imageUrl}
-        alt={`${club.clubName} 이미지`}
-      />
-    );
-  }
-
-  return <div className="club-card-placeholder">IMAGE</div>;
-}
-
-function ClubCard({ club }) {
-  return (
-    <article className="my-club-card">
-      <ClubImage club={club} />
-
-      <div className="club-card-main">
-        <div className="club-card-badges">
-          <span className="club-category">{club.categoryName || '기타'}</span>
-          <StatusBadge isRecruiting={club.isRecruiting} />
-        </div>
-
-        <h3>{club.clubName}</h3>
-        <p>{club.briefDescription || '동아리 소개가 아직 등록되지 않았습니다.'}</p>
-
-        <div className="club-card-meta">
-          <Rating value={club.averageRating} />
-          <span className="club-favorite-count">
-            <Heart size={14} strokeWidth={1.8} />
-            ({Number(club.favoriteCount || 0)})
-          </span>
-        </div>
-      </div>
-
-      <div className="club-card-actions">
-        <button type="button">수정하기</button>
-        <button type="button">[수정 로그]</button>
-      </div>
-    </article>
   );
 }
 
