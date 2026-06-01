@@ -1,0 +1,19 @@
+/* src/components/common/Badge/CategoryBadge/CategoryBadge.css */
+.category-badge {
+  display: inline-flex;
+  padding: 5px 10.5px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  
+  border-radius: 17px;
+  background: #EEEDFE;
+  
+  /* 유저님이 찾아주신 스타일 */
+  color: #534AB7;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
