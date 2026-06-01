@@ -37,3 +37,29 @@ export async function deleteFavoriteClub(clubId) {
 
   return response.data.data;
 }
+
+export async function verifyMyPassword(password) {
+  const response = await apiClient.post('/users/me/password/verify', {
+    password,
+  });
+
+  return response.data.data;
+}
+
+export async function changeMyPassword({
+  currentPassword,
+  newPassword,
+}) {
+  const response = await apiClient.patch('/users/me/password', {
+    currentPassword,
+    newPassword,
+  });
+
+  return response.data.data;
+}
+
+export async function deleteMyAccount() {
+  const response = await apiClient.delete('/users/me');
+
+  return response.data.data;
+}
