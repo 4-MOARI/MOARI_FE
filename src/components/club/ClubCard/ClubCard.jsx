@@ -13,15 +13,13 @@ function RecruitStatusBadge({ isRecruiting }) {
   );
 }
 
-function ClubImage({ club }) {
-  const imageUrl = club.profileImageUrl || club.coverImageUrl;
-
+function ClubImage({ imageUrl, title }) {
   if (imageUrl) {
     return (
       <img
         className="club-card-image"
         src={imageUrl}
-        alt={`${club.clubName} 이미지`}
+        alt={`${title} 이미지`}
       />
     );
   }
@@ -30,7 +28,14 @@ function ClubImage({ club }) {
 }
 
 function ClubCard({
-  club,
+  club = {},
+  title,
+  category,
+  description,
+  recruiting,
+  rating,
+  favoriteCount,
+  imageUrl,
   categoryBadge,
   recruitStatusBadge,
   onEdit,
@@ -38,33 +43,39 @@ function ClubCard({
   editLabel = '수정하기',
   historyLabel = '[수정 로그]',
 }) {
+  const cardTitle = title || club.clubName;
+  const cardCategory = category || club.categoryName || '기타';
+  const cardDescription =
+    description || club.briefDescription || '동아리 소개가 아직 등록되지 않았습니다.';
+  const isRecruiting = recruiting ?? club.isRecruiting;
+  const cardRating = rating ?? club.averageRating;
+  const cardFavoriteCount = favoriteCount ?? club.favoriteCount;
+  const cardImageUrl = imageUrl || club.profileImageUrl || club.coverImageUrl;
+
   return (
     <article className="club-card club-card--registered">
-      <ClubImage club={club} />
+      <ClubImage imageUrl={cardImageUrl} title={cardTitle} />
 
       <div className="club-card-main">
         <div className="club-card-badges">
           {categoryBadge || (
             <span className="club-card-category">
-              {club.categoryName || '기타'}
+              {cardCategory}
             </span>
           )}
           {recruitStatusBadge || (
-            <RecruitStatusBadge isRecruiting={club.isRecruiting} />
+            <RecruitStatusBadge isRecruiting={isRecruiting} />
           )}
         </div>
 
-        <h3>{club.clubName}</h3>
-        <p>
-          {club.briefDescription ||
-            '동아리 소개가 아직 등록되지 않았습니다.'}
-        </p>
+        <h3>{cardTitle}</h3>
+        <p>{cardDescription}</p>
 
         <div className="club-card-meta">
-          <StarRating value={club.averageRating} />
+          <StarRating value={cardRating} />
           <FavoriteButton
-            count={club.favoriteCount}
-            label={`${club.clubName} 찜 수`}
+            count={cardFavoriteCount}
+            label={`${cardTitle} 찜 수`}
             showCount
           />
         </div>
