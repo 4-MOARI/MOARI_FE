@@ -2,7 +2,11 @@ import './Header.css';
 import HeaderSwitch from './HeaderSwitch';
 import { UserRound } from 'lucide-react';
 
-function Header() {
+function Header({
+    showSwitch,
+    clubType,
+    setClubType,
+}) {
   return (
     <header className="header">
       <div className="header-left">
@@ -10,7 +14,12 @@ function Header() {
           모아리
         </div>
 
-        <HeaderSwitch />
+        { showSwitch && (
+            <HeaderSwitch 
+                selected={clubType}
+                onChange={setClubType}
+            />
+        )}
       </div>
 
       <nav className="header-nav">
