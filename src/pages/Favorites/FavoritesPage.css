@@ -1,0 +1,95 @@
+.favorites-content {
+  padding-bottom: 18px;
+}
+
+.favorite-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 30px;
+}
+
+.favorite-card {
+  min-height: 132px;
+  display: grid;
+  grid-template-columns: 80px minmax(0, 1fr);
+  gap: 20px;
+  align-items: center;
+  padding: 16px 20px;
+  border-radius: 16px;
+  background-color: var(--color-white);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.1);
+}
+
+.favorite-card-image {
+  width: 76px;
+  height: 76px;
+  border-radius: 14px;
+  object-fit: cover;
+}
+
+.favorite-card-image.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  background-color: var(--color-primary-bg);
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+}
+
+.favorite-card-body {
+  min-width: 0;
+}
+
+.favorite-card-body h3 {
+  overflow: hidden;
+  color: var(--color-text-primary);
+  font-size: 18px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.favorite-card-badges {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.favorite-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.favorite-heart-button {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  color: var(--color-favourite);
+  cursor: pointer;
+  padding: 0;
+}
+
+.favorite-heart-button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.favorites-content .pagination-container {
+  margin-top: 18px;
+}
+
+@media (max-width: 760px) {
+  .favorite-card-grid {
+    grid-template-columns: 1fr;
+  }
+}
