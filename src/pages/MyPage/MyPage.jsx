@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Heart, Star, UserRound } from 'lucide-react';
 
 import Header from '../../components/common/Header/Header';
+import Pagination from '../../components/common/Pagination/Pagination';
 import { getMyClubs, getMyProfile } from '../../api/userApi';
 import './MyPage.css';
 
@@ -97,45 +98,6 @@ function ClubCard({ club }) {
   );
 }
 
-function Pagination({ page, totalPages, onPageChange }) {
-  const pages = useMemo(() => {
-    const pageCount = Math.max(totalPages, 1);
-
-    return Array.from({ length: Math.min(pageCount, 5) }, (_, index) => index + 1);
-  }, [totalPages]);
-
-  return (
-    <div className="mypage-pagination" aria-label="페이지네이션">
-      <button
-        type="button"
-        disabled={page <= 1}
-        onClick={() => onPageChange(page - 1)}
-      >
-        {'<'}
-      </button>
-
-      {pages.map((pageNumber) => (
-        <button
-          key={pageNumber}
-          type="button"
-          className={page === pageNumber ? 'active' : ''}
-          onClick={() => onPageChange(pageNumber)}
-        >
-          {pageNumber}
-        </button>
-      ))}
-
-      <button
-        type="button"
-        disabled={page >= Math.max(totalPages, 1)}
-        onClick={() => onPageChange(page + 1)}
-      >
-        {'>'}
-      </button>
-    </div>
-  );
-}
-
 function MyPage() {
   const [profile, setProfile] = useState(fallbackProfile);
   const [clubs, setClubs] = useState([]);
@@ -171,7 +133,7 @@ function MyPage() {
         setClubs(clubsData?.clubs || []);
         setPagination({
           totalCount: Number(clubsData?.totalCount || 0),
-          totalPages: Number(clubsData?.totalPages || 1),
+          totalPages: Math.max(Number(clubsData?.totalPages || 1), 1),
         });
       } catch {
         if (!isMounted) {
@@ -253,7 +215,7 @@ function MyPage() {
           </div>
 
           <Pagination
-            page={page}
+            currentPage={page}
             totalPages={pagination.totalPages}
             onPageChange={setPage}
           />
