@@ -1,4 +1,5 @@
-import { Heart, Star } from 'lucide-react';
+import StarRating from '../../common/StarRating/StarRating';
+import FavoriteButton from '../FavoriteButton/FavoriteButton';
 
 import './ClubCard.css';
 
@@ -8,25 +9,6 @@ function RecruitStatusBadge({ isRecruiting }) {
       className={`club-card-status${isRecruiting ? ' recruiting' : ' closed'}`}
     >
       {isRecruiting ? '모집중' : '마감'}
-    </span>
-  );
-}
-
-function Rating({ value }) {
-  const rating = Number(value || 0);
-  const filledCount = Math.round(rating);
-
-  return (
-    <span className="club-card-rating" aria-label={`별점 ${rating}`}>
-      {Array.from({ length: 5 }).map((_, index) => (
-        <Star
-          key={index}
-          size={13}
-          fill={index < filledCount ? 'currentColor' : 'none'}
-          strokeWidth={1.8}
-        />
-      ))}
-      <span>({rating.toFixed(1)})</span>
     </span>
   );
 }
@@ -79,11 +61,12 @@ function ClubCard({
         </p>
 
         <div className="club-card-meta">
-          <Rating value={club.averageRating} />
-          <span className="club-card-favorite-count">
-            <Heart size={14} strokeWidth={1.8} />
-            ({Number(club.favoriteCount || 0)})
-          </span>
+          <StarRating value={club.averageRating} />
+          <FavoriteButton
+            count={club.favoriteCount}
+            label={`${club.clubName} 찜 수`}
+            showCount
+          />
         </div>
       </div>
 

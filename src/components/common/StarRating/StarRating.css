@@ -1,0 +1,10 @@
+.star-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--color-star);
+}
+
+.star-rating svg {
+  flex: 0 0 auto;
+}

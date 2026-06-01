@@ -100,25 +100,6 @@
   font-size: 13px;
 }
 
-.club-card-rating,
-.club-card-favorite-count {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-}
-
-.club-card-rating {
-  color: var(--color-star);
-}
-
-.club-card-rating svg {
-  flex: 0 0 auto;
-}
-
-.club-card-favorite-count {
-  color: var(--color-favourite);
-}
-
 .club-card-actions {
   align-self: flex-start;
   display: flex;
