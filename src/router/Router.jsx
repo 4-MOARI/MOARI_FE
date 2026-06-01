@@ -5,6 +5,7 @@ import FavoritesPage from "../pages/Favorites/FavoritesPage";
 import HomePage from "../pages/Home/HomePage";
 import MyPage from "../pages/MyPage/MyPage";
 import SearchPage from "../pages/Search/SearchPage";
+import ClubDetailPage from "../pages/Club/ClubDetailPage";
 
 export default function Router() {
   return (
@@ -15,6 +16,7 @@ export default function Router() {
         <Route path="/mypage/favorites" element={<FavoritesPage />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/search" element={<SearchPage />} />
+        <Route path="/club/:clubId" element={<ClubDetailPage />} />
       </Routes>
     </BrowserRouter>
   );
