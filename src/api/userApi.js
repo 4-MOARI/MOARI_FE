@@ -20,3 +20,20 @@ export async function getMyClubs({ page = 1, limit = 6 } = {}) {
 
   return response.data.data;
 }
+
+export async function getMyFavoriteClubs({ page = 1, limit = 6 } = {}) {
+  const response = await apiClient.get('/users/me/favorites', {
+    params: {
+      page,
+      limit,
+    },
+  });
+
+  return response.data.data;
+}
+
+export async function deleteFavoriteClub(clubId) {
+  const response = await apiClient.delete(`/clubs/${clubId}/favorites`);
+
+  return response.data.data;
+}
