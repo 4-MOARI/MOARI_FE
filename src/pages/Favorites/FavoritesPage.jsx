@@ -157,9 +157,7 @@ function FavoritesPage() {
     setRemovingClubId(clubId);
     setErrorMessage('');
 
-    try {
-      await deleteFavoriteClub(clubId);
-
+    const removeClubFromList = () => {
       const nextTotalCount = Math.max(pagination.totalCount - 1, 0);
       const nextTotalPages = Math.max(Math.ceil(nextTotalCount / LIMIT), 1);
 
@@ -175,7 +173,20 @@ function FavoritesPage() {
         totalCount: nextTotalCount,
         totalPages: nextTotalPages,
       });
-    } catch {
+    };
+
+    try {
+      await deleteFavoriteClub(clubId);
+      removeClubFromList();
+    } catch (error) {
+      if (
+        error.response?.status === 404 ||
+        error.response?.data?.error?.code === 'FAVORITE_NOT_FOUND'
+      ) {
+        removeClubFromList();
+        return;
+      }
+
       setErrorMessage('찜 취소에 실패했습니다.');
     } finally {
       setRemovingClubId(null);
