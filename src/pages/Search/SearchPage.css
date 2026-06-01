@@ -259,3 +259,7 @@ body {
   font-size: var(--font-size-sm);
   color: var(--color-favourite);
 }
+
+.club-list .club-card-actions {
+  display: none;
+}

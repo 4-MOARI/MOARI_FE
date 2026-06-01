@@ -1,9 +1,9 @@
 import { useState } from 'react';
-<<<<<<< HEAD
+import { useSearchParams } from 'react-router-dom';
 import Header from '../../components/common/Header/Header';
 import Pagination from '../../components/common/Pagination/Pagination';
+import ClubCard from '../../components/club/ClubCard/ClubCard';
 import './SearchPage.css';
-import { useSearchParams } from 'react-router-dom';
 
 // 더미 데이터
 const dummyClubs = [
@@ -13,7 +13,7 @@ const dummyClubs = [
     briefDescription: '알고리즘 관련 활동과 스터디 정보를 확인할 수 있습니다.',
     categoryName: '학술',
     isRecruiting: true,
-    avgRating: 4.6,
+    averageRating: 4.6,
     favoriteCount: 20,
     schoolType: 'internal',
     coverImageUrl: null,
@@ -24,7 +24,7 @@ const dummyClubs = [
     briefDescription: '풋살을 즐기는 동아리입니다.',
     categoryName: '체육',
     isRecruiting: true,
-    avgRating: 4.2,
+    averageRating: 4.2,
     favoriteCount: 15,
     schoolType: 'internal',
     coverImageUrl: null,
@@ -35,7 +35,7 @@ const dummyClubs = [
     briefDescription: '사진 촬영과 편집을 배우는 동아리입니다.',
     categoryName: '공연·예술',
     isRecruiting: false,
-    avgRating: 4.6,
+    averageRating: 4.6,
     favoriteCount: 10,
     schoolType: 'external',
     coverImageUrl: null,
@@ -43,17 +43,6 @@ const dummyClubs = [
 ];
 
 const categories = ['전체', '학술', '체육', '공연·예술', '봉사', '취미·친목', '창업·취업', '어학', '기타'];
-
-function StarRating({ rating }) {
-  return (
-    <span className="star-rating">
-      {[1, 2, 3, 4, 5].map((star) => (
-        <span key={star} className={star <= rating ? 'star-filled' : 'star-empty'}>★</span>
-      ))}
-      <span className="rating-text">({rating})</span>
-    </span>
-  );
-}
 
 export default function SearchPage() {
   const [searchParams] = useSearchParams();
@@ -174,32 +163,16 @@ export default function SearchPage() {
           {/* 동아리 목록 */}
           <section className="club-list">
             {dummyClubs.map((club) => (
-              <div key={club.clubId} className="club-card">
-                <div className="club-image">
-                  {club.coverImageUrl ? (
-                    <img src={club.coverImageUrl} alt={club.clubName} />
-                  ) : (
-                    <div className="image-placeholder">IMAGE</div>
-                  )}
-                </div>
-                <div className="club-info">
-                  <div className="club-badges">
-                    <span className="category-badge">{club.categoryName}</span>
-                    <span className={club.isRecruiting ? 'recruiting-badge' : 'closed-badge'}>
-                      {club.isRecruiting ? '모집중' : '마감'}
-                    </span>
-                  </div>
-                  <h3 className="club-name">{club.clubName}</h3>
-                  <p className="club-desc">{club.briefDescription}</p>
-                  <div className="club-footer">
-                    <StarRating rating={club.avgRating} />
-                    <span className="favorite-count">♡ ({club.favoriteCount})</span>
-                  </div>
-                </div>
-              </div>
+              <ClubCard
+                key={club.clubId}
+                club={club}
+                onEdit={null}
+                onOpenHistory={null}
+                editLabel=""
+                historyLabel=""
+              />
             ))}
           </section>
-
         </div>
 
         <Pagination
@@ -209,25 +182,5 @@ export default function SearchPage() {
         />
       </main>
     </>
-=======
-import Pagination from '../../components/common/Pagination/Pagination';
-
-export default function SearchPage() {
-    //디폹로 처음 들어가면 1페이지
-  const [currentPage, setCurrentPage] = useState(1);
-//임시로 5로 설정(나중에흠 currentPage, totalPages로관리해서 paginationdp props로 넘겨주면 됩니다)
-  const totalPages = 5;
-
-  return (
-    <div>
-      {/* 검색 결과 카드 목록 */}
-
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-      />
-    </div>
->>>>>>> develop
   );
 }
