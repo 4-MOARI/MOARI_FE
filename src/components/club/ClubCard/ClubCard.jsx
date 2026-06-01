@@ -1,5 +1,5 @@
 import StarRating from '../../common/StarRating/StarRating';
-import FavoriteButton from '../FavoriteButton/FavoriteButton';
+import FavoriteButton from '../../common/Button/FavoriteButton/FavoriteButton';
 
 import './ClubCard.css';
 
