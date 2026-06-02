@@ -26,10 +26,7 @@ export default function Router() {
         <Route path="/mypage/favorites" element={<FavoritesPage />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/search" element={<SearchPage />} />
-<<<<<<< HEAD
-        <Route path="/test" element={<TestPage />} /> 
-=======
->>>>>>> a81b73c21b0c40c1eb3bbd60af84802b6a521a20
+
         <Route path="/clubs/:clubId/history" element={<HistoryPage />} />
       </Routes>
     </BrowserRouter>
