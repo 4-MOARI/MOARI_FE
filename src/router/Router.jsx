@@ -6,7 +6,6 @@ import MyPage from "../pages/MyPage/MyPage";
 import SearchPage from "../pages/Search/SearchPage";
 import ClubDetailPage from "../pages/Club/ClubDetailPage";
 import HistoryPage from '../pages/Club/History/HistoryPage';
-import TestPage from '../pages/TestPage';
 
 export default function Router() {
   return (
@@ -17,7 +16,6 @@ export default function Router() {
         <Route path="/mypage/favorites" element={<FavoritesPage />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/search" element={<SearchPage />} />
-        <Route path="/test" element={<TestPage />} /> //테스트용
         <Route path="/clubs/:clubId/history" element={<HistoryPage />} />
       </Routes>
     </BrowserRouter>
