@@ -1,0 +1,33 @@
+.report-button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 10px;
+  gap: 10px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: #D45353;
+
+  color: #FFF;
+
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+
+  cursor: pointer;
+
+  transition: 0.15s;
+}
+
+.report-button:hover {
+  opacity: 0.92;
+}
+
+.report-button:active {
+  transform: scale(0.96);
+}
