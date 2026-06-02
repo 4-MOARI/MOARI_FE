@@ -6,22 +6,6 @@ import RecruitStatusFilterButton from "../../components/common/Button/FilterButt
 import ClubCardMain from '../../components/club/ClubCard/ClubCardMain';
 import Pagination from '../../components/common/Pagination/Pagination';
 
-const fetchClubs = async () => {
-  try {
-    const mockClubs = Array.from({ length: 30 }, (_, i) => ({
-      id: i + 1,
-      name: `${clubType === 'internal' ? '교내' : '외부'} 동아리 ${i + 1}`,
-      category: i % 2 === 0 ? '학술' : '체육',
-      status: i % 3 === 0 ? '마감' : '모집중',
-      type: i % 2 === 0 ? 'internal' : 'external',
-      description: '동아리 소개와 활동 내용을 확인하고 리뷰와 모집 여부를 볼 수 있어요.' // 추가됨!
-    })).filter((club) => club.type === clubType);
-
-    setClubs(mockClubs);
-  } catch (error) {
-    console.error(error);
-  }
-};
 const HomePage = () => {
   const [clubType, setClubType] = useState('internal'); // 'internal' 또는 'external'
   const [clubs, setClubs] = useState([]);
