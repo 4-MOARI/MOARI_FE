@@ -1,6 +1,9 @@
 import Header from '../../components/common/Header/Header';
 import apiClient from '../../api/axios';
-
+//등록/수정페이지 내 모집 상태 배지 실험용(곧 삭제 예정)
+import RecruitStatusToggle
+  from '../../components/common/DatePicker/RecruitStatusToggle';
+import { useState, useEffect } from 'react';
 // 테스트(+헤더 스위치 쪽 조정해봤습니다)
 // src/pages/Home/HomePage.jsx
 
@@ -39,9 +42,10 @@ const HomePage = () => {
       {/* 2. 호출 확인 */}
       <h1>테스트 페이지</h1>
 
-      <p>현재 선택 : {cluvType} </p> 
+      <p>현재 선택 : {clubType} </p> 
       <CategoryBadge>학술</CategoryBadge>
       <RecruitStatusBadge isRecruiting={true} />
+      <RecruitStatusToggle />
     </div>
   );
 };

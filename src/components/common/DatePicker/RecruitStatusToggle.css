@@ -1,0 +1,33 @@
+.recruit-wrapper {
+  position: relative;
+}
+
+.recruit-toggle {
+  display: flex;
+  gap: 10px;
+}
+
+.recruit-toggle button {
+  border: none;
+
+  border-radius: 999px;
+
+  padding: 5px 12px;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.selected {
+  background-color: #1F116D;
+
+  color: #FFFFFF;
+}
+
+.unselected {
+  background-color: #EDEAFE;
+
+  color: #A19DD5;
+}
