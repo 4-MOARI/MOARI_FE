@@ -8,7 +8,9 @@ import SearchPage from "../pages/Search/SearchPage";
 import HistoryPage from '../pages/Club/History/HistoryPage';
 import ClubDetailPage from "../pages/Club/ClubDetail/ClubDetailPage";
 import ClubRegisterPage from '../pages/Club/ClubManage/ClubRegisterPage';
+import ClubRegisterPreviewPage from '../pages/Club/ClubManage/ClubRegisterPreviewPage';
 import ClubUpdatePage from '../pages/Club/ClubManage/ClubUpdatePage';
+import ClubUpdatePreviewPage from '../pages/Club/ClubManage/ClubUpdatePreviewPage.jsx';
 import LoginPage from "../pages/Auth/LoginPage";
 import SignupPage from "../pages/Auth/SignupPage";
 import FindAccountPage from "../pages/Auth/FindAccountPage";
@@ -30,8 +32,14 @@ export default function Router() {
         {/* 동아리 관련 경로들 */}
         <Route path="/clubs/:clubId/history" element={<HistoryPage />} />
         <Route path="/club/:clubId" element={<ClubDetailPage />} />
+        
+        {/* 등록 관련 경로 */}
         <Route path="/club/register" element={<ClubRegisterPage />} />
+        <Route path="/club/register/preview" element={<ClubRegisterPreviewPage />} />
+        
+        {/* 수정 관련 경로 */}
         <Route path="/club/update/:clubId" element={<ClubUpdatePage />} />
+        <Route path="/club/update/:clubId/preview" element={<ClubUpdatePreviewPage />} />
       </Routes>
     </BrowserRouter>
   );
