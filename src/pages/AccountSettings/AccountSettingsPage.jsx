@@ -209,7 +209,7 @@ function AccountSettingsPage() {
             <MenuItem onClick={() => navigate('/mypage/favorites')}>
               찜한 동아리
             </MenuItem>
-            <MenuItem>내가 쓴 리뷰</MenuItem>
+            <MenuItem onClick={() => navigate('/mypage/reviews')}>내가 쓴 리뷰</MenuItem>
             <MenuItem onClick={() => navigate('/mypage')}>
               내가 등록한 동아리
             </MenuItem>

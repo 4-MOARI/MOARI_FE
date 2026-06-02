@@ -28,11 +28,13 @@ export default function ReviewModal({
     try {
         setIsLoading(true);
 
-        await createReview({
-            clubId,
+        await createReview(
+          clubId,
+          {
             rating,
             content,
-        });
+          }
+        );
 
         alert('리뷰 등록 완료');
 
