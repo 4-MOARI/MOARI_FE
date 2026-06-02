@@ -51,10 +51,15 @@ export default function ReviewModal({
 
   return (
     // 모달 뒤 회색 배경
-    <div className="review-overlay">
+    <div 
+        className="review-overlay"
+        onClick={onClose}>
       
       {/* 모달 본체 */}
-      <div className="review-modal">
+      <div 
+        className="review-modal"
+        onClick={(e) => e.stopPropagation()}
+        >
 
         {/* 제목 */}
         <h2 className="review-title">
