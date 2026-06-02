@@ -1,0 +1,27 @@
+.url-button {
+  display: inline-flex;
+  height: 23px;
+  padding: 10px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border-radius: 10px;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none; /* 밑줄 제거 */
+  color: inherit;         /* 부모의 텍스트 색상을 따르도록 설정 */
+  transition: opacity 0.2s;
+}
+
+/* ... 각 타입별 스타일 (이전과 동일) ... */
+
+.url-button.web { background: #EAF3DE; color: #3B6D11; }
+.url-button.discord { background: #E6F1FB; color: #185FA5; }
+.url-button.instagram { background: #FBEAF0; color: #993556; }
+.url-button.notion { background: #EEEDFE; color: #534AB7; }
+.url-button.default { background: #D1D1D1; color: #111827; }
+
+.url-button:hover { opacity: 0.8; }
