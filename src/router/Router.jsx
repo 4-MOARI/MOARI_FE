@@ -7,17 +7,23 @@ import SearchPage from "../pages/Search/SearchPage";
 import ClubDetailPage from "../pages/Club/ClubDetailPage";
 import HistoryPage from '../pages/Club/History/HistoryPage';
 import TestPage from '../pages/TestPage';
+import LoginPage from "../pages/Auth/LoginPage";
+import SignupPage from "../pages/Auth/SignupPage";
+import FindAccountPage from "../pages/Auth/FindAccountPage";
 
 export default function Router() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/find-account" element={<FindAccountPage />} />
         <Route path="/mypage/account" element={<AccountSettingsPage />} />
         <Route path="/mypage/favorites" element={<FavoritesPage />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/search" element={<SearchPage />} />
-        <Route path="/test" element={<TestPage />} /> //테스트용
+        <Route path="/test" element={<TestPage />} /> 
         <Route path="/clubs/:clubId/history" element={<HistoryPage />} />
       </Routes>
     </BrowserRouter>
