@@ -1,8 +1,11 @@
 import Header from '../../components/common/Header/Header';
 import apiClient from '../../api/axios';
 //등록/수정페이지 내 모집 상태 배지 실험용(곧 삭제 예정)
-import RecruitStatusToggle
-  from '../../components/common/DatePicker/RecruitStatusToggle';
+
+import RecruitStatusSection
+  from '../../components/club/RecruitStatusSection/RecruitStatusSection';
+
+
 import { useState, useEffect } from 'react';
 // 테스트(+헤더 스위치 쪽 조정해봤습니다)
 // src/pages/Home/HomePage.jsx
@@ -14,6 +17,11 @@ import RecruitStatusBadge from "../../components/common/Badge/RecruitStatusBadge
 const HomePage = () => {
   const [clubType, setClubType] = useState('internal');
   const [clubs, setClubs] =useState([]);
+  const [selectedStat, setSelectedStat]
+  = useState('마감');
+
+  const [isOpen, setIsOpen]
+  = useState(false);
 
   useEffect(() => {
     fetchClubs();
@@ -44,9 +52,14 @@ const HomePage = () => {
 
       <p>현재 선택 : {clubType} </p> 
       <CategoryBadge>학술</CategoryBadge>
-      <RecruitStatusBadge isRecruiting={true} />
-      <RecruitStatusToggle />
+     
+      <RecruitStatusSection />
+
+
+       
     </div>
+
+    
   );
 };
 
