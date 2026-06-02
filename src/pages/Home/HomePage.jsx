@@ -1,21 +1,21 @@
-import { useEffect, useState } from 'react';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../../components/common/Header/Header';
 import apiClient from '../../api/axios';
 import CategoryFilterButton from "../../components/common/Button/FilterButton/CategoryFilterButton";
 import RecruitStatusFilterButton from "../../components/common/Button/FilterButton/RecruitStatusFilterButton";
 import ClubCardMain from '../../components/club/ClubCard/ClubCardMain';
 import Pagination from '../../components/common/Pagination/Pagination';
+import CategoryBadge from '../../components/common/Badge/CategoryBadge/CategoryBadge'; // 추가됨
+import RecruitStatusBadge from '../../components/common/Badge/RecruitStatusBadge/RecruitStatusBadge'; // 추가됨
 
 const HomePage = () => {
   const [clubType, setClubType] = useState('internal');
-  const [, setClubs] = useState([]);
-  const [clubs, setClubs] = useState([]);
+  const [clubs, setClubs] = useState([]); // 중복 제거함
   
   const [selectedCategory, setSelectedCategory] = useState('전체');
   const [selectedStatus, setSelectedStatus] = useState('전체');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 12;
+  const itemsPerPage = 12; // 요청하신 대로 12개 설정
 
   useEffect(() => {
     fetchClubs();
@@ -53,10 +53,7 @@ const HomePage = () => {
   return (
     <div>
       <Header showSwitch={true} clubType={clubType} setClubType={setClubType} />
-
-      <p>현재 선택 : {clubType} </p>
-      <CategoryBadge>학술</CategoryBadge>
-      <RecruitStatusBadge status="모집중" />
+      
       <div style={{ width: '100%', height: '180px', background: '#EEEDFE', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
         <div style={{ color: '#534AB7', fontSize: '36px', fontWeight: '700', marginBottom: '20px' }}>
           우리 학교 동아리를 한 눈에
@@ -84,7 +81,6 @@ const HomePage = () => {
           총 {filteredClubs.length}개 동아리
         </div>
 
-        {/* 여기서 ClubCard 대신 새로 만든 ClubCardMain을 사용합니다. */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', paddingBottom: '40px', minHeight: '600px' }}>
           {currentClubs.length > 0 ? (
             currentClubs.map((club) => (
@@ -102,7 +98,7 @@ const HomePage = () => {
             totalItems={filteredClubs.length} 
             itemsPerPage={itemsPerPage} 
             currentPage={currentPage} 
-            setCurrentPage={setCurrentPage} 
+            onPageChange={setCurrentPage} 
           />
         </div>
       </div>
