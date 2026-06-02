@@ -1,13 +1,15 @@
 import axios from 'axios';
 
 export const AUTH_TOKEN_KEY = 'moariAccessToken';
+const DEV_AUTH_TOKEN = import.meta.env.VITE_DEV_AUTH_TOKEN || '';
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
 });
 
 apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem(AUTH_TOKEN_KEY);
+  const token = localStorage.getItem(AUTH_TOKEN_KEY) ||
+    (import.meta.env.DEV ? DEV_AUTH_TOKEN : '');
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;

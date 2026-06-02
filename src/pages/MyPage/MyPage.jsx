@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { UserRound } from 'lucide-react';
 
 import ClubCard from '../../components/club/ClubCard/ClubCard';
@@ -17,15 +18,20 @@ const fallbackProfile = {
   },
 };
 
-function MyPageMenuItem({ children, active }) {
+function MyPageMenuItem({ children, active, onClick }) {
   return (
-    <button className={`mypage-menu-item${active ? ' active' : ''}`}>
+    <button
+      type="button"
+      className={`mypage-menu-item${active ? ' active' : ''}`}
+      onClick={onClick}
+    >
       {children}
     </button>
   );
 }
 
 function MyPage() {
+  const navigate = useNavigate();
   const [profile, setProfile] = useState(fallbackProfile);
   const [clubs, setClubs] = useState([]);
   const [page, setPage] = useState(1);
@@ -97,10 +103,14 @@ function MyPage() {
           <em>{profile.school?.schoolName}</em>
 
           <nav className="mypage-menu" aria-label="마이페이지 메뉴">
-            <MyPageMenuItem>찜한 동아리</MyPageMenuItem>
+            <MyPageMenuItem onClick={() => navigate('/mypage/favorites')}>
+              찜한 동아리
+            </MyPageMenuItem>
             <MyPageMenuItem>내가 쓴 리뷰</MyPageMenuItem>
             <MyPageMenuItem active>내가 등록한 동아리</MyPageMenuItem>
-            <MyPageMenuItem>계정 설정</MyPageMenuItem>
+            <MyPageMenuItem onClick={() => navigate('/mypage/account')}>
+              계정 설정
+            </MyPageMenuItem>
           </nav>
 
           <div className="mypage-sidebar-footer">

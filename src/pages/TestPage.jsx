@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import CategoryBadge from '../components/common/Badge/CategoryBadge/CategoryBadge';
 import RecruitStatusBadge from '../components/common/Badge/RecruitStatusBadge/RecruitStatusBadge';
-import FilterButton from '../components/common/Button/FilterButton/FilterButton';
+import CategoryFilterButton from '../components/common/Button/FilterButton/CategoryFilterButton';
+import RecruitStatusFilterButton from '../components/common/Button/FilterButton/RecruitStatusFilterButton';
 
 export default function TestPage() {
   const [selectedCat, setSelectedCat] = useState('학술');
@@ -29,10 +30,9 @@ export default function TestPage() {
         <h3>2. 카테고리 필터링</h3>
         <div style={{ display: 'flex', gap: '10px' }}>
           {['학술', '체육', '공연,예술'].map(cat => (
-            <FilterButton 
+            <CategoryFilterButton
               key={cat} 
               label={cat} 
-              type="category" 
               isSelected={selectedCat === cat} 
               onClick={() => setSelectedCat(cat)} 
             />
@@ -45,10 +45,9 @@ export default function TestPage() {
         <h3>3. 모집상태 필터링 (등록/수정용 동일)</h3>
         <div style={{ display: 'flex', gap: '10px' }}>
           {['전체', '모집중', '마감'].map(stat => (
-            <FilterButton 
+            <RecruitStatusFilterButton
               key={stat} 
               label={stat} 
-              type="status" 
               isSelected={selectedStat === stat} 
               onClick={() => setSelectedStat(stat)} 
             />

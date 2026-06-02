@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { LockKeyhole, ShieldCheck, UserRound } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { UserRound } from 'lucide-react';
 
 import Header from '../../components/common/Header/Header';
 import {
@@ -12,42 +13,61 @@ import '../MyPage/MyPage.css';
 import './AccountSettingsPage.css';
 
 const fallbackProfile = {
+  userId: 'hong_gildong',
   userName: '홍길동',
   email: 'hong@korea.ac.kr',
   school: {
     schoolName: '성신여자대학교',
   },
+  isVerified: true,
 };
 
-function MenuItem({ children, active }) {
+function MenuItem({ children, active, onClick }) {
   return (
-    <button className={`mypage-menu-item${active ? ' active' : ''}`}>
+    <button
+      type="button"
+      className={`mypage-menu-item${active ? ' active' : ''}`}
+      onClick={onClick}
+    >
       {children}
     </button>
   );
 }
 
-function ReadonlyField({ label, value, helperText }) {
+function StatusBadge({ children, tone = 'disabled' }) {
   return (
-    <label className="account-field">
-      <span>{label}</span>
-      <input value={value || ''} readOnly />
-      {helperText && <em>{helperText}</em>}
-    </label>
+    <span className={`account-status-badge ${tone}`}>
+      {children}
+    </span>
+  );
+}
+
+function AccountInfoRow({
+  label,
+  value,
+  action,
+}) {
+  return (
+    <div className="account-info-row">
+      <strong>{label}</strong>
+      <span>{value}</span>
+      <div>{action}</div>
+    </div>
   );
 }
 
 function AccountSettingsPage() {
+  const navigate = useNavigate();
   const [profile, setProfile] = useState(fallbackProfile);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isPasswordFormOpen, setIsPasswordFormOpen] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isPasswordVerified, setIsPasswordVerified] = useState(false);
   const [passwordMessage, setPasswordMessage] = useState('');
   const [isPasswordSubmitting, setIsPasswordSubmitting] = useState(false);
-  const [isDeleteChecked, setIsDeleteChecked] = useState(false);
   const [deleteMessage, setDeleteMessage] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -62,7 +82,10 @@ function AccountSettingsPage() {
         const profileData = await getMyProfile();
 
         if (isMounted) {
-          setProfile(profileData || fallbackProfile);
+          setProfile({
+            ...fallbackProfile,
+            ...profileData,
+          });
         }
       } catch {
         if (isMounted) {
@@ -136,6 +159,7 @@ function AccountSettingsPage() {
       setNewPassword('');
       setConfirmPassword('');
       setIsPasswordVerified(false);
+      setIsPasswordFormOpen(false);
       setPasswordMessage('비밀번호가 변경되었습니다.');
     } catch {
       setPasswordMessage('비밀번호 변경에 실패했습니다.');
@@ -147,8 +171,7 @@ function AccountSettingsPage() {
   const handleDeleteAccount = async () => {
     setDeleteMessage('');
 
-    if (!isDeleteChecked) {
-      setDeleteMessage('회원탈퇴 안내를 확인해주세요.');
+    if (!window.confirm('계정을 탈퇴하시겠습니까?')) {
       return;
     }
 
@@ -166,6 +189,8 @@ function AccountSettingsPage() {
     }
   };
 
+  const accountId = profile.userId || profile.email?.split('@')[0] || 'hong_gildong';
+
   return (
     <>
       <Header />
@@ -181,9 +206,13 @@ function AccountSettingsPage() {
           <em>{profile.school?.schoolName}</em>
 
           <nav className="mypage-menu" aria-label="마이페이지 메뉴">
-            <MenuItem>찜한 동아리</MenuItem>
+            <MenuItem onClick={() => navigate('/mypage/favorites')}>
+              찜한 동아리
+            </MenuItem>
             <MenuItem>내가 쓴 리뷰</MenuItem>
-            <MenuItem>내가 등록한 동아리</MenuItem>
+            <MenuItem onClick={() => navigate('/mypage')}>
+              내가 등록한 동아리
+            </MenuItem>
             <MenuItem active>계정 설정</MenuItem>
           </nav>
 
@@ -194,13 +223,9 @@ function AccountSettingsPage() {
         </aside>
 
         <section className="mypage-content account-settings-content">
-          <div className="mypage-content-header">
-            <div>
-              <h1>계정 설정</h1>
-              <p>내 계정 정보를 확인하고 비밀번호를 변경할 수 있습니다.</p>
-            </div>
-
-            <span>변경 불가</span>
+          <div className="account-settings-header">
+            <h1>계정 설정</h1>
+            <p>개인정보와 학교 인증 상태를 확인하고 계정 정보를 관리합니다.</p>
           </div>
 
           {isLoading && <div className="mypage-state">불러오는 중입니다.</div>}
@@ -210,127 +235,109 @@ function AccountSettingsPage() {
           )}
 
           {!isLoading && !errorMessage && (
-            <div className="account-settings-panel">
-              <section className="account-section">
-                <div className="account-section-title">
-                  <ShieldCheck size={22} strokeWidth={2} />
-                  <h2>기본 정보</h2>
-                </div>
-
-                <div className="account-field-grid">
-                  <ReadonlyField
-                    label="이름"
-                    value={profile.userName}
-                    helperText="가입 시 등록된 이름입니다."
-                  />
-                  <ReadonlyField
-                    label="아이디"
-                    value={profile.email}
-                    helperText="아이디는 변경할 수 없습니다."
-                  />
-                  <ReadonlyField
-                    label="학교"
-                    value={profile.school?.schoolName}
-                    helperText="학교는 변경할 수 없습니다."
-                  />
-                </div>
-              </section>
-
-              <section className="account-section">
-                <div className="account-section-title">
-                  <LockKeyhole size={22} strokeWidth={2} />
-                  <h2>비밀번호 변경</h2>
-                </div>
-
-                <form className="account-password-form">
-                  <label className="account-field">
-                    <span>현재 비밀번호</span>
-                    <input
-                      type="password"
-                      value={currentPassword}
-                      onChange={(event) => {
-                        setCurrentPassword(event.target.value);
-                        setIsPasswordVerified(false);
+            <>
+              <div className="account-info-list">
+                <AccountInfoRow
+                  label="아이디"
+                  value={accountId}
+                  action={<StatusBadge>변경 불가</StatusBadge>}
+                />
+                <AccountInfoRow
+                  label="학교"
+                  value={profile.school?.schoolName}
+                  action={<StatusBadge>변경 불가</StatusBadge>}
+                />
+                <AccountInfoRow
+                  label="이메일"
+                  value={profile.email}
+                  action={(
+                    <StatusBadge tone="success">
+                      {profile.isVerified === false ? '인증 필요' : '인증 완료'}
+                    </StatusBadge>
+                  )}
+                />
+                <AccountInfoRow
+                  label="비밀번호"
+                  value="••••••••"
+                  action={(
+                    <button
+                      type="button"
+                      className="account-change-button"
+                      onClick={() => {
+                        setIsPasswordFormOpen((prev) => !prev);
+                        setPasswordMessage('');
                       }}
-                      placeholder="현재 비밀번호 입력"
-                    />
-                  </label>
+                    >
+                      변경
+                    </button>
+                  )}
+                />
+              </div>
 
+              {isPasswordFormOpen && (
+                <form className="account-password-panel">
+                  <input
+                    type="password"
+                    value={currentPassword}
+                    onChange={(event) => {
+                      setCurrentPassword(event.target.value);
+                      setIsPasswordVerified(false);
+                    }}
+                    placeholder="현재 비밀번호"
+                  />
                   <button
                     type="button"
-                    className="account-secondary-button"
                     disabled={isPasswordSubmitting}
                     onClick={handleVerifyPassword}
                   >
-                    비밀번호 확인
+                    확인
                   </button>
-
-                  <label className="account-field">
-                    <span>새 비밀번호</span>
-                    <input
-                      type="password"
-                      value={newPassword}
-                      disabled={!isPasswordVerified}
-                      onChange={(event) => setNewPassword(event.target.value)}
-                      placeholder="8자 이상 입력"
-                    />
-                  </label>
-
-                  <label className="account-field">
-                    <span>새 비밀번호 확인</span>
-                    <input
-                      type="password"
-                      value={confirmPassword}
-                      disabled={!isPasswordVerified}
-                      onChange={(event) => setConfirmPassword(event.target.value)}
-                      placeholder="새 비밀번호 재입력"
-                    />
-                  </label>
-
+                  <input
+                    type="password"
+                    value={newPassword}
+                    disabled={!isPasswordVerified}
+                    onChange={(event) => setNewPassword(event.target.value)}
+                    placeholder="새 비밀번호"
+                  />
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    disabled={!isPasswordVerified}
+                    onChange={(event) => setConfirmPassword(event.target.value)}
+                    placeholder="새 비밀번호 확인"
+                  />
                   <button
                     type="button"
-                    className="account-primary-button"
                     disabled={isPasswordSubmitting || !isPasswordVerified}
                     onClick={handleChangePassword}
                   >
                     변경하기
                   </button>
                 </form>
+              )}
 
-                {passwordMessage && (
-                  <p className="account-message">{passwordMessage}</p>
-                )}
-              </section>
+              {passwordMessage && (
+                <p className="account-message">{passwordMessage}</p>
+              )}
 
-              <section className="account-section danger">
-                <h2>회원탈퇴</h2>
-                <p>
-                  회원탈퇴 시 내가 등록한 동아리와 계정 정보가 함께 삭제됩니다.
-                </p>
-
-                <label className="account-delete-check">
-                  <input
-                    type="checkbox"
-                    checked={isDeleteChecked}
-                    onChange={(event) => setIsDeleteChecked(event.target.checked)}
-                  />
-                  <span>안내 내용을 확인했습니다.</span>
-                </label>
+              <section className="account-delete-box">
+                <div>
+                  <h2>탈퇴</h2>
+                  <p>계정 삭제 시 찜, 리뷰, 등록한 동아리 정보가 함께 처리됩니다.</p>
+                  {deleteMessage && (
+                    <p className="account-message danger">{deleteMessage}</p>
+                  )}
+                </div>
 
                 <button
                   type="button"
-                  className="account-danger-button"
-                  disabled={isDeleting || !isDeleteChecked}
+                  disabled={isDeleting}
                   onClick={handleDeleteAccount}
                 >
-                  회원탈퇴
+                  계정 탈퇴
                 </button>
-
-                {deleteMessage && (
-                  <p className="account-message danger">{deleteMessage}</p>
-                )}
               </section>
-            </div>
+            </>
           )}
         </section>
       </main>
