@@ -61,7 +61,7 @@ function AccountSettingsPage() {
   const [profile, setProfile] = useState(fallbackProfile);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
-  const [isPasswordFormOpen, setIsPasswordFormOpen] = useState(false);
+  const [passwordModalStep, setPasswordModalStep] = useState(null);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -70,6 +70,26 @@ function AccountSettingsPage() {
   const [isPasswordSubmitting, setIsPasswordSubmitting] = useState(false);
   const [deleteMessage, setDeleteMessage] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const isPasswordModalOpen = passwordModalStep !== null;
+
+  const openPasswordModal = () => {
+    setPasswordModalStep('verify');
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setIsPasswordVerified(false);
+    setPasswordMessage('');
+  };
+
+  const closePasswordModal = () => {
+    setPasswordModalStep(null);
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setIsPasswordVerified(false);
+    setPasswordMessage('');
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -120,9 +140,10 @@ function AccountSettingsPage() {
     try {
       await verifyMyPassword(currentPassword);
       setIsPasswordVerified(true);
-      setPasswordMessage('현재 비밀번호가 확인되었습니다.');
+      setPasswordMessage('');
+      setPasswordModalStep('change');
     } catch {
-      setPasswordMessage('현재 비밀번호가 일치하지 않습니다.');
+      setPasswordMessage('비밀번호가 일치하지 않습니다.');
     } finally {
       setIsPasswordSubmitting(false);
     }
@@ -138,12 +159,17 @@ function AccountSettingsPage() {
     }
 
     if (newPassword.length < 8 || newPassword.length > 50) {
-      setPasswordMessage('새 비밀번호는 8자 이상 50자 이하로 입력해주세요.');
+      setPasswordMessage('비밀번호 조건을 확인해주세요.');
+      return;
+    }
+
+    if (!/[A-Za-z]/.test(newPassword) || !/\d/.test(newPassword)) {
+      setPasswordMessage('비밀번호 조건을 확인해주세요.');
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setPasswordMessage('새 비밀번호 확인이 일치하지 않습니다.');
+      setPasswordMessage('비밀번호가 일치하지 않습니다.');
       return;
     }
 
@@ -159,7 +185,7 @@ function AccountSettingsPage() {
       setNewPassword('');
       setConfirmPassword('');
       setIsPasswordVerified(false);
-      setIsPasswordFormOpen(false);
+      setPasswordModalStep(null);
       setPasswordMessage('비밀번호가 변경되었습니다.');
     } catch {
       setPasswordMessage('비밀번호 변경에 실패했습니다.');
@@ -263,10 +289,7 @@ function AccountSettingsPage() {
                     <button
                       type="button"
                       className="account-change-button"
-                      onClick={() => {
-                        setIsPasswordFormOpen((prev) => !prev);
-                        setPasswordMessage('');
-                      }}
+                      onClick={openPasswordModal}
                     >
                       변경
                     </button>
@@ -274,49 +297,7 @@ function AccountSettingsPage() {
                 />
               </div>
 
-              {isPasswordFormOpen && (
-                <form className="account-password-panel">
-                  <input
-                    type="password"
-                    value={currentPassword}
-                    onChange={(event) => {
-                      setCurrentPassword(event.target.value);
-                      setIsPasswordVerified(false);
-                    }}
-                    placeholder="현재 비밀번호"
-                  />
-                  <button
-                    type="button"
-                    disabled={isPasswordSubmitting}
-                    onClick={handleVerifyPassword}
-                  >
-                    확인
-                  </button>
-                  <input
-                    type="password"
-                    value={newPassword}
-                    disabled={!isPasswordVerified}
-                    onChange={(event) => setNewPassword(event.target.value)}
-                    placeholder="새 비밀번호"
-                  />
-                  <input
-                    type="password"
-                    value={confirmPassword}
-                    disabled={!isPasswordVerified}
-                    onChange={(event) => setConfirmPassword(event.target.value)}
-                    placeholder="새 비밀번호 확인"
-                  />
-                  <button
-                    type="button"
-                    disabled={isPasswordSubmitting || !isPasswordVerified}
-                    onClick={handleChangePassword}
-                  >
-                    변경하기
-                  </button>
-                </form>
-              )}
-
-              {passwordMessage && (
+              {!isPasswordModalOpen && passwordMessage && (
                 <p className="account-message">{passwordMessage}</p>
               )}
 
@@ -341,6 +322,97 @@ function AccountSettingsPage() {
           )}
         </section>
       </main>
+
+      {isPasswordModalOpen && (
+        <div
+          className="password-modal-overlay"
+          onClick={closePasswordModal}
+        >
+          {passwordModalStep === 'verify' && (
+            <form
+              className="password-modal"
+              onClick={(event) => event.stopPropagation()}
+              onSubmit={handleVerifyPassword}
+            >
+              <h2>비밀번호 변경</h2>
+
+              <label className="password-modal-field">
+                <span>현재 비밀번호</span>
+                <input
+                  type="password"
+                  value={currentPassword}
+                  onChange={(event) => {
+                    setCurrentPassword(event.target.value);
+                    setIsPasswordVerified(false);
+                    setPasswordMessage('');
+                  }}
+                  autoFocus
+                />
+              </label>
+
+              <p className="password-modal-message">
+                {passwordMessage}
+              </p>
+
+              <button
+                type="submit"
+                className="password-modal-submit"
+                disabled={isPasswordSubmitting}
+              >
+                확인
+              </button>
+            </form>
+          )}
+
+          {passwordModalStep === 'change' && (
+            <form
+              className="password-modal password-modal--large"
+              onClick={(event) => event.stopPropagation()}
+              onSubmit={handleChangePassword}
+            >
+              <h2>비밀번호 변경</h2>
+
+              <label className="password-modal-field">
+                <span>새 비밀번호</span>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(event) => {
+                    setNewPassword(event.target.value);
+                    setPasswordMessage('');
+                  }}
+                  autoFocus
+                />
+              </label>
+
+              <label className="password-modal-field">
+                <span>비밀번호 확인</span>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(event) => {
+                    setConfirmPassword(event.target.value);
+                    setPasswordMessage('');
+                  }}
+                />
+              </label>
+
+              <div className="password-modal-help-row">
+                <span>비밀번호 조건  ✓ 8자 이상  ✓ 영문 포함  ✓ 숫자 포함</span>
+                <p>{passwordMessage}</p>
+              </div>
+
+              <button
+                type="submit"
+                className="password-modal-submit"
+                disabled={isPasswordSubmitting}
+              >
+                비밀번호 변경
+              </button>
+            </form>
+          )}
+        </div>
+      )}
     </>
   );
 }

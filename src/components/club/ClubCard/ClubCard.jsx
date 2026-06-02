@@ -43,11 +43,11 @@ function ClubCard({
   const cardImageUrl = imageUrl || club.profileImageUrl || club.coverImageUrl;
 
   return (
-    <article className="club-card club-card--registered">
+    <article className="club-card registered-club-card club-card--registered">
       <ClubImage imageUrl={cardImageUrl} title={cardTitle} />
 
-      <div className="club-card-main">
-        <div className="club-card-badges">
+      <div className="registered-club-card-main">
+        <div className="registered-club-card-badges">
           {categoryBadge || (
             <CategoryBadge>{cardCategory}</CategoryBadge>
           )}
@@ -59,7 +59,7 @@ function ClubCard({
         <h3>{cardTitle}</h3>
         <p>{cardDescription}</p>
 
-        <div className="club-card-meta">
+        <div className="registered-club-card-meta">
           <StarRating value={cardRating} />
           <FavoriteButton
             count={cardFavoriteCount}
@@ -69,7 +69,7 @@ function ClubCard({
         </div>
       </div>
 
-      <div className="club-card-actions">
+      <div className="registered-club-card-actions">
         <button type="button" onClick={() => onEdit?.(club)}>
           {editLabel}
         </button>

@@ -118,7 +118,7 @@
 
 .mypage-content {
   min-height: 660px;
-  padding: 42px 56px 24px;
+  padding: 42px 70px 24px;
 }
 
 .mypage-content-header {
@@ -126,7 +126,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 24px;
-  margin-bottom: 36px;
+  margin-bottom: 46px;
 }
 
 .mypage-content-header h1 {
@@ -157,7 +157,7 @@
 .my-club-list {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 46px;
 }
 
 .club-category,
@@ -211,12 +211,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 36px;
+  margin-top: 46px;
   border-radius: 18px;
   color: var(--color-primary);
   background-color: var(--color-primary-bg);
   font-size: 16px;
   font-weight: var(--font-weight-bold);
+}
+
+.mypage-content .pagination-container {
+  margin-top: 22px;
 }
 
 .mypage-pagination {
