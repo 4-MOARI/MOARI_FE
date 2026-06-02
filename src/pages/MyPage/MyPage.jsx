@@ -8,7 +8,7 @@ import Pagination from '../../components/common/Pagination/Pagination';
 import { getMyClubs, getMyProfile } from '../../api/userApi';
 import './MyPage.css';
 
-const LIMIT = 6;
+const LIMIT = 2;
 
 const fallbackProfile = {
   userName: '홍길동',
