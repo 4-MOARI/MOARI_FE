@@ -94,7 +94,7 @@
 
 .mypage-sidebar-footer {
   width: 100%;
-  margin-top: auto;
+  margin-top: 30px;
   padding-top: 24px;
   border-top: 1px solid #e5e7eb;
   color: var(--color-text-secondary);
@@ -107,10 +107,11 @@
   color: inherit;
   cursor: pointer;
   font: inherit;
-  padding: 0 0 58px 4px;
+  padding: 0 0 0 4px;
 }
 
 .mypage-sidebar-footer p {
+  margin-top: 68px;
   font-size: 12px;
   white-space: nowrap;
 }
