@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { LockKeyhole, ShieldCheck, UserRound } from 'lucide-react';
 
 import Header from '../../components/common/Header/Header';
@@ -19,9 +20,13 @@ const fallbackProfile = {
   },
 };
 
-function MenuItem({ children, active }) {
+function MenuItem({ children, active, onClick }) {
   return (
-    <button className={`mypage-menu-item${active ? ' active' : ''}`}>
+    <button
+      type="button"
+      className={`mypage-menu-item${active ? ' active' : ''}`}
+      onClick={onClick}
+    >
       {children}
     </button>
   );
@@ -38,6 +43,7 @@ function ReadonlyField({ label, value, helperText }) {
 }
 
 function AccountSettingsPage() {
+  const navigate = useNavigate();
   const [profile, setProfile] = useState(fallbackProfile);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
@@ -181,9 +187,13 @@ function AccountSettingsPage() {
           <em>{profile.school?.schoolName}</em>
 
           <nav className="mypage-menu" aria-label="마이페이지 메뉴">
-            <MenuItem>찜한 동아리</MenuItem>
+            <MenuItem onClick={() => navigate('/mypage/favorites')}>
+              찜한 동아리
+            </MenuItem>
             <MenuItem>내가 쓴 리뷰</MenuItem>
-            <MenuItem>내가 등록한 동아리</MenuItem>
+            <MenuItem onClick={() => navigate('/mypage')}>
+              내가 등록한 동아리
+            </MenuItem>
             <MenuItem active>계정 설정</MenuItem>
           </nav>
 
