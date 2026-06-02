@@ -1,17 +1,9 @@
+import CategoryBadge from '../../common/Badge/CategoryBadge/CategoryBadge';
+import RecruitStatusBadge from '../../common/Badge/RecruitStatusBadge/RecruitStatusBadge';
 import StarRating from '../../common/StarRating/StarRating';
 import FavoriteButton from '../../common/Button/FavoriteButton/FavoriteButton';
 
 import './ClubCard.css';
-
-function RecruitStatusBadge({ isRecruiting }) {
-  return (
-    <span
-      className={`club-card-status${isRecruiting ? ' recruiting' : ' closed'}`}
-    >
-      {isRecruiting ? '모집중' : '마감'}
-    </span>
-  );
-}
 
 function ClubImage({ imageUrl, title }) {
   if (imageUrl) {
@@ -39,9 +31,7 @@ function ClubCard({
   categoryBadge,
   recruitStatusBadge,
   onEdit,
-  onOpenHistory,
   editLabel = '수정하기',
-  historyLabel = '[수정 로그]',
 }) {
   const cardTitle = title || club.clubName;
   const cardCategory = category || club.categoryName || '기타';
@@ -59,12 +49,10 @@ function ClubCard({
       <div className="club-card-main">
         <div className="club-card-badges">
           {categoryBadge || (
-            <span className="club-card-category">
-              {cardCategory}
-            </span>
+            <CategoryBadge>{cardCategory}</CategoryBadge>
           )}
           {recruitStatusBadge || (
-            <RecruitStatusBadge isRecruiting={isRecruiting} />
+            <RecruitStatusBadge status={isRecruiting ? '모집중' : '마감'} />
           )}
         </div>
 
@@ -84,9 +72,6 @@ function ClubCard({
       <div className="club-card-actions">
         <button type="button" onClick={() => onEdit?.(club)}>
           {editLabel}
-        </button>
-        <button type="button" onClick={() => onOpenHistory?.(club)}>
-          {historyLabel}
         </button>
       </div>
     </article>
