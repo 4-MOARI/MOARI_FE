@@ -8,10 +8,6 @@ import Pagination from '../../components/common/Pagination/Pagination';
 
 
 
-
-import { useState, useEffect } from 'react';
-
-
 // 1. 경로를 정확하게 확인 (상대 경로)
 
 const HomePage = () => {

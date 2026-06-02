@@ -6,7 +6,8 @@ import './ReviewModal.css';
 export default function ReviewModal({
     clubId,
     clubName,
-    onClose
+    onClose,
+    onSuccess,
 }) {
   // 기본 별점 4점
   const [rating, setRating] = useState(4);
@@ -34,6 +35,8 @@ export default function ReviewModal({
         });
 
         alert('리뷰 등록 완료');
+
+        onSuccess?.();
 
         //모달 달기
         onClose();
