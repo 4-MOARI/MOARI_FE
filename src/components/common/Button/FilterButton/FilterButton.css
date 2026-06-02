@@ -1,25 +1,25 @@
-/* FilterButton.css */
+/* FilterButton.css (전체 수정본) */
 
 /* 1. 카테고리 타입 - 선택됨 */
-.filter-button.category.selected {
-  background: #534AB7; /* 기존 보라색 */
+.btn-filter.category.selected {
+  background: #534AB7;
   color: #FFF;
 }
 
 /* 2. 모집상태 타입 - 선택됨 */
-.filter-button.status.selected {
-  background: #1F116D; /* 요청하신 진한 남색 */
+.btn-filter.status.selected {
+  background: #1F116D;
   color: #FFF;
 }
 
-/* 선택 안 된 버튼들의 공통 스타일 (둘 다 동일하다고 하셨으니 유지) */
-.filter-button.unselected {
+/* 선택 안 된 버튼들의 공통 스타일 */
+.btn-filter.unselected {
   background: #EEEDFE;
   color: #534AB7;
 }
 
-/* 공통 기본 스타일 (이전과 동일) */
-.filter-button {
+/* 공통 기본 스타일 */
+.btn-filter {
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -31,9 +31,8 @@
   transition: all 0.2s;
 }
 
-.filter-button.category { padding: 5px 10px; font-size: 14px; }
-.filter-button.status { height: 25px; padding: 0 8px; font-size: 12px; }
-
+.btn-filter.category { padding: 5px 10px; font-size: 14px; }
+.btn-filter.status { height: 25px; padding: 0 8px; font-size: 12px; }
 
 /* 누를 때 효과 */
-.filter-button:active { transform: scale(0.85); }
+.btn-filter:active { transform: scale(0.85); }

@@ -1,19 +1,21 @@
 /* src/components/common/Badge/CategoryBadge/CategoryBadge.css */
 .category-badge {
-  display: inline-flex;
-  padding: 5px 10.5px;
+  display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
   
-  border-radius: 17px;
-  background: #EEEDFE;
+  /* 모집상태 배지와 동일한 높이와 둥글기 */
+  height: 25px; 
+  padding: 0 12px;
+  border-radius: 12px;
   
-  /* 유저님이 찾아주신 스타일 */
-  color: #534AB7;
+  /* 글자 스타일 통일 */
   font-family: 'Inter', sans-serif;
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 700;
+  font-size: 12px;      /* 모집상태 배지와 동일 */
+  font-weight: 700;     /* 모집상태 배지와 동일하게 굵게 */
   line-height: normal;
+  
+  /* 색상은 그대로 유지 */
+  background: #EEEDFE;
+  color: #534AB7;
 }

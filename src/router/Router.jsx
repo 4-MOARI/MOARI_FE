@@ -6,10 +6,13 @@ import MyPage from "../pages/MyPage/MyPage";
 import SearchPage from "../pages/Search/SearchPage";
 import ClubDetailPage from "../pages/Club/ClubDetailPage";
 import HistoryPage from '../pages/Club/History/HistoryPage';
+
 import TestPage from '../pages/TestPage';
 import LoginPage from "../pages/Auth/LoginPage";
 import SignupPage from "../pages/Auth/SignupPage";
 import FindAccountPage from "../pages/Auth/FindAccountPage";
+
+
 
 export default function Router() {
   return (
@@ -23,7 +26,10 @@ export default function Router() {
         <Route path="/mypage/favorites" element={<FavoritesPage />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/search" element={<SearchPage />} />
+<<<<<<< HEAD
         <Route path="/test" element={<TestPage />} /> 
+=======
+>>>>>>> a81b73c21b0c40c1eb3bbd60af84802b6a521a20
         <Route path="/clubs/:clubId/history" element={<HistoryPage />} />
       </Routes>
     </BrowserRouter>
