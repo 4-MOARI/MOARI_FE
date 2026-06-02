@@ -5,17 +5,13 @@ import HomePage from "../pages/Home/HomePage";
 import MyPage from "../pages/MyPage/MyPage";
 import MyReviewsPage from "../pages/MyReviews/MyReviewsPage";
 import SearchPage from "../pages/Search/SearchPage";
-import ClubDetailPage from "../pages/Club/ClubDetailPage";
 import HistoryPage from '../pages/Club/History/HistoryPage';
-import ClubRegisterPage from '../pages/Club/ClubRegisterPage';
-import ClubUpdatePage from '../pages/Club/ClubUpdatePage';
-
-import TestPage from '../pages/TestPage';
+import ClubDetailPage from "../pages/Club/ClubDetail/ClubDetailPage";
+import ClubRegisterPage from '../pages/Club/ClubManage/ClubRegisterPage';
+import ClubUpdatePage from '../pages/Club/ClubManage/ClubUpdatePage';
 import LoginPage from "../pages/Auth/LoginPage";
 import SignupPage from "../pages/Auth/SignupPage";
 import FindAccountPage from "../pages/Auth/FindAccountPage";
-
-
 
 export default function Router() {
   return (
@@ -31,7 +27,9 @@ export default function Router() {
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/search" element={<SearchPage />} />
 
+        {/* 동아리 관련 경로들 */}
         <Route path="/clubs/:clubId/history" element={<HistoryPage />} />
+        <Route path="/club/:clubId" element={<ClubDetailPage />} />
         <Route path="/club/register" element={<ClubRegisterPage />} />
         <Route path="/club/update/:clubId" element={<ClubUpdatePage />} />
       </Routes>
