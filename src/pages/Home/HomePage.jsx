@@ -6,7 +6,16 @@ import RecruitStatusFilterButton from "../../components/common/Button/FilterButt
 import ClubCardMain from '../../components/club/ClubCard/ClubCardMain';
 import Pagination from '../../components/common/Pagination/Pagination';
 
+
+
+
+import { useState, useEffect } from 'react';
+
+
+// 1. 경로를 정확하게 확인 (상대 경로)
+
 const HomePage = () => {
+
   const [clubType, setClubType] = useState('internal'); // 'internal' 또는 'external'
   const [clubs, setClubs] = useState([]);
   
@@ -14,6 +23,7 @@ const HomePage = () => {
   const [selectedStatus, setSelectedStatus] = useState('전체');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
+
 
   useEffect(() => {
     fetchClubs();
@@ -66,6 +76,7 @@ const HomePage = () => {
           <button style={{ width: '66px', height: '38px', position: 'absolute', right: '6px', top: '6px', background: '#534AB7', color: 'white', borderRadius: '10px', border: 'none', fontWeight: '700', cursor: 'pointer' }}>검색</button>
         </div>
       </div>
+       
 
       <div style={{ width: '1280px', margin: '0 auto', padding: '40px 0' }}>
         <div style={{ display: 'flex', gap: '24px', marginBottom: '20px' }}>
@@ -105,7 +116,10 @@ const HomePage = () => {
           />
         </div>
       </div>
+
     </div>
+
+    
   );
 };
 
