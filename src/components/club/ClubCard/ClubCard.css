@@ -4,12 +4,12 @@
 }
 
 .club-card--registered {
+  position: relative;
   min-height: 157px;
-  display: grid;
-  grid-template-columns: 120px minmax(0, 1fr) 82px;
+  display: flex;
   gap: 24px;
   align-items: center;
-  padding: 18px 20px;
+  padding: 18px 132px 18px 20px;
   border-radius: 18px;
 }
 
@@ -35,6 +35,7 @@
 }
 
 .club-card-main {
+  flex: 1 1 auto;
   min-width: 0;
 }
 
@@ -74,12 +75,13 @@
 }
 
 .club-card-actions {
-  align-self: flex-start;
+  position: absolute;
+  top: 26px;
+  right: 28px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-end;
   gap: 10px;
-  padding-top: 4px;
 }
 
 .club-card-actions button {
@@ -90,17 +92,21 @@
 }
 
 .club-card-actions button:first-child {
-  padding: 9px 11px;
+  min-width: 82px;
+  height: 36px;
+  padding: 0 12px;
   border-radius: 10px;
   color: var(--color-white);
   background-color: var(--color-primary);
   font-size: 14px;
   font-weight: var(--font-weight-bold);
+  line-height: 1;
+  white-space: nowrap;
 }
 
 @media (max-width: 960px) {
   .club-card--registered {
-    grid-template-columns: 96px minmax(0, 1fr);
+    padding-right: 120px;
   }
 
   .club-card-image,
@@ -110,20 +116,27 @@
   }
 
   .club-card-actions {
-    grid-column: 1 / -1;
-    flex-direction: row;
-    justify-content: flex-end;
+    top: 24px;
+    right: 24px;
   }
 }
 
 @media (max-width: 640px) {
   .club-card--registered {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 18px;
   }
 
   .club-card-image,
   .club-card-placeholder {
     width: 100%;
     height: 160px;
+  }
+
+  .club-card-actions {
+    position: static;
+    flex-direction: row;
+    justify-content: flex-end;
   }
 }

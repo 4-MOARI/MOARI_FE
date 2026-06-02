@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import Header from '../../components/common/Header/Header';
 import apiClient from '../../api/axios';
 
@@ -10,7 +11,7 @@ import RecruitStatusBadge from "../../components/common/Badge/RecruitStatusBadge
 
 const HomePage = () => {
   const [clubType, setClubType] = useState('internal');
-  const [clubs, setClubs] =useState([]);
+  const [, setClubs] = useState([]);
 
   useEffect(() => {
     fetchClubs();
@@ -39,9 +40,9 @@ const HomePage = () => {
       {/* 2. 호출 확인 */}
       <h1>테스트 페이지</h1>
 
-      <p>현재 선택 : {cluvType} </p> 
+      <p>현재 선택 : {clubType} </p>
       <CategoryBadge>학술</CategoryBadge>
-      <RecruitStatusBadge isRecruiting={true} />
+      <RecruitStatusBadge status="모집중" />
     </div>
   );
 };
