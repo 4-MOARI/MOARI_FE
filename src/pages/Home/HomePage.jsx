@@ -5,21 +5,19 @@ import CategoryFilterButton from "../../components/common/Button/FilterButton/Ca
 import RecruitStatusFilterButton from "../../components/common/Button/FilterButton/RecruitStatusFilterButton";
 import ClubCardMain from '../../components/club/ClubCard/ClubCardMain';
 import Pagination from '../../components/common/Pagination/Pagination';
-import CategoryBadge from '../../components/common/Badge/CategoryBadge/CategoryBadge'; // 추가됨
-import RecruitStatusBadge from '../../components/common/Badge/RecruitStatusBadge/RecruitStatusBadge'; // 추가됨
 
 const HomePage = () => {
-  const [clubType, setClubType] = useState('internal');
-  const [clubs, setClubs] = useState([]); // 중복 제거함
+  const [clubType, setClubType] = useState('internal'); // 'internal' 또는 'external'
+  const [clubs, setClubs] = useState([]);
   
   const [selectedCategory, setSelectedCategory] = useState('전체');
   const [selectedStatus, setSelectedStatus] = useState('전체');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 12; // 요청하신 대로 12개 설정
+  const itemsPerPage = 12;
 
   useEffect(() => {
     fetchClubs();
-  }, [clubType]);
+  }, [clubType]); // clubType이 바뀔 때마다 데이터 다시 호출
 
   useEffect(() => {
     setCurrentPage(1);
@@ -27,13 +25,17 @@ const HomePage = () => {
 
   const fetchClubs = async () => {
     try {
-      const mockClubs = Array.from({ length: 20 }, (_, i) => ({
+      // 실제 API 호출 예시 (현재는 mock 데이터로 대체)
+      // const response = await apiClient.get(`/clubs?type=${clubType}`);
+      
+      const mockClubs = Array.from({ length: 30 }, (_, i) => ({
         id: i + 1,
-        name: `동아리 ${i + 1}`,
+        name: `${clubType === 'internal' ? '교내' : '외부'} 동아리 ${i + 1}`,
         category: i % 2 === 0 ? '학술' : '체육',
         status: i % 3 === 0 ? '마감' : '모집중',
-        description: '동아리 소개와 활동 내용을 확인하고 리뷰와 모집 여부를 볼 수 있어요.'
-      }));
+        type: i % 2 === 0 ? 'internal' : 'external'
+      })).filter((club) => club.type === clubType); // 선택된 타입만 필터링
+
       setClubs(mockClubs);
     } catch (error) {
       console.error(error);
@@ -56,7 +58,8 @@ const HomePage = () => {
       
       <div style={{ width: '100%', height: '180px', background: '#EEEDFE', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
         <div style={{ color: '#534AB7', fontSize: '36px', fontWeight: '700', marginBottom: '20px' }}>
-          우리 학교 동아리를 한 눈에
+          {/* clubType에 따라 멘트 자동 변경 */}
+          {clubType === 'internal' ? '우리 학교 동아리를 한 눈에' : '전국의 동아리를 한 눈에'}
         </div>
         <div style={{ width: '520px', height: '50px', position: 'relative' }}>
           <input type="text" placeholder="동아리 이름, 소개, 활동내용으로 검색" style={{ width: '100%', height: '100%', padding: '0 20px', borderRadius: '25px', border: 'none', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }} />
