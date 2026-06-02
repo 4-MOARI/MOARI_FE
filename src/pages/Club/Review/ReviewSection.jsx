@@ -4,6 +4,8 @@ import {
   deleteReview,
 } from '../../../api/reviewApi';
 
+import ReviewModal from "./ReviewModal";
+
 import StarRating from '../../../components/common/StarRating/StarRating';
 
 import ReviewCard from '../../../components/club/ReviewCard/ReviewCard';
