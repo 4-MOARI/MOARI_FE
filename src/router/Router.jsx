@@ -6,6 +6,8 @@ import MyPage from "../pages/MyPage/MyPage";
 import SearchPage from "../pages/Search/SearchPage";
 import ClubDetailPage from "../pages/Club/ClubDetailPage";
 import HistoryPage from '../pages/Club/History/HistoryPage';
+import ClubRegisterPage from '../pages/Club/ClubRegisterPage';
+import ClubUpdatePage from '../pages/Club/ClubUpdatePage';
 
 import TestPage from '../pages/TestPage';
 import LoginPage from "../pages/Auth/LoginPage";
@@ -28,6 +30,8 @@ export default function Router() {
         <Route path="/search" element={<SearchPage />} />
 
         <Route path="/clubs/:clubId/history" element={<HistoryPage />} />
+        <Route path="/club/register" element={<ClubRegisterPage />} />
+        <Route path="/club/update/:clubId" element={<ClubUpdatePage />} />
       </Routes>
     </BrowserRouter>
   );
