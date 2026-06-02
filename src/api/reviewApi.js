@@ -11,7 +11,7 @@ export const getClubReviews = async (
     `/clubs/${clubId}/reviews`
   );
 
-  return response.data;
+  return response.data.data;
 };
 
 /**
@@ -27,7 +27,7 @@ export const createReview = async (
     reviewData
   );
 
-  return response.data;
+  return response.data.data;
 };
 
 /**
@@ -41,5 +41,5 @@ export const deleteReview = async (
     `/reviews/${reviewId}`
   );
 
-  return response.data;
+  return response.data.data;
 };

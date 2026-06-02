@@ -3,6 +3,7 @@ import AccountSettingsPage from "../pages/AccountSettings/AccountSettingsPage";
 import FavoritesPage from "../pages/Favorites/FavoritesPage";
 import HomePage from "../pages/Home/HomePage";
 import MyPage from "../pages/MyPage/MyPage";
+import MyReviewsPage from "../pages/MyReviews/MyReviewsPage";
 import SearchPage from "../pages/Search/SearchPage";
 import ClubDetailPage from "../pages/Club/ClubDetailPage";
 import HistoryPage from '../pages/Club/History/HistoryPage';
@@ -26,6 +27,7 @@ export default function Router() {
         <Route path="/find-account" element={<FindAccountPage />} />
         <Route path="/mypage/account" element={<AccountSettingsPage />} />
         <Route path="/mypage/favorites" element={<FavoritesPage />} />
+        <Route path="/mypage/reviews" element={<MyReviewsPage />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/search" element={<SearchPage />} />
 

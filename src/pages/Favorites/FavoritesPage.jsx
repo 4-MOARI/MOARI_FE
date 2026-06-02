@@ -215,7 +215,7 @@ function FavoritesPage() {
 
           <nav className="mypage-menu" aria-label="마이페이지 메뉴">
             <MenuItem active>찜한 동아리</MenuItem>
-            <MenuItem>내가 쓴 리뷰</MenuItem>
+            <MenuItem onClick={() => navigate('/mypage/reviews')}>내가 쓴 리뷰</MenuItem>
             <MenuItem onClick={() => navigate('/mypage')}>
               내가 등록한 동아리
             </MenuItem>
