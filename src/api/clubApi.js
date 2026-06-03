@@ -91,3 +91,10 @@ export const getClubHistory = async (
 
   return response.data;
 };
+
+// 카테고리 목록 조회
+export const getCategories = async () => {
+  const response = await apiClient.get('/categories');
+
+  return response.data.data.categories;
+};
