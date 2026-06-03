@@ -6,6 +6,7 @@ import ClubCard from '../../components/club/ClubCard/ClubCard';
 import './SearchPage.css';
 import { useEffect } from 'react';
 import { getClubs } from '../../api/clubApi';
+import { addFavoriteClub, deleteFavoriteClub } from '../../api/userApi';
 
 const categories = ['전체', '학술', '체육', '공연·예술', '봉사', '취미·친목', '창업·취업', '어학', '기타'];
 
@@ -27,6 +28,7 @@ export default function SearchPage() {
   const [clubs, setClubs] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [favoriteUpdatingIds, setFavoriteUpdatingIds] = useState(new Set());
 
   const handleSearch = () => {
     setSearchedKeyword(keyword);
@@ -34,6 +36,70 @@ export default function SearchPage() {
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') handleSearch();
+  };
+
+  const updateClubFavoriteState = (clubId, isFavorite, favoriteDelta) => {
+    setClubs((prevClubs) =>
+      prevClubs.map((club) => {
+        const currentClubId = club.clubId ?? club.id;
+
+        if (currentClubId !== clubId) return club;
+
+        const currentCount = Number(club.favoriteCount || 0);
+
+        return {
+          ...club,
+          isFavorite,
+          favoriteCount: Math.max(currentCount + favoriteDelta, 0),
+        };
+      })
+    );
+  };
+
+  const handleFavoriteToggle = async (club) => {
+    const clubId = club.clubId ?? club.id;
+
+    if (!clubId) {
+      alert('동아리 정보를 확인할 수 없어 찜 처리에 실패했습니다.');
+      return;
+    }
+
+    const nextIsFavorite = !club.isFavorite;
+    const favoriteDelta = nextIsFavorite ? 1 : -1;
+
+    setFavoriteUpdatingIds((prevIds) => new Set(prevIds).add(clubId));
+    updateClubFavoriteState(clubId, nextIsFavorite, favoriteDelta);
+
+    try {
+      if (nextIsFavorite) {
+        await addFavoriteClub(clubId);
+      } else {
+        await deleteFavoriteClub(clubId);
+      }
+    } catch (error) {
+      const errorCode = error.response?.data?.error?.code || '';
+      const errorMessage = error.response?.data?.error?.message || '';
+      const isAlreadyFavoriteError =
+        nextIsFavorite &&
+        (errorCode.includes('ALREADY') || errorMessage.includes('이미'));
+      const isNotFavoriteError =
+        !nextIsFavorite &&
+        (errorCode.includes('NOT') || errorMessage.includes('찜'));
+
+      if (isAlreadyFavoriteError || isNotFavoriteError) {
+        return;
+      }
+
+      console.error(error);
+      updateClubFavoriteState(clubId, !nextIsFavorite, -favoriteDelta);
+      alert(errorMessage || '찜 처리에 실패했습니다. 로그인 상태를 확인해주세요.');
+    } finally {
+      setFavoriteUpdatingIds((prevIds) => {
+        const nextIds = new Set(prevIds);
+        nextIds.delete(clubId);
+        return nextIds;
+      });
+    }
   };
 
   const fetchClubs = async () => {
@@ -49,7 +115,12 @@ export default function SearchPage() {
         pageSize: 10
       });
       if (result.success) {
-        setClubs(result.data.clubs);
+        setClubs(
+          (result.data.clubs || []).map((club) => ({
+            ...club,
+            isFavorite: Boolean(club.isFavorite ?? club.isLiked ?? false),
+          }))
+        );
         setTotalPages(result.data.totalPages);
       }
     } catch (error) {
@@ -164,10 +235,13 @@ export default function SearchPage() {
             ) : (
               clubs.map((club) => (
                 <ClubCard
-                  key={club.clubId}
+                  key={club.clubId ?? club.id}
                   club={club}
                   onEdit={null}
                   onOpenHistory={null}
+                  onFavoriteToggle={handleFavoriteToggle}
+                  isFavorite={Boolean(club.isFavorite)}
+                  isFavoriteLoading={favoriteUpdatingIds.has(club.clubId ?? club.id)}
                   editLabel=""
                   historyLabel=""
                 />

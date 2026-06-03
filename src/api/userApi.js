@@ -74,6 +74,12 @@ export async function deleteFavoriteClub(clubId) {
   return response.data.data;
 }
 
+export async function addFavoriteClub(clubId) {
+  const response = await apiClient.post(`/clubs/${clubId}/favorites`);
+
+  return response.data.data;
+}
+
 export async function verifyMyPassword(password) {
   const response = await apiClient.post('/users/me/password/verify', {
     password,
