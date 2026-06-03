@@ -1,13 +1,24 @@
 import { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import Header from '../../../components/common/Header/Header';
 import Pagination from '../../../components/common/Pagination/Pagination';
 import './HistoryPage.css';
 import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 import { getClubHistory } from '../../../api/clubApi';
+
+const formatDate = (dateStr) => {
+  const d = new Date(dateStr);
+  const yyyy = d.getFullYear();
+  const MM = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  const HH = String(d.getHours()).padStart(2, '0');
+  const mm = String(d.getMinutes()).padStart(2, '0');
+  return `${yyyy}.${MM}.${dd}  ${HH}:${mm}`;
+};
 
 export default function HistoryPage() {
   const { clubId } = useParams();
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [history, setHistory] = useState([]);
   const [club, setClub] = useState({ clubName: '', coverImageUrl: null });
@@ -24,6 +35,10 @@ export default function HistoryPage() {
         if (result.success) {
         setHistory(result.data.history);
         setTotalPages(result.data.totalPages);
+        setClub({
+          clubName: result.data.clubName || '',
+          coverImageUrl: result.data.coverImageUrl || null
+        });
         }
     } catch (error) {
         console.error(error);
@@ -44,7 +59,9 @@ export default function HistoryPage() {
 
         {/* 왼쪽 메인 영역 */}
         <div className="history-main">
-          <button className="back-button">{'< 동아리 상세로 돌아가기'}</button>
+          <button className="back-button" onClick={() => navigate(`/club/${clubId}`)}>
+            {'< 동아리 상세로 돌아가기'}
+          </button>
 
           <h1 className="history-title">수정 로그</h1>
           <p className="history-subtitle">"{club.clubName}" 동아리의 수정 내역을 확인할 수 있습니다.</p>
@@ -63,7 +80,7 @@ export default function HistoryPage() {
                       <div className="history-card-header">
                         <div className="history-modifier-info">
                           <span className="history-modifier">{item.modifier}</span>
-                          <span className="history-date">{item.createdAt}</span>
+                          <span className="history-date">{formatDate(item.createdAt)}</span>
                         </div>
                         <div className="history-field-info">
                           <span className="history-field-label">수정 항목</span>
@@ -108,7 +125,9 @@ export default function HistoryPage() {
             )}
           </div>
           <h3 className="sidebar-club-name">{club.clubName}</h3>
-          <button className="sidebar-detail-btn">동아리 상세 보기 &gt;</button>
+          <button className="sidebar-detail-btn" onClick={() => navigate(`/club/${clubId}`)}>
+            동아리 상세 보기 &gt;
+          </button>
           <p className="sidebar-notice">
             ⓘ 수정 로그는 최근 1년간의 내역만 확인할 수 있습니다.
           </p>

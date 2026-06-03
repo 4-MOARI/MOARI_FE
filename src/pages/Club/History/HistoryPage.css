@@ -76,6 +76,9 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  width: 140px;
+  min-width: 120px;
+  overflow: hidden;
 }
 
 .history-modifier {
@@ -87,6 +90,8 @@
 .history-date {
   font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
+  white-space: nowrap;
+  font-size: 11px;
 }
 
 .history-field-info {
@@ -233,4 +238,10 @@
   color: var(--color-text-secondary);
   text-align: center;
   line-height: 1.6;
+}
+
+.history-date {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
 }
