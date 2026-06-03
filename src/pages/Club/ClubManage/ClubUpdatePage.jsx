@@ -3,6 +3,8 @@ import React, { useState, useRef, useEffect } from 'react'; // useEffect 추가
 import Header from '../../../components/common/Header/Header';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { MOCK_CLUBS } from "../../../data/clubs"; // 더미데이터 경로 확인 필수!
+import RecruitStatusSection from '../../../components/club/RecruitStatusSection/RecruitStatusSection';
+
 
 const ClubUpdatePage = () => {
   const { clubId } = useParams(); // ★ ID 가져오기
@@ -23,6 +25,14 @@ const ClubUpdatePage = () => {
     setRecruitStatus(returnedData.recruitStatus || '');
     setCoverImage(returnedData.coverImage || null);
     setProfileImage(returnedData.profileImage || null);
+    
+    setRecruitInfo(
+      returnedData.recruitInfo || {
+        isRecruiting: returnedData.status === '모집중',
+        recruitStartAt: returnedData.recruitStartAt || null,
+        recruitEndAt: returnedData.recruitEndAt || null,
+      }
+    );
 
     // ★ 수정: urlFields가 있으면 그대로 복구
     if (returnedData.urlFields && returnedData.urlFields.length > 0) {
@@ -55,6 +65,12 @@ const ClubUpdatePage = () => {
     setCategoryId(foundClub.category || '');
     setRecruitStatus(foundClub.status || '');
 
+      setRecruitInfo({
+        isRecruiting: foundClub.status === '모집중',
+        recruitStartAt: foundClub.recruitStartAt || null,
+        recruitEndAt: foundClub.recruitEndAt || null,
+      });
+      
     if (foundClub.links && typeof foundClub.links === 'object') {
       const restoredUrlFields = Object.entries(foundClub.links).map(
         ([key, url], index) => ({
@@ -78,6 +94,11 @@ const ClubUpdatePage = () => {
   const [activity, setActivity] = useState('');       // ★ 추가
   const [categoryId, setCategoryId] = useState('');   // ★ 추가
   const [recruitStatus, setRecruitStatus] = useState(''); 
+  const [recruitInfo, setRecruitInfo] = useState({
+    isRecruiting: false,
+    recruitStartAt: null,
+    recruitEndAt: null,
+  });
   const [urlFields, setUrlFields] = useState([{ id: Date.now(), type: 'select', selectedValue: 'URL' }]);
   const [isHovered, setIsHovered] = useState(false);
   const [coverImage, setCoverImage] = useState(null);
@@ -274,6 +295,15 @@ const ClubUpdatePage = () => {
                 </div>
               ))}
             </div>
+
+            {/* 모집 상태 */}
+            <div style={{ marginBottom: '40px' }}>
+              <RecruitStatusSection
+                onChange={setRecruitInfo}
+                initialValue={recruitInfo}
+              />
+            </div>
+
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', paddingRight: '40px' }}>
@@ -287,6 +317,12 @@ const ClubUpdatePage = () => {
                     activity,
                     categoryId,
                     recruitStatus,
+
+                    recruitInfo,
+                      status: recruitInfo.isRecruiting ? '모집중' : '마감',
+                      recruitStartAt: recruitInfo.recruitStartAt,
+                      recruitEndAt: recruitInfo.recruitEndAt,
+
                     urlFields,
                     coverImage,
                     profileImage,
@@ -296,7 +332,7 @@ const ClubUpdatePage = () => {
                     name: clubName,
                     category: categoryId,
                     activityContent: activity,
-                    status: recruitStatus,
+                
                     links: urlFields.reduce((acc, field) => {
                       if (
                         field.selectedValue &&
