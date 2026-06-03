@@ -1,13 +1,18 @@
 import React from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom'; // useLocation 추가
 import Header from '../../../components/common/Header/Header';
 import StyledButton from '../../../components/common/Button/StyledButton';
 // 상세 페이지의 UI를 재사용하기 위해 import 합니다.
 import ClubInfoSection from '../ClubDetail/ClubInfoSection'; 
+import { MOCK_CLUBS } from "../../../data/clubs"; // 데이터 import
 
 const ClubUpdatePreviewPage = () => {
   const navigate = useNavigate();
   const { clubId } = useParams();
+  const { state } = useLocation(); // 1. 수정 페이지에서 보낸 데이터 받기
+  
+  // state(수정페이지에서 보낸 데이터)가 있으면 그걸 쓰고, 없으면 MOCK 데이터를 찾음
+  const clubData = state || MOCK_CLUBS.find(c => String(c.id) === String(clubId));
 
   return (
     <div style={{ width: '100%', minHeight: '1400px', background: '#F8F8FB', paddingBottom: '100px', boxSizing: 'border-box' }}>
@@ -28,7 +33,7 @@ const ClubUpdatePreviewPage = () => {
             
             {/* 실제 상세페이지 UI를 호출 */}
             <div style={{ width: '100%' }}>
-              <ClubInfoSection />
+              <ClubInfoSection club={clubData} />
             </div>
           </div>
 
