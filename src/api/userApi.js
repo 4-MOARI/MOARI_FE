@@ -5,7 +5,7 @@ const LEGACY_AUTH_TOKEN_KEY = 'moariAccessToken';
 const DEV_AUTH_TOKEN = import.meta.env.VITE_DEV_AUTH_TOKEN || '';
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL ,
 });
 
 apiClient.interceptors.request.use((config) => {
