@@ -12,6 +12,7 @@ const statuses = ['전체', '모집중', '마감'];
   
 const HomePage = () => {
   const navigate = useNavigate();
+  const [keyword, setKeyword] = useState('');
   const [clubType, setClubType] = useState('internal');
   const [clubs, setClubs] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('전체');
@@ -19,6 +20,15 @@ const HomePage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
 
+  const handleSearch = () => {
+    if (!keyword.trim()) return;
+    navigate(`/search?keyword=${encodeURIComponent(keyword)}&schoolType=${clubType}`);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') handleSearch();
+  };
+  
   useEffect(() => {
     const mockClubs = Array.from({ length: 30 }, (_, i) => ({
       id: i + 1,
@@ -56,8 +66,8 @@ const HomePage = () => {
           {clubType === 'internal' ? '우리 학교 동아리를 한눈에' : '전국의 동아리를 한눈에'}
         </div>
         <div style={{ width: '520px', height: '50px', position: 'relative' }}>
-          <input type="text" placeholder="동아리 이름, 소개, 활동내용으로 검색" style={{ width: '100%', height: '100%', padding: '0 20px', borderRadius: '25px', border: 'none', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }} />
-          <button style={{ width: '66px', height: '38px', position: 'absolute', right: '6px', top: '6px', background: '#534AB7', color: 'white', borderRadius: '10px', border: 'none', fontWeight: '700', cursor: 'pointer' }}>검색</button>
+          <input type="text" placeholder="동아리 이름, 소개, 활동내용으로 검색" value={keyword} onChange={(e) => setKeyword(e.target.value)} onKeyDown={handleKeyDown} style={{ width: '100%', height: '100%', padding: '0 20px', borderRadius: '25px', border: 'none', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }} />
+          <button onClick={handleSearch} style={{ width: '66px', height: '38px', position: 'absolute', right: '6px', top: '6px', background: '#534AB7', color: 'white', borderRadius: '10px', border: 'none', fontWeight: '700', cursor: 'pointer' }}>검색</button>
         </div>
       </div>
 
