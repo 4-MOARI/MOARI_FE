@@ -5,10 +5,44 @@ import StyledButton from '../../../components/common/Button/StyledButton';
 // 기존 상세 페이지에서 사용하던 컴포넌트를 import 합니다.
 import ClubInfoSection from '../ClubDetail/ClubInfoSection'; 
 import { useLocation } from 'react-router-dom'; // 1. import 추가
+import { createClub } from '../../../api/clubApi';
 
 const ClubRegisterPreviewPage = () => {
   const navigate = useNavigate();
   const { state } = useLocation(); // 2. 전달받은 state 받기
+  
+  // ★ 수정: 등록페이지에서 넘어온 URL 데이터를 UrlButton이 읽는 형태로 변환
+  const linksFromUrlFields = Array.isArray(state?.urlFields)
+    ? state.urlFields.reduce((acc, field) => {
+        const url = field?.urlValue || field?.url;
+
+        if (
+          field?.selectedValue &&
+          field.selectedValue !== 'URL' &&
+          field.selectedValue !== '직접입력' &&
+          url
+        ) {
+          acc[field.selectedValue.toLowerCase()] = url;
+        }
+
+        return acc;
+      }, {})
+    : {};
+
+  // ★ 수정: ClubInfoSection에 넘길 최종 데이터
+  const clubData = {
+    ...state,
+    name: state?.name || state?.clubName || '',
+    category: state?.category || state?.categoryId || '',
+    schoolName: state?.school || state?.schoolName || '외부',
+    description: state?.description || '',
+    activityContent: state?.activityContent || state?.activity || '',
+    oneLineIntro: state?.oneLineIntro || state?.shortDescription || '',
+    links: Object.keys(linksFromUrlFields).length > 0
+      ? linksFromUrlFields
+      : state?.links || {},
+  };
+
   return (
     <div style={{ width: '100%', minHeight: '1400px', background: '#F8F8FB', paddingBottom: '100px', boxSizing: 'border-box' }}>
       <Header />
@@ -30,30 +64,7 @@ const ClubRegisterPreviewPage = () => {
             {/* 상세페이지 미리보기 컴포넌트 호출 */}
             {/* ClubInfoSection이 props를 필요로 하지 않는다면 그대로 쓰시고, 만약 데이터를 요구한다면 data={...} 처럼 넘겨주어야 합니다. */}
             <div style={{ width: '100%' }}>
-              <ClubInfoSection 
-                club={{
-                  // 1. 기존 데이터 전달
-                  ...state,
-                  
-                  // 2. 컴포넌트가 사용하는 이름과 데이터 구조를 강제로 맞춤 (안전하게!)
-                  name: state?.name || '',
-                  category: state?.category || '',
-                  schoolName: state?.school || '외부',
-                  description: state?.description || '',
-                  activityContent: state?.activity || '',
-                  oneLineIntro: state?.oneLineIntro || '',
-                  
-                  // 3. 링크 데이터 안전하게 객체로 변환 (reduce 사용 시 에러 방지)
-                  links: Array.isArray(state?.links) 
-                    ? state.links.reduce((acc, field) => {
-                        if (field?.selectedValue && field?.url) {
-                          acc[field.selectedValue] = field.url;
-                        }
-                        return acc;
-                      }, {}) 
-                    : {}
-                }} 
-              />
+              <ClubInfoSection club={clubData} />
             </div>
           </div>
 
@@ -61,9 +72,68 @@ const ClubRegisterPreviewPage = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 40px' }}>
             <StyledButton 
               variant="secondary" 
-              onClick={() => navigate('/club/register', { state: state })} // 데이터 그대로 들고 이동
+              onClick={() => navigate('/club/register', { state: clubData })} // 데이터 그대로 들고 이동
             >이전</StyledButton>
-            <StyledButton onClick={() => navigate('/club/1')}>제출</StyledButton>
+            <StyledButton
+              onClick={async () => {
+                const requestBody = {
+                  clubName: clubData.name,
+                  categoryId: clubData.categoryId,
+                  schoolId: clubData.schoolId,
+                  briefDescription: clubData.oneLineIntro,
+                  description: clubData.description,
+                  activity: clubData.activityContent || clubData.activity,
+
+                  // ★ 지금은 이미지 업로드 서버가 따로 없으니 임시로 문자열 전달
+                  profileImageUrl: clubData.profileImage || '',
+                  coverImageUrl: clubData.coverImage || '',
+
+                  recruitStartAt: clubData.recruitInfo?.recruitStartAt || null,
+                  recruitEndAt: clubData.recruitInfo?.recruitEndAt || null,
+
+                  links: clubData.urlFields
+                    ?.filter((field) => {
+                      const url = field.url || field.urlValue;
+
+                      return (
+                        field.selectedValue &&
+                        field.selectedValue !== 'URL' &&
+                        url
+                      );
+                    })
+                    .map((field) => ({
+                      title: field.selectedValue,
+                      url: field.url || field.urlValue,
+                    })) || [],
+                };
+
+                try {
+                  // ★ 1순위: 백엔드 등록 API 호출
+                  const result = await createClub(requestBody);
+                  const newClubId = result.data.clubId;
+
+                  navigate(`/club/${newClubId}`);
+                } catch (error) {
+                  console.error('동아리 등록 실패 → 프론트 테스트용 localStorage 사용:', error);
+
+                  // ★ API 실패 시 기존 더미 테스트 방식 유지
+                  const newClubId = clubData.id || Date.now();
+
+                  const savedClubData = {
+                    ...clubData,
+                    id: newClubId,
+                  };
+
+                  localStorage.setItem(`club-${newClubId}`, JSON.stringify(savedClubData));
+
+                  navigate(`/club/${newClubId}`, {
+                    state: savedClubData,
+                  });
+                }
+              }}
+            >
+              제출
+            </StyledButton>
           </div>
         </div>
       </div>

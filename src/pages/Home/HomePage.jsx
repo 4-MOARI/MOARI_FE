@@ -9,6 +9,7 @@ import Pagination from '../../components/common/Pagination/Pagination';
 const categories = ['전체', '학술', '체육', '공연·예술', '봉사', '취미·친목', '창업·취업', '어학', '기타'];
 const statuses = ['전체', '모집중', '마감'];
 
+  
 const HomePage = () => {
   const navigate = useNavigate();
   const [clubType, setClubType] = useState('internal');

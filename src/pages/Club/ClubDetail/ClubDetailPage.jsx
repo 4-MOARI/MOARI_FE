@@ -1,35 +1,82 @@
+import { getClubDetail } from '../../../api/clubApi';
+
 import React, { useEffect, useState } from 'react';
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { MOCK_CLUBS } from "../../../data/clubs"; //더미데이터
 import Header from "../../../components/common/Header/Header";
 import ClubInfoSection from './ClubInfoSection';
 import ReviewSection from "../Review/ReviewSection";
-import axios from 'axios'; // 1. axios 추가 (서버 통신용)
 
 export default function ClubDetailPage() {
   const { clubId } = useParams();
+  const navigate = useNavigate();
   const [club, setClub] = useState(null);
+  const location = useLocation();
 
   useEffect(() => {
-    // 2. 서버에서 실제 데이터를 가져오는 함수
-    const foundClub = MOCK_CLUBS.find(c => c.id === clubId);
-    setClub(foundClub || null);
-  }, [clubId]);
+    const getFallbackClub = () => {
+      if (location.state) {
+        return location.state;
+      }
 
-  /* api시
-    const fetchClub = async () => {
+      const savedClub = localStorage.getItem(`club-${clubId}`);
+
+      if (savedClub) {
+        return JSON.parse(savedClub);
+      }
+
+      const foundClub = MOCK_CLUBS.find(
+        (c) => String(c.id) === String(clubId)
+      );
+
+      return foundClub || null;
+    };
+
+    const fetchClubDetail = async () => {
       try {
-        // 서버의 엔드포인트 주소는 백엔드 팀과 확인하신 주소로 바꾸세요!
-        const response = await axios.get(`http://localhost:8080/api/clubs/${clubId}`);
-        setClub(response.data); 
+        // ★ 1순위: API 상세 조회
+        const data = await getClubDetail(clubId);
+
+        if (!data) {
+          throw new Error('API 응답 데이터 없음');
+        }
+
+        // ★ 백엔드 데이터 → 기존 ClubInfoSection용 데이터로 변환
+        const formattedClub = {
+          id: data.clubId,
+          clubId: data.clubId,
+          name: data.clubName,
+          clubName: data.clubName,
+          oneLineIntro: data.briefDescription,
+          shortDescription: data.briefDescription,
+          description: data.description,
+          activityContent: data.activity,
+          category: data.category,
+          schoolName: data.schoolName || data.campusLocation || '외부',
+          status: data.isRecruiting ? '모집중' : '마감',
+          isRecruiting: data.isRecruiting,
+          warningMessage: data.warningMessage,
+          displayWarning: data.displayWarning,
+          links: Array.isArray(data.links)
+            ? data.links.reduce((acc, link) => {
+                if (link?.type && link?.url) {
+                  acc[link.type.toLowerCase()] = link.url;
+                }
+                return acc;
+              }, {})
+            : {},
+        };
+
+        setClub(formattedClub);
       } catch (error) {
-        console.error("데이터를 가져오는 중 오류 발생:", error);
+        console.warn('API 상세 조회 실패 → 기존 데이터 사용:', error);
+        setClub(getFallbackClub());
       }
     };
-    fetchClub();
-  }, [clubId]);
 
-  */
+    fetchClubDetail();
+  }, [clubId, location.state]);
+
 
   if (!club) return <div>데이터를 불러오는 중입니다...</div>;
 
