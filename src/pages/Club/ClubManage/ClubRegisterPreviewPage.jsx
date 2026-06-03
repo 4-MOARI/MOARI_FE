@@ -9,6 +9,7 @@ import { useLocation } from 'react-router-dom'; // 1. import 추가
 const ClubRegisterPreviewPage = () => {
   const navigate = useNavigate();
   const { state } = useLocation(); // 2. 전달받은 state 받기
+  
   return (
     <div style={{ width: '100%', minHeight: '1400px', background: '#F8F8FB', paddingBottom: '100px', boxSizing: 'border-box' }}>
       <Header />

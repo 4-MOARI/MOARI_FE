@@ -24,9 +24,22 @@ const ClubUpdatePage = () => {
     setCoverImage(returnedData.coverImage || null);
     setProfileImage(returnedData.profileImage || null);
 
-    // ★ 수정: urlFields 그대로 복구
+    // ★ 수정: urlFields가 있으면 그대로 복구
     if (returnedData.urlFields && returnedData.urlFields.length > 0) {
       setUrlFields(returnedData.urlFields);
+    }
+    // ★ 추가: links만 있는 경우에도 urlFields로 변환해서 복구
+    else if (returnedData.links && typeof returnedData.links === 'object') {
+      const restoredUrlFields = Object.entries(returnedData.links).map(
+        ([key, url], index) => ({
+          id: Date.now() + index,
+          type: 'select',
+          selectedValue: key.charAt(0).toUpperCase() + key.slice(1),
+          urlValue: url,
+        })
+      );
+
+      setUrlFields(restoredUrlFields);
     }
 
     return;
@@ -42,8 +55,17 @@ const ClubUpdatePage = () => {
     setCategoryId(foundClub.category || '');
     setRecruitStatus(foundClub.status || '');
 
-    if (foundClub.urls && foundClub.urls.length > 0) {
-      setUrlFields(foundClub.urls);
+    if (foundClub.links && typeof foundClub.links === 'object') {
+      const restoredUrlFields = Object.entries(foundClub.links).map(
+        ([key, url], index) => ({
+          id: Date.now() + index,
+          type: 'select',
+          selectedValue: key.charAt(0).toUpperCase() + key.slice(1),
+          urlValue: url,
+        })
+      );
+
+      setUrlFields(restoredUrlFields);
     }
   }
 }, [clubId, returnedData]);
@@ -222,7 +244,21 @@ const ClubUpdatePage = () => {
                       <div style={{ position: 'absolute', right: '10px', top: '15px', pointerEvents: 'none', color: '#6B7280', fontSize: '10px' }}>▼</div>
                     </div>
                   ) : (
-                    <input type="text" placeholder="입력하세요" style={{ width: '120px', height: '44px', borderRadius: '10px', border: '1px solid #534AB7', padding: '0 10px' }} />
+                    <input
+                      type="text"
+                      placeholder="입력하세요"
+                      value={field.customLabel || ''}
+                      onChange={(e) =>
+                        setUrlFields(
+                          urlFields.map((item) =>
+                            item.id === field.id
+                              ? { ...item, customLabel: e.target.value }
+                              : item
+                          )
+                        )
+                      }
+                      style={{ width: '120px', height: '44px', borderRadius: '10px', border: '1px solid #534AB7', padding: '0 10px' }}
+                    />
                   )}
                     <input
                       type="text"
@@ -262,8 +298,13 @@ const ClubUpdatePage = () => {
                     activityContent: activity,
                     status: recruitStatus,
                     links: urlFields.reduce((acc, field) => {
-                      if (field.selectedValue && field.urlValue) {
-                        acc[field.selectedValue] = field.urlValue;
+                      if (
+                        field.selectedValue &&
+                        field.selectedValue !== 'URL' &&
+                        field.urlValue
+                      ) {
+                        // ★ 수정: UrlButton이 읽을 수 있게 web, instagram, discord, notion 소문자로 저장
+                        acc[field.selectedValue.toLowerCase()] = field.urlValue;
                       }
                       return acc;
                     }, {}),

@@ -19,7 +19,7 @@ const ClubUpdatePreviewPage = () => {
     const linksFromUrlFields = Array.isArray(rawClubData?.urlFields)
       ? rawClubData.urlFields.reduce((acc, field) => {
           if (field?.selectedValue && field?.urlValue) {
-            acc[field.selectedValue] = field.urlValue;
+            acc[field.selectedValue.toLowerCase()] = field.urlValue;
           }
           return acc;
         }, {})
@@ -31,7 +31,9 @@ const ClubUpdatePreviewPage = () => {
       name: rawClubData?.name || rawClubData?.clubName || '',
       category: rawClubData?.category || rawClubData?.categoryId || '',
       activityContent: rawClubData?.activityContent || rawClubData?.activity || '',
-      links: rawClubData?.links || linksFromUrlFields,
+      links: Object.keys(linksFromUrlFields).length > 0
+        ? linksFromUrlFields
+        : rawClubData?.links || {},
     };
 
   return (
