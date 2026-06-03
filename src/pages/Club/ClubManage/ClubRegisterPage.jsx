@@ -1,14 +1,17 @@
-//동아리 등록페이지
-//
-import React, { useState, useRef } from 'react'; // [수정/추가] useRef 추가
+import React, { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom'; // 네비게이션 추가
 import Header from '../../../components/common/Header/Header';
 import RecruitStatusSection from '../../../components/club/RecruitStatusSection/RecruitStatusSection';
 
+import StyledButton from '../../../components/common/Button/StyledButton'; // 버튼 컴포넌트
+
 const ClubRegisterPage = () => {
+  const navigate = useNavigate(); // 페이지 이동용
   const [oneLineIntro, setOneLineIntro] = useState('');
   const [urlFields, setUrlFields] = useState([{ id: Date.now(), type: 'select', selectedValue: 'URL' , url:'',}]);
   const [isHovered, setIsHovered] = useState(false);
   
+
   //submit용 state추가
   const [clubName, setClubName]
   = useState('');
@@ -25,14 +28,13 @@ const ClubRegisterPage = () => {
   const [activity, setActivity]
   = useState('');
   // [수정/추가] 이미지 상태 관리
+
   const [coverImage, setCoverImage] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
   
-  // [수정/추가] 파일 입력을 위한 Ref
   const coverInputRef = useRef(null);
   const profileInputRef = useRef(null);
 
-  // [수정/추가] 파일 변경 핸들러
   const handleFileChange = (e, setFile) => {
     const file = e.target.files[0];
     if (file) {
@@ -76,38 +78,31 @@ const ClubRegisterPage = () => {
     <div style={{ width: '100%', minHeight: '1400px', background: '#F8F8FB', paddingBottom: '100px', boxSizing: 'border-box' }}>
       <Header />
       
-     {/* 2. 중앙 정렬을 위한 컨테이너 (Flex 사용) */}
-    <div style={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      gap: '40px', 
-      marginTop: '40px', // Header와의 간격
-      alignItems: 'flex-start' 
-    }}>
-
-      {/* 3. 왼쪽 사이드바 (등록 단계) */}
-        <div style={{ width: '260px', height: '800px', left: '58px', top: '86px', position: 'absolute', background: 'white', boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.10)', borderRadius: '24px', padding: '32px', boxSizing: 'border-box' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '40px', marginTop: '40px', alignItems: 'flex-start', width: '100%' }}>
+        
+        {/* 왼쪽 사이드바 */}
+        <div style={{ width: '260px', background: 'white', boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.10)', borderRadius: '24px', padding: '32px', boxSizing: 'border-box' }}>
           <h2 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '24px', color: '#111827' }}>등록 단계</h2>
           <div style={{ background: '#EEEDFE', padding: '10px 20px', borderRadius: '12px', color: '#534AB7', fontWeight: '700', marginBottom: '16px', boxShadow: '0px 1px 5px rgba(0, 0, 0, 0.25)' }}>1 정보 작성</div>
           <div style={{ padding: '10px 20px', color: '#7E8490', fontWeight: '700' }}>2 확인 및 제출</div>
         </div>
-
       
-        <div style={{ width: '834px', left: '388px', top: '86px', position: 'absolute' }}>
-          <div style={{ width: '834px', background: 'white', boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.10)', borderRadius: '24px', paddingBottom: '40px' }}>
+        {/* 오른쪽 메인 */}
+        <div style={{ width: '834px', background: 'white', boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.10)', borderRadius: '24px', paddingBottom: '40px' }}>
+          <div style={{ padding: '40px', paddingBottom: '0' }}>
+            <h1 style={{ fontSize: '24px', fontWeight: '700', marginBottom: '30px', color: '#111827' }}>상세 정보 입력</h1>
             
-            <div style={{ padding: '40px', paddingBottom: '0' }}>
-              <h1 style={{ fontSize: '24px', fontWeight: '700', marginBottom: '30px', color: '#111827' }}>상세 정보 입력</h1>
-              
-              {/* [수정/추가] 커버 이미지 영역 */}
-              <div 
-                onClick={() => coverInputRef.current.click()}
-                style={{ width: '763px', height: '170px', background: coverImage ? `url(${coverImage}) center/cover` : '#EEEDFE', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B7280', marginBottom: '20px', cursor: 'pointer' }}
-              >
-                {!coverImage && '+ 커버 이미지 업로드'}
-                <input type="file" ref={coverInputRef} hidden accept="image/*" onChange={(e) => handleFileChange(e, setCoverImage)} />
-              </div>
+            {/* 커버 이미지 */}
+            <div 
+              onClick={() => coverInputRef.current.click()}
+              style={{ width: '763px', height: '170px', background: coverImage ? `url(${coverImage}) center/cover` : '#EEEDFE', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B7280', marginBottom: '20px', cursor: 'pointer' }}
+            >
+              {!coverImage && '+ 커버 이미지 업로드'}
+              <input type="file" ref={coverInputRef} hidden accept="image/*" onChange={(e) => handleFileChange(e, setCoverImage)} />
+            </div>
 
+            {/* 프로필 및 동아리명 */}
+        
               <div style={{ display: 'flex', gap: '20px', marginBottom: '20px', alignItems: 'center' }}>
                 {/* [수정/추가] 프로필 이미지 영역 */}
                 <div 
@@ -163,7 +158,7 @@ const ClubRegisterPage = () => {
                       </div>
                     ) : (
                       <input type="text" placeholder="입력하세요" style={{ width: '120px', height: '44px', borderRadius: '10px', border: '1px solid #534AB7', padding: '0 10px' }} />
-                    )}
+                    )} {/* URL 입력 */}
                     <input type="text" value={field.url} onChange={(e) => setUrlFields( urlFields.map(item => item.id === field.id ? { ...item, url: e.target.value,} : item ))} placeholder="URL을 입력하세요" style={{ width: '524px', height: '44px', padding: '0 15px', borderRadius: '10px', border: '1px solid #D1D5DB' }} />
                     <button onClick={() => removeUrlField(field.id)} style={{ width: '40px', height: '40px', borderRadius: '10px', border: '1px solid #D1D5DB', cursor: 'pointer', background: 'white' }}>-</button>
                     {index === urlFields.length - 1 && (
@@ -171,6 +166,7 @@ const ClubRegisterPage = () => {
                     )}
                   </div>
                 ))}
+
               </div>
               {/* 모집 상태 */}
               <div style={{marginBottom: '40px'}}>
@@ -179,27 +175,14 @@ const ClubRegisterPage = () => {
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', paddingRight: '40px' }}>
-              <button 
-              
-                onMouseEnter={() => setIsHovered(true)} 
-                onMouseLeave={() => setIsHovered(false)}
-                style={{ 
-                  width: '100px', 
-                  height: '46px', 
-                  background: isHovered ? '#6A62C7' : '#534AB7', 
-                  color: 'white', 
-                  borderRadius: '10px', 
-                  border: 'none', 
-                  cursor: 'pointer', 
-                  fontWeight: '700',
-                  transition: 'background 0.3s ease, box-shadow 0.3s ease',
-                  boxShadow: isHovered ? '0px 4px 12px rgba(83, 74, 183, 0.4)' : 'none'
-                }}
-              >
-                다음
-              </button>
-            </div>
+            
+
+            
+            
+
+          {/* 버튼 영역 (복구됨) */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', paddingRight: '40px' }}>
+            <StyledButton onClick={() => navigate('/club/register/preview')}>다음</StyledButton>
           </div>
         </div>
       </div>

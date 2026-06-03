@@ -4,43 +4,8 @@ import Header from '../../components/common/Header/Header';
 import Pagination from '../../components/common/Pagination/Pagination';
 import ClubCard from '../../components/club/ClubCard/ClubCard';
 import './SearchPage.css';
-
-// 더미 데이터
-const dummyClubs = [
-  {
-    clubId: 1,
-    clubName: '알고리즘 연구회',
-    briefDescription: '알고리즘 관련 활동과 스터디 정보를 확인할 수 있습니다.',
-    categoryName: '학술',
-    isRecruiting: true,
-    averageRating: 4.6,
-    favoriteCount: 20,
-    schoolType: 'internal',
-    coverImageUrl: null,
-  },
-  {
-    clubId: 2,
-    clubName: '풋살 클럽',
-    briefDescription: '풋살을 즐기는 동아리입니다.',
-    categoryName: '체육',
-    isRecruiting: true,
-    averageRating: 4.2,
-    favoriteCount: 15,
-    schoolType: 'internal',
-    coverImageUrl: null,
-  },
-  {
-    clubId: 3,
-    clubName: '빛의 사진반',
-    briefDescription: '사진 촬영과 편집을 배우는 동아리입니다.',
-    categoryName: '공연·예술',
-    isRecruiting: false,
-    averageRating: 4.6,
-    favoriteCount: 10,
-    schoolType: 'external',
-    coverImageUrl: null,
-  },
-];
+import { useEffect } from 'react';
+import { getClubs } from '../../api/clubApi';
 
 const categories = ['전체', '학술', '체육', '공연·예술', '봉사', '취미·친목', '창업·취업', '어학', '기타'];
 
@@ -59,7 +24,9 @@ export default function SearchPage() {
     if (type === 'external') return '외부';
     return '전체';
   });
-  const totalPages = 5;
+  const [clubs, setClubs] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
 
   const handleSearch = () => {
     setSearchedKeyword(keyword);
@@ -68,6 +35,34 @@ export default function SearchPage() {
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') handleSearch();
   };
+
+  const fetchClubs = async () => {
+    setLoading(true);
+    try {
+      const result = await getClubs({
+        keyword: searchedKeyword,
+        categoryId: selectedCategory !== '전체' ? categories.indexOf(selectedCategory) : undefined,
+        isRecruiting,
+        schoolType,
+        sort,
+        page: currentPage,
+        pageSize: 10
+      });
+      if (result.success) {
+        setClubs(result.data.clubs);
+        setTotalPages(result.data.totalPages);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchClubs();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchedKeyword, selectedCategory, isRecruiting, schoolType, sort, currentPage]);
 
   return (
     <>
@@ -89,7 +84,7 @@ export default function SearchPage() {
           </div>
           <button className="search-btn" onClick={handleSearch}>검색</button>
           {searchedKeyword && (
-            <span className="search-result">"{searchedKeyword}" 검색결과 ({dummyClubs.length})개</span>
+            <span className="search-result">"{searchedKeyword}" 검색결과 ({clubs.length})개</span>
           )}
         </div>
 
@@ -162,16 +157,22 @@ export default function SearchPage() {
 
           {/* 동아리 목록 */}
           <section className="club-list">
-            {dummyClubs.map((club) => (
-              <ClubCard
-                key={club.clubId}
-                club={club}
-                onEdit={null}
-                onOpenHistory={null}
-                editLabel=""
-                historyLabel=""
-              />
-            ))}
+            {loading ? (
+              <p>로딩 중...</p>
+            ) : clubs.length === 0 ? (
+              <p>검색 결과가 없습니다.</p>
+            ) : (
+              clubs.map((club) => (
+                <ClubCard
+                  key={club.clubId}
+                  club={club}
+                  onEdit={null}
+                  onOpenHistory={null}
+                  editLabel=""
+                  historyLabel=""
+                />
+              ))
+            )}
           </section>
         </div>
 
