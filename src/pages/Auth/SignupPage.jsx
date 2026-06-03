@@ -7,6 +7,22 @@ import {
 } from '../../api/authApi';
 import './AuthPage.css';
 
+const schools = [
+  { schoolId: 1, name: '성신여자대학교', domain: 'sungshin.ac.kr' },
+  { schoolId: 2, name: '서울대학교', domain: 'snu.ac.kr' },
+  { schoolId: 3, name: '연세대학교', domain: 'yonsei.ac.kr' },
+  { schoolId: 4, name: '고려대학교', domain: 'korea.ac.kr' },
+  { schoolId: 5, name: '서강대학교', domain: 'sogang.ac.kr' },
+  { schoolId: 6, name: '성균관대학교', domain: 'skku.edu' },
+  { schoolId: 7, name: '한양대학교', domain: 'hanyang.ac.kr' },
+  { schoolId: 8, name: '중앙대학교', domain: 'cau.ac.kr' },
+  { schoolId: 9, name: '경희대학교', domain: 'khu.ac.kr' },
+  { schoolId: 10, name: '한국외국어대학교', domain: 'hufs.ac.kr' },
+  { schoolId: 11, name: '서울시립대학교', domain: 'uos.ac.kr' },
+  { schoolId: 12, name: '이화여자대학교', domain: 'ewha.ac.kr' },
+  { schoolId: 13, name: '숙명여자대학교', domain: 'sookmyung.ac.kr' },
+];
+
 export default function SignupPage() {
   const navigate = useNavigate();
 
@@ -24,6 +40,13 @@ export default function SignupPage() {
   const [errorMessage, setErrorMessage] = useState('');
   const [isEmailVerified, setIsEmailVerified] = useState(false);
 
+  const selectedSchool = schools.find(
+    (school) => school.schoolId === Number(form.schoolId)
+  );
+
+  const schoolDomain = selectedSchool?.domain || '';
+  const fullEmail = form.email ? `${form.email}@${schoolDomain}` : '';
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -32,7 +55,7 @@ export default function SignupPage() {
       [name]: value,
     }));
 
-    if (name === 'email') {
+    if (name === 'email' || name === 'schoolId') {
       setIsEmailVerified(false);
       setMessage('');
     }
@@ -44,11 +67,11 @@ export default function SignupPage() {
       setMessage('');
 
       if (!form.email) {
-        setErrorMessage('학교 이메일을 입력해주세요.');
+        setErrorMessage('학교 이메일 아이디를 입력해주세요.');
         return;
       }
 
-      await sendVerificationCode(form.email, Number(form.schoolId));
+      await sendVerificationCode(fullEmail, Number(form.schoolId));
       setMessage('인증번호가 발송되었습니다.');
     } catch (err) {
       setErrorMessage(err.response?.data?.error?.message || '인증번호 발송 실패');
@@ -65,7 +88,7 @@ export default function SignupPage() {
         return;
       }
 
-      await confirmVerificationCode(form.email, form.code);
+      await confirmVerificationCode(fullEmail, form.code);
       setIsEmailVerified(true);
       setMessage('이메일 인증이 완료되었습니다.');
     } catch (err) {
@@ -97,7 +120,7 @@ export default function SignupPage() {
         userId: form.userId,
         userName: form.userName,
         password: form.password,
-        email: form.email,
+        email: fullEmail,
         schoolId: Number(form.schoolId),
       });
 
@@ -172,19 +195,11 @@ export default function SignupPage() {
         <div className="school-field">
           <label>학교 선택 *</label>
           <select name="schoolId" value={form.schoolId} onChange={handleChange}>
-            <option value={1}>성신여자대학교</option>
-            <option value={2}>서울대학교</option>
-            <option value={3}>연세대학교</option>
-            <option value={4}>고려대학교</option>
-            <option value={5}>서강대학교</option>
-            <option value={6}>성균관대학교</option>
-            <option value={7}>한양대학교</option>
-            <option value={8}>중앙대학교</option>
-            <option value={9}>경희대학교</option>
-            <option value={10}>한국외국어대학교</option>
-            <option value={11}>서울시립대학교</option>
-            <option value={12}>이화여자대학교</option>
-            <option value={13}>숙명여자대학교</option>
+            {schools.map((school) => (
+              <option key={school.schoolId} value={school.schoolId}>
+                {school.name}
+              </option>
+            ))}
           </select>
         </div>
 
@@ -194,8 +209,9 @@ export default function SignupPage() {
             name="email"
             value={form.email}
             onChange={handleChange}
-            placeholder="school@email.ac.kr"
+            placeholder="학번 또는 이메일 아이디"
           />
+          <span className="email-domain">@{schoolDomain}</span>
           <button type="button" onClick={handleSendCode}>
             학교 인증
           </button>

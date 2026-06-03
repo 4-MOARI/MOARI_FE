@@ -31,6 +31,9 @@ function ClubCard({
   categoryBadge,
   recruitStatusBadge,
   onEdit,
+  onFavoriteToggle,
+  isFavorite,
+  isFavoriteLoading = false,
   editLabel = '수정하기',
 }) {
   const cardTitle = title || club.clubName;
@@ -41,6 +44,7 @@ function ClubCard({
   const cardRating = rating ?? club.averageRating;
   const cardFavoriteCount = favoriteCount ?? club.favoriteCount;
   const cardImageUrl = imageUrl || club.profileImageUrl || club.coverImageUrl;
+  const cardIsFavorite = isFavorite ?? club.isFavorite ?? club.isLiked ?? false;
 
   return (
     <article className="club-card registered-club-card club-card--registered">
@@ -63,6 +67,16 @@ function ClubCard({
           <StarRating value={cardRating} />
           <FavoriteButton
             count={cardFavoriteCount}
+            isActive={cardIsFavorite}
+            disabled={isFavoriteLoading}
+            onClick={
+              onFavoriteToggle
+                ? (event) => {
+                    event.stopPropagation();
+                    onFavoriteToggle(club);
+                  }
+                : undefined
+            }
             label={`${cardTitle} 찜 수`}
             showCount
           />

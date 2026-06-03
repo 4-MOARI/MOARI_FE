@@ -221,7 +221,23 @@
   margin-bottom: 26px;
 }
 
-.email-row,
+.email-row {
+  display: grid;
+  grid-template-columns: 1fr auto 120px;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.email-domain {
+  height: 54px;
+  display: flex;
+  align-items: center;
+  color: #6b7280;
+  font-size: 15px;
+  white-space: nowrap;
+}
+
 .code-row {
   display: grid;
   grid-template-columns: 1fr 120px;
@@ -313,7 +329,7 @@
   line-height: 88px;
 }
 
-/* 비밀번호 찾기 - 인증/확인 버튼 피그마 스타일 */
+
 .find-card .password-row {
   display: grid;
   grid-template-columns: 1fr 110px;

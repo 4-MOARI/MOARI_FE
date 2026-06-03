@@ -6,13 +6,8 @@ import RecruitStatusFilterButton from "../../components/common/Button/FilterButt
 import ClubCardMain from '../../components/club/ClubCard/ClubCardMain';
 import Pagination from '../../components/common/Pagination/Pagination';
 
-
-
-// 1. 경로를 정확하게 확인 (상대 경로)
-
 const HomePage = () => {
-
-  const [clubType, setClubType] = useState('internal'); // 'internal' 또는 'external'
+  const [clubType, setClubType] = useState('internal');
   const [clubs, setClubs] = useState([]);
   
   const [selectedCategory, setSelectedCategory] = useState('전체');
@@ -20,10 +15,9 @@ const HomePage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
 
-
   useEffect(() => {
     fetchClubs();
-  }, [clubType]); // clubType이 바뀔 때마다 데이터 다시 호출
+  }, [clubType]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -31,16 +25,13 @@ const HomePage = () => {
 
   const fetchClubs = async () => {
     try {
-      // 실제 API 호출 예시 (현재는 mock 데이터로 대체)
-      // const response = await apiClient.get(`/clubs?type=${clubType}`);
-      
       const mockClubs = Array.from({ length: 30 }, (_, i) => ({
         id: i + 1,
         name: `${clubType === 'internal' ? '교내' : '외부'} 동아리 ${i + 1}`,
         category: i % 2 === 0 ? '학술' : '체육',
         status: i % 3 === 0 ? '마감' : '모집중',
         type: i % 2 === 0 ? 'internal' : 'external'
-      })).filter((club) => club.type === clubType); // 선택된 타입만 필터링
+      })).filter((club) => club.type === clubType);
 
       setClubs(mockClubs);
     } catch (error) {
@@ -64,7 +55,6 @@ const HomePage = () => {
       
       <div style={{ width: '100%', height: '180px', background: '#EEEDFE', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
         <div style={{ color: '#534AB7', fontSize: '36px', fontWeight: '700', marginBottom: '20px' }}>
-          {/* clubType에 따라 멘트 자동 변경 */}
           {clubType === 'internal' ? '우리 학교 동아리를 한 눈에' : '전국의 동아리를 한 눈에'}
         </div>
         <div style={{ width: '520px', height: '50px', position: 'relative' }}>
@@ -73,7 +63,6 @@ const HomePage = () => {
         </div>
       </div>
        
-
       <div style={{ width: '1280px', margin: '0 auto', padding: '40px 0' }}>
         <div style={{ display: 'flex', gap: '24px', marginBottom: '20px' }}>
           {['전체', '학술', '체육', '공연·예술', '봉사', '취미·친목', '창업·취업', '어학', '기타'].map((cat) => (
@@ -112,10 +101,7 @@ const HomePage = () => {
           />
         </div>
       </div>
-
     </div>
-
-    
   );
 };
 
