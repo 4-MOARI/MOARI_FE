@@ -9,9 +9,9 @@ const apiClient = axios.create({
 });
 
 apiClient.interceptors.request.use((config) => {
-  const token = (import.meta.env.DEV ? DEV_AUTH_TOKEN : '') ||
-    localStorage.getItem(AUTH_TOKEN_KEY) ||
-    localStorage.getItem(LEGACY_AUTH_TOKEN_KEY);
+  const token = localStorage.getItem(AUTH_TOKEN_KEY) ||
+    localStorage.getItem(LEGACY_AUTH_TOKEN_KEY) ||
+    (import.meta.env.DEV ? DEV_AUTH_TOKEN : '');
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
