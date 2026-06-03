@@ -25,11 +25,11 @@
 
 .rdrStartEdge,
 .rdrEndEdge {
-  background: #1F116D !important;
+  background: #4B3FB3 !important;
 }
 
 .rdrInRange {
-  background: #EDEAFE !important;
+  background: #4B3FB3 !important;
 }
 
 .rdrDayToday .rdrDayNumber span:after {

@@ -13,7 +13,8 @@ import ReviewCard from '../../../components/club/ReviewCard/ReviewCard';
 
 import './ReviewSection.css';
 
-function ReviewSection({ clubId }) {
+function ReviewSection({ clubId, clubName }) {
+    console.log("ReviewSection clubId =", clubId);
   const [reviews, setReviews] = useState([]);
 
   const [isModalOpen, setIsModalOpen]
@@ -124,6 +125,7 @@ function ReviewSection({ clubId }) {
       {isModalOpen && (
         <ReviewModal
             clubId={clubId}
+            clubName={clubName}
             onClose={() =>
                 setIsModalOpen(false)
             }

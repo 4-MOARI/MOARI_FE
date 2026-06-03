@@ -1,12 +1,40 @@
 //동아리 수정페이지
 
-import React, { useState, useRef } from 'react'; // [수정/추가] useRef 추가
+import React, { useState, useRef, useEffect } from 'react'; // [수정/추가] useRef 추가
 import Header from '../../../components/common/Header/Header';
+import RecruitStatusSection from '../../../components/club/RecruitStatusSection/RecruitStatusSection';
+import { useParams } from 'react-router-dom';
 
 const ClubUpdatePage = () => {
   const [oneLineIntro, setOneLineIntro] = useState('');
-  const [urlFields, setUrlFields] = useState([{ id: Date.now(), type: 'select', selectedValue: 'URL' }]);
+  const [urlFields, setUrlFields] = useState([{ id: Date.now(), type: 'select', selectedValue: 'URL' , url: ''}]);
   const [isHovered, setIsHovered] = useState(false);
+
+  //상세조회 함수 만들기
+  const loadClub = async () => {
+  const res = await getClubDetail(clubId);
+
+  console.log(res.data);
+};
+
+  
+
+  //모집상태 관련state
+  const [recruitInfo, setRecruitInfo]
+  = useState({
+    isRecruiting: false,
+    recruitStartAt: null,
+    recruitEndAt: null,
+  });
+
+  const [categoryId, setCategoryId]
+  = useState('');
+  const [description, setDescription]
+  = useState('');
+  const [activity, setActivity]
+  = useState('');
+ //기존 데이터 불러오기
+  const { clubId } = useParams();
 
   // [수정/추가] 이미지 상태 관리
   const [coverImage, setCoverImage] = useState(null);
@@ -37,7 +65,7 @@ const ClubUpdatePage = () => {
   };
 
   const addUrlField = () => {
-    setUrlFields([...urlFields, { id: Date.now(), type: 'select', selectedValue: 'URL' }]);
+    setUrlFields([...urlFields, { id: Date.now(), type: 'select', selectedValue: 'URL' , url: ''}]);
   };
 
   const removeUrlField = (id) => {
@@ -52,6 +80,7 @@ const ClubUpdatePage = () => {
       return field;
     }));
   };
+
 
   const categories = ["전체", "학술", "체육", "공연·예술", "봉사", "취미·친목", "창업·친업", "어학", "기타"];
   const schools = ["성신여자대학교", "외부"];
@@ -111,8 +140,8 @@ const ClubUpdatePage = () => {
 
               <div style={{ display: 'flex', gap: '30px', marginBottom: '30px' }}>
                 <div style={{ position: 'relative', width: '362px' }}>
-                  <select style={{ width: '100%', height: '44px', padding: '0 20px', borderRadius: '10px', border: '1px solid #D1D5DB', color: '#6B7280', backgroundColor: 'white', cursor: 'pointer', appearance: 'none' }}>
-                    <option value="" disabled selected>카테고리 선택</option>
+                  <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} style={{ width: '100%', height: '44px', padding: '0 20px', borderRadius: '10px', border: '1px solid #D1D5DB', color: '#6B7280', backgroundColor: 'white', cursor: 'pointer', appearance: 'none' }}>
+                    <option value="" disabled>카테고리 선택</option>
                     {categories.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
                   </select>
                   <div style={{ position: 'absolute', right: '20px', top: '15px', color: '#6B7280', pointerEvents: 'none' }}>▼</div>
@@ -129,8 +158,8 @@ const ClubUpdatePage = () => {
                   <textarea value={oneLineIntro} onChange={handleIntroChange} placeholder="동아리 한 줄 소개 (30자 제한)" style={{ width: '754px', height: '40px', padding: '10px', borderRadius: '10px', border: '1px solid #D1D5DB', resize: 'none', boxSizing: 'border-box' }} />
                   <span style={{ position: 'absolute', right: '15px', bottom: '10px', fontSize: '12px', color: '#9CA3AF' }}>{oneLineIntro.length}/30</span>
                 </div>
-                <textarea placeholder="동아리 소개" style={{ width: '754px', height: '100px', padding: '10px', borderRadius: '10px', border: '1px solid #D1D5DB', boxSizing: 'border-box' }} />
-                <textarea placeholder="활동내용" style={{ width: '754px', height: '150px', padding: '10px', borderRadius: '10px', border: '1px solid #D1D5DB', boxSizing: 'border-box' }} />
+                <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="동아리 소개" style={{ width: '754px', height: '100px', padding: '10px', borderRadius: '10px', border: '1px solid #D1D5DB', boxSizing: 'border-box' }} />
+                <textarea value={activity} onChange={(e) => setActivity(e.target.value)} placeholder="활동내용" style={{ width: '754px', height: '150px', padding: '10px', borderRadius: '10px', border: '1px solid #D1D5DB', boxSizing: 'border-box' }} />
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '40px' }}>
@@ -151,13 +180,18 @@ const ClubUpdatePage = () => {
                     ) : (
                       <input type="text" placeholder="입력하세요" style={{ width: '120px', height: '44px', borderRadius: '10px', border: '1px solid #534AB7', padding: '0 10px' }} />
                     )}
-                    <input type="text" placeholder="URL을 입력하세요" style={{ width: '524px', height: '44px', padding: '0 15px', borderRadius: '10px', border: '1px solid #D1D5DB' }} />
+                    <input type="text" value={field.url} onChange={(e) => setUrlFields( urlFields.map(item => item.id === field.id ? { ...item, url: e.target.value,} : item ) ) } placeholder="URL을 입력하세요" style={{ width: '524px', height: '44px', padding: '0 15px', borderRadius: '10px', border: '1px solid #D1D5DB' }} />
                     <button onClick={() => removeUrlField(field.id)} style={{ width: '40px', height: '40px', borderRadius: '10px', border: '1px solid #D1D5DB', cursor: 'pointer', background: 'white' }}>-</button>
                     {index === urlFields.length - 1 && (
                       <button onClick={addUrlField} style={{ width: '40px', height: '40px', borderRadius: '10px', border: '1px solid #534AB7', cursor: 'pointer', background: '#534AB7', color: 'white' }}>+</button>
                     )}
                   </div>
                 ))}
+              </div>
+              {/*모집상태 */}
+              <div style={{marginBottom: '40px'}}>
+                <RecruitStatusSection
+                  onChange={setRecruitInfo} />
               </div>
             </div>
 
