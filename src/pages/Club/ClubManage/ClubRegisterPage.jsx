@@ -7,16 +7,30 @@ import StyledButton from '../../../components/common/Button/StyledButton'; // �
 
 const ClubRegisterPage = () => {
   const navigate = useNavigate(); // 페이지 이동용
-  const [oneLineIntro, setOneLineIntro] = useState('');
-  const [isHovered, setIsHovered] = useState(false);
-  
 
-  //submit용 state추가
   // submit용 state
   const { state } = useLocation(); 
 
+
+  const [oneLineIntro, setOneLineIntro] = useState(
+    state?.oneLineIntro || state?.shortDescription || ''
+  );
+  const [isHovered, setIsHovered] = useState(false);
+  
+
+
   // 🔥 아예 처음 진입할 때(state가 없을 때)의 초기값 설정
-  const [urlFields, setUrlFields] = useState(state?.links || [{ id: Date.now(), type: 'select', selectedValue: 'URL', url: '' }]);
+  const [urlFields, setUrlFields] = useState(
+    state?.urlFields ||
+    (state?.links && typeof state.links === 'object'
+      ? Object.entries(state.links).map(([key, url], index) => ({
+          id: Date.now() + index,
+          type: 'select',
+          selectedValue: key.charAt(0).toUpperCase() + key.slice(1),
+          url,
+        }))
+      : [{ id: Date.now(), type: 'select', selectedValue: 'URL', url: '' }])
+  );
   const [recruitInfo, setRecruitInfo] = useState(state?.recruitInfo || {
       isRecruiting: false,
       recruitStartAt: null,
@@ -74,7 +88,23 @@ const ClubRegisterPage = () => {
         oneLineIntro, 
         description, 
         activity, 
-        links: urlFields,
+        urlFields,
+
+        links: urlFields.reduce((acc, field) => {
+          const url = field.url || field.urlValue;
+
+          if (
+            field.selectedValue &&
+            field.selectedValue !== 'URL' &&
+            field.selectedValue !== '직접입력' &&
+            url
+          ) {
+            acc[field.selectedValue.toLowerCase()] = url;
+          }
+
+          return acc;
+        }, {}),
+        
         recruitInfo: recruitInfo,
         coverImage, 
         profileImage 
