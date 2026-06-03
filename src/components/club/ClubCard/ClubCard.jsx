@@ -35,19 +35,34 @@ function ClubCard({
   isFavorite,
   isFavoriteLoading = false,
   editLabel = '수정하기',
+  onClick,
 }) {
   const cardTitle = title || club.clubName;
   const cardCategory = category || club.categoryName || '기타';
   const cardDescription =
     description || club.briefDescription || '동아리 소개가 아직 등록되지 않았습니다.';
-  const isRecruiting = recruiting ?? club.isRecruiting;
+  const isRecruiting = (() => {
+    if (recruiting !== undefined) return recruiting;
+    if (club.isRecruiting !== undefined) return club.isRecruiting;
+    if (club.recruitStartAt && club.recruitEndAt) {
+      const now = new Date();
+      const start = new Date(club.recruitStartAt);
+      const end = new Date(club.recruitEndAt);
+      end.setHours(23, 59, 59, 999);
+      return now >= start && now <= end;
+    }
+    return false;
+  })();
   const cardRating = rating ?? club.averageRating;
   const cardFavoriteCount = favoriteCount ?? club.favoriteCount;
   const cardImageUrl = imageUrl || club.profileImageUrl || club.coverImageUrl;
   const cardIsFavorite = isFavorite ?? club.isFavorite ?? club.isLiked ?? false;
 
   return (
-    <article className="club-card registered-club-card club-card--registered">
+    <article className="club-card registered-club-card club-card--registered" 
+    onClick={onClick}
+    style={onClick ? { cursor: 'pointer' } : undefined}
+    >
       <ClubImage imageUrl={cardImageUrl} title={cardTitle} />
 
       <div className="registered-club-card-main">
@@ -83,11 +98,13 @@ function ClubCard({
         </div>
       </div>
 
-      <div className="registered-club-card-actions">
-        <button type="button" onClick={() => onEdit?.(club)}>
-          {editLabel}
-        </button>
-      </div>
+      {editLabel && (
+        <div className="registered-club-card-actions">
+          <button type="button" onClick={(e) => { e.stopPropagation(); onEdit?.(club); }}>
+            {editLabel}
+          </button>
+        </div>
+      )}
     </article>
   );
 }
