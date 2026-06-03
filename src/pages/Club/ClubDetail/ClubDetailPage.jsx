@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { MOCK_CLUBS } from "../../../data/clubs"; //더미데이터
 import Header from "../../../components/common/Header/Header";
 import ClubInfoSection from './ClubInfoSection';
@@ -8,13 +8,29 @@ import axios from 'axios'; // 1. axios 추가 (서버 통신용)
 
 export default function ClubDetailPage() {
   const { clubId } = useParams();
+  const navigate = useNavigate();
   const [club, setClub] = useState(null);
+  const location = useLocation();
 
   useEffect(() => {
-    // 2. 서버에서 실제 데이터를 가져오는 함수
-    const foundClub = MOCK_CLUBS.find(c => c.id === clubId);
-    setClub(foundClub || null);
-  }, [clubId]);
+  // ★ 1순위: 수정프리뷰에서 바로 넘어온 데이터
+  if (location.state) {
+    setClub(location.state);
+    return;
+  }
+
+  // ★ 2순위: localStorage에 저장된 수정 데이터
+  const savedClub = localStorage.getItem(`club-${clubId}`);
+
+  if (savedClub) {
+    setClub(JSON.parse(savedClub));
+    return;
+  }
+
+  // ★ 3순위: 기존 더미데이터
+  const foundClub = MOCK_CLUBS.find(c => String(c.id) === String(clubId));
+  setClub(foundClub || null);
+}, [clubId, location.state]);
 
   /* api시
     const fetchClub = async () => {
