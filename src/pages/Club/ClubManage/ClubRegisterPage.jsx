@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { getCategories } from '../../../api/clubApi';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '../../../components/common/Header/Header';
 import RecruitStatusSection from '../../../components/club/RecruitStatusSection/RecruitStatusSection';
@@ -11,6 +12,16 @@ const ClubRegisterPage = () => {
   // submit용 state
   const { state } = useLocation(); 
 
+  const [categories, setCategories] = useState([
+    { categoryId: 1, categoryName: "학술" },
+    { categoryId: 2, categoryName: "체육" },
+    { categoryId: 3, categoryName: "공연·예술" },
+    { categoryId: 4, categoryName: "봉사" },
+    { categoryId: 5, categoryName: "취미·친목" },
+    { categoryId: 6, categoryName: "창업·취업" },
+    { categoryId: 7, categoryName: "어학" },
+    { categoryId: 8, categoryName: "기타" },
+  ]);
 
   const [oneLineIntro, setOneLineIntro] = useState(
     state?.oneLineIntro || state?.shortDescription || ''
@@ -38,7 +49,9 @@ const ClubRegisterPage = () => {
   });
 
   const [clubName, setClubName] = useState(state?.name || '');
-  const [categoryId, setCategoryId] = useState(state?.category || '');
+  const [categoryId, setCategoryId] = useState(
+    state?.categoryId || ''
+  );
   const [schoolId, setSchoolId] = useState(state?.school || ''); // 수정됨
   const [description, setDescription] = useState(state?.description || ''); // 수정됨
   const [activity, setActivity] = useState(state?.activity || ''); // 수정됨
@@ -75,6 +88,19 @@ const ClubRegisterPage = () => {
     }));
   };
 
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const categoryList = await getCategories();
+        setCategories(categoryList);
+      } catch (error) {
+        console.warn('카테고리 조회 실패 → 기본 카테고리 사용:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
   const handleNext = () => {
     if (!clubName || !categoryId || !schoolId) {
       alert("동아리명, 카테고리, 소속 학교는 필수 입력 사항입니다.");
@@ -83,8 +109,11 @@ const ClubRegisterPage = () => {
     navigate('/club/register/preview', { 
       state: { 
         name: clubName,            // 수정: 전달하는 키값 name
-        category: categoryId,      // 수정: 전달하는 키값 category
-        school: schoolId,          // 수정: 전달하는 키값 school
+        category: categories.find((cat) => String(cat.categoryId) === String(categoryId))?.categoryName || '',
+        categoryId: Number(categoryId),
+
+        school: schoolId,
+        schoolId: schoolId === '외부' ? null : 1,
         oneLineIntro, 
         description, 
         activity, 
@@ -113,7 +142,7 @@ const ClubRegisterPage = () => {
   };
   
 
-  const categories = ["학술", "체육", "공연·예술", "봉사", "취미·친목", "창업·취업", "어학", "기타"];
+
   const schools = ["성신여자대학교", "외부"];
   const urlOptions = ["Web", "Instagram", "Discord", "Notion", "직접입력"];
 
@@ -162,7 +191,11 @@ const ClubRegisterPage = () => {
                 <div style={{ position: 'relative', width: '362px' }}>
                   <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} style={{ width: '100%', height: '44px', padding: '0 20px', borderRadius: '10px', border: '1px solid #D1D5DB', color: '#6B7280', backgroundColor: 'white', cursor: 'pointer', appearance: 'none' }}>
                     <option value="" disabled >* 카테고리 선택 (필수)</option>
-                    {categories.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
+                    {categories.map((cat) => (
+                      <option key={cat.categoryId} value={cat.categoryId}>
+                        {cat.categoryName}
+                      </option>
+                    ))}
                   </select>
                   <div style={{ position: 'absolute', right: '20px', top: '15px', color: '#6B7280', pointerEvents: 'none' }}>▼</div>
                 </div>

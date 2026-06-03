@@ -5,6 +5,7 @@ import StyledButton from '../../../components/common/Button/StyledButton';
 // 기존 상세 페이지에서 사용하던 컴포넌트를 import 합니다.
 import ClubInfoSection from '../ClubDetail/ClubInfoSection'; 
 import { useLocation } from 'react-router-dom'; // 1. import 추가
+import { createClub } from '../../../api/clubApi';
 
 const ClubRegisterPreviewPage = () => {
   const navigate = useNavigate();
@@ -74,21 +75,61 @@ const ClubRegisterPreviewPage = () => {
               onClick={() => navigate('/club/register', { state: clubData })} // 데이터 그대로 들고 이동
             >이전</StyledButton>
             <StyledButton
-              onClick={() => {
-                const newClubId = clubData.id || Date.now();
+              onClick={async () => {
+                const requestBody = {
+                  clubName: clubData.name,
+                  categoryId: clubData.categoryId,
+                  schoolId: clubData.schoolId,
+                  briefDescription: clubData.oneLineIntro,
+                  description: clubData.description,
+                  activity: clubData.activityContent || clubData.activity,
 
-                const savedClubData = {
-                  ...clubData,
-                  id: newClubId,
+                  // ★ 지금은 이미지 업로드 서버가 따로 없으니 임시로 문자열 전달
+                  profileImageUrl: clubData.profileImage || '',
+                  coverImageUrl: clubData.coverImage || '',
+
+                  recruitStartAt: clubData.recruitInfo?.recruitStartAt || null,
+                  recruitEndAt: clubData.recruitInfo?.recruitEndAt || null,
+
+                  links: clubData.urlFields
+                    ?.filter((field) => {
+                      const url = field.url || field.urlValue;
+
+                      return (
+                        field.selectedValue &&
+                        field.selectedValue !== 'URL' &&
+                        url
+                      );
+                    })
+                    .map((field) => ({
+                      title: field.selectedValue,
+                      url: field.url || field.urlValue,
+                    })) || [],
                 };
 
-                // ★ 추가: 등록한 동아리 데이터를 localStorage에 저장
-                localStorage.setItem(`club-${newClubId}`, JSON.stringify(savedClubData));
+                try {
+                  // ★ 1순위: 백엔드 등록 API 호출
+                  const result = await createClub(requestBody);
+                  const newClubId = result.data.clubId;
 
-                // ★ 추가: 상세페이지로 이동하면서 등록 데이터 전달
-                navigate(`/club/${newClubId}`, {
-                  state: savedClubData,
-                });
+                  navigate(`/club/${newClubId}`);
+                } catch (error) {
+                  console.error('동아리 등록 실패 → 프론트 테스트용 localStorage 사용:', error);
+
+                  // ★ API 실패 시 기존 더미 테스트 방식 유지
+                  const newClubId = clubData.id || Date.now();
+
+                  const savedClubData = {
+                    ...clubData,
+                    id: newClubId,
+                  };
+
+                  localStorage.setItem(`club-${newClubId}`, JSON.stringify(savedClubData));
+
+                  navigate(`/club/${newClubId}`, {
+                    state: savedClubData,
+                  });
+                }
               }}
             >
               제출
