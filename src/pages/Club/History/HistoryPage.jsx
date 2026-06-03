@@ -16,12 +16,23 @@ const formatDate = (dateStr) => {
   return `${yyyy}.${MM}.${dd}  ${HH}:${mm}`;
 };
 
+const fieldNameMap = {
+  description: '동아리 소개',
+  briefDescription: '한줄 소개',
+  clubName: '동아리 이름',
+  recruitPeriod: '모집 기간',
+  coverImage: '커버 이미지',
+  profileImage: '프로필 이미지',
+  activity: '활동 내용',
+  categoryId: '카테고리',
+};
+
 export default function HistoryPage() {
   const { clubId } = useParams();
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [history, setHistory] = useState([]);
-  const [club, setClub] = useState({ clubName: '', coverImageUrl: null });
+  const [club, setClub] = useState({ clubName: '', profileImageUrl: null });
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
 
@@ -37,7 +48,7 @@ export default function HistoryPage() {
         setTotalPages(result.data.totalPages);
         setClub({
           clubName: result.data.clubName || '',
-          coverImageUrl: result.data.coverImageUrl || null
+          profileImageUrl: result.data.profileImageUrl || null
         });
         }
     } catch (error) {
@@ -84,7 +95,7 @@ export default function HistoryPage() {
                         </div>
                         <div className="history-field-info">
                           <span className="history-field-label">수정 항목</span>
-                          <span className="history-field-value">{item.modifiedField}</span>
+                          <span className="history-field-value">{fieldNameMap[item.modifiedField] || item.modifiedField}</span>
                         </div>
                       </div>
                       <div className="history-card-body">
@@ -118,8 +129,8 @@ export default function HistoryPage() {
         {/* 오른쪽 사이드바 */}
         <aside className="history-sidebar">
           <div className="sidebar-image">
-            {club.coverImageUrl ? (
-              <img src={club.coverImageUrl} alt={club.clubName} />
+            {club.profileImageUrl ? (
+              <img src={club.profileImageUrl} alt={club.clubName} />
             ) : (
               <div className="sidebar-image-placeholder">IMAGE</div>
             )}

@@ -109,9 +109,9 @@ export default function SearchPage() {
       const result = await getClubs({
         keyword: searchedKeyword,
         categoryId: selectedCategory !== '전체' ? categories.indexOf(selectedCategory) : undefined,
-        isRecruiting: isRecruiting === '모집중' ? 'true' : isRecruiting === '마감' ? 'false' : undefined,
-        schoolType: schoolType === '교내' ? 'internal' : schoolType === '외부' ? 'external' : undefined,
-        sort: sort === '인기순' ? 'favoriteCount' : sort === '별점순' ? 'rating' : sort === '이름순' ? 'name' : undefined,
+        isRecruiting: isRecruiting,
+        schoolType: schoolType,
+        sort: sort,
         page: currentPage,
         pageSize: 10
       });
