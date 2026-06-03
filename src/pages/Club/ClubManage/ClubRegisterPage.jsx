@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom'; // 네비게이션 추가
+import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '../../../components/common/Header/Header';
 import RecruitStatusSection from '../../../components/club/RecruitStatusSection/RecruitStatusSection';
 
@@ -8,30 +8,28 @@ import StyledButton from '../../../components/common/Button/StyledButton'; // �
 const ClubRegisterPage = () => {
   const navigate = useNavigate(); // 페이지 이동용
   const [oneLineIntro, setOneLineIntro] = useState('');
-  const [urlFields, setUrlFields] = useState([{ id: Date.now(), type: 'select', selectedValue: 'URL' , url:'',}]);
   const [isHovered, setIsHovered] = useState(false);
   
 
   //submit용 state추가
-  const [clubName, setClubName]
-  = useState('');
+  // submit용 state
+  const { state } = useLocation(); 
 
-  const [categoryId, setCategoryId]
-  = useState('');
+  // 🔥 아예 처음 진입할 때(state가 없을 때)의 초기값 설정
+  const [urlFields, setUrlFields] = useState(state?.links || [{ id: Date.now(), type: 'select', selectedValue: 'URL', url: '' }]);
+  const [recruitInfo, setRecruitInfo] = useState(state?.recruitInfo || {
+      isRecruiting: false,
+      recruitStartAt: null,
+      recruitEndAt: null,
+  });
 
-  const [schoolId, setSchoolId]
-  = useState('');
-
-  const [description, setDescription]
-  = useState('');
-
-  const [activity, setActivity]
-  = useState('');
-  // [수정/추가] 이미지 상태 관리
-
+  const [clubName, setClubName] = useState(state?.name || '');
+  const [categoryId, setCategoryId] = useState(state?.category || '');
+  const [schoolId, setSchoolId] = useState(state?.school || ''); // 수정됨
+  const [description, setDescription] = useState(state?.description || ''); // 수정됨
+  const [activity, setActivity] = useState(state?.activity || ''); // 수정됨
   const [coverImage, setCoverImage] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
-  
   const coverInputRef = useRef(null);
   const profileInputRef = useRef(null);
 
@@ -62,15 +60,30 @@ const ClubRegisterPage = () => {
       return field;
     }));
   };
-  //모집상태 관련 state
-  const [recruitInfo, setRecruitInfo]
-  = useState({
-      isRecruiting: false,
-      recruitStartAt: null,
-      recruitEndAt: null,
-    });
 
-  const categories = ["전체", "학술", "체육", "공연·예술", "봉사", "취미·친목", "창업·취업", "어학", "기타"];
+  const handleNext = () => {
+    if (!clubName || !categoryId || !schoolId) {
+      alert("동아리명, 카테고리, 소속 학교는 필수 입력 사항입니다.");
+      return;
+    }
+    navigate('/club/register/preview', { 
+      state: { 
+        name: clubName,            // 수정: 전달하는 키값 name
+        category: categoryId,      // 수정: 전달하는 키값 category
+        school: schoolId,          // 수정: 전달하는 키값 school
+        oneLineIntro, 
+        description, 
+        activity, 
+        links: urlFields,
+        recruitInfo: recruitInfo,
+        coverImage, 
+        profileImage 
+      } 
+    });
+  };
+  
+
+  const categories = ["학술", "체육", "공연·예술", "봉사", "취미·친목", "창업·취업", "어학", "기타"];
   const schools = ["성신여자대학교", "외부"];
   const urlOptions = ["Web", "Instagram", "Discord", "Notion", "직접입력"];
 
@@ -112,20 +125,20 @@ const ClubRegisterPage = () => {
                   {!profileImage && '+ 프로필'}
                   <input type="file" ref={profileInputRef} hidden accept="image/*" onChange={(e) => handleFileChange(e, setProfileImage)} />
                 </div>
-                <input type="text" value={clubName} onChange={(e) => setClubName(e.target.value)} placeholder="동아리명: 알고리즘 연구회" style={{ width: '627px', height: '44px', padding: '0 20px', borderRadius: '10px', border: '1px solid #D1D5DB' }} />
+                <input type="text" value={clubName} onChange={(e) => setClubName(e.target.value)} placeholder="* 동아리명 (필수)" style={{ width: '627px', height: '44px', padding: '0 20px', borderRadius: '10px', border: '1px solid #D1D5DB' }} />
               </div>
 
               <div style={{ display: 'flex', gap: '30px', marginBottom: '30px' }}>
                 <div style={{ position: 'relative', width: '362px' }}>
                   <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} style={{ width: '100%', height: '44px', padding: '0 20px', borderRadius: '10px', border: '1px solid #D1D5DB', color: '#6B7280', backgroundColor: 'white', cursor: 'pointer', appearance: 'none' }}>
-                    <option value="" disabled >카테고리 선택</option>
+                    <option value="" disabled >* 카테고리 선택 (필수)</option>
                     {categories.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
                   </select>
                   <div style={{ position: 'absolute', right: '20px', top: '15px', color: '#6B7280', pointerEvents: 'none' }}>▼</div>
                 </div>
                 <div style={{ position: 'relative', width: '362px' }}>
                   <select value={schoolId} onChange={(e) => setSchoolId(e.target.value)} style={{ width: '100%', height: '44px', padding: '0 20px', borderRadius: '10px', border: '1px solid #D1D5DB', color: '#6B7280', backgroundColor: 'white', cursor: 'pointer', appearance: 'none' }}>
-                    <option value="" disabled >소속 학교 선택</option>
+                    <option value="" disabled >* 소속 선택 (필수)</option>
                     {schools.map((school) => <option key={school} value={school}>{school}</option>)}
                   </select>
                   <div style={{ position: 'absolute', right: '20px', top: '15px', color: '#6B7280', pointerEvents: 'none' }}>▼</div>
@@ -175,14 +188,9 @@ const ClubRegisterPage = () => {
               </div>
             </div>
 
-            
-
-            
-            
-
-          {/* 버튼 영역 (복구됨) */}
+           {/* 버튼 영역 (복구됨) */}
           <div style={{ display: 'flex', justifyContent: 'flex-end', paddingRight: '40px' }}>
-            <StyledButton onClick={() => navigate('/club/register/preview')}>다음</StyledButton>
+            <StyledButton onClick={handleNext}>다음</StyledButton>
           </div>
         </div>
       </div>

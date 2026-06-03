@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { MOCK_CLUBS } from "../../data/clubs"; //더미데이터
+import { useNavigate } from 'react-router-dom'; // 동아리카드 연결
 import Header from '../../components/common/Header/Header';
 import apiClient from '../../api/axios';
 import CategoryFilterButton from "../../components/common/Button/FilterButton/CategoryFilterButton";
@@ -8,6 +10,9 @@ import Pagination from '../../components/common/Pagination/Pagination';
 
 const HomePage = () => {
   const [clubType, setClubType] = useState('internal');
+
+  const navigate = useNavigate(); // 동아리카드연결
+  const [clubType, setClubType] = useState('internal'); // 'internal' 또는 'external'
   const [clubs, setClubs] = useState([]);
   
   const [selectedCategory, setSelectedCategory] = useState('전체');
@@ -32,8 +37,20 @@ const HomePage = () => {
         status: i % 3 === 0 ? '마감' : '모집중',
         type: i % 2 === 0 ? 'internal' : 'external'
       })).filter((club) => club.type === clubType);
+      // [백엔드 연동 전] 더미 데이터(MOCK_CLUBS)를 사용하여 필터링
+      // 실제 API 호출은 나중에 이 부분을 주석 처리하고 axios.get()으로 바꾸면 됩니다.
+      const data = MOCK_CLUBS;
 
-      setClubs(mockClubs);
+      // 여기서 'internal'을 '성신여자대학교'로, 'external'을 '외부'로 바꿔서 비교합니다.
+      const filteredByType = data.filter((club) => {
+        if (clubType === 'internal') {
+          return club.affiliation === '성신여자대학교';
+        } else {
+          return club.affiliation === '외부';
+        }
+      });
+      
+      setClubs(filteredByType);
     } catch (error) {
       console.error(error);
     }
@@ -83,7 +100,13 @@ const HomePage = () => {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', paddingBottom: '40px', minHeight: '600px' }}>
           {currentClubs.length > 0 ? (
             currentClubs.map((club) => (
-              <ClubCardMain key={club.id} club={club} />
+              <div 
+                key={club.id} 
+                onClick={() => navigate(`/club/${club.id}`)} 
+                style={{ cursor: 'pointer' }}
+              >
+                <ClubCardMain club={club} />
+              </div>
             ))
           ) : (
             <div style={{ gridColumn: 'span 4', textAlign: 'center', padding: '100px 0', color: '#6B7280' }}>

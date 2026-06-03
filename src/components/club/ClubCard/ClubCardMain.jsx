@@ -6,7 +6,10 @@ import StarRating from '../../common/StarRating/StarRating';
 
 const ClubCardMain = ({ club }) => {
   const [isLiked, setIsLiked] = useState(false);
-  const toggleLike = () => setIsLiked(!isLiked);
+  const toggleLike = (e) => {
+    e.stopPropagation(); // ★ 핵심: 이벤트가 부모(카드 전체)로 퍼지는 것을 막음
+    setIsLiked(!isLiked);
+  };
 
   return (
     <article className="club-card-main">
@@ -18,7 +21,7 @@ const ClubCardMain = ({ club }) => {
       </div>
 
       <h3>{club.name}</h3>
-      <p>{club.description}</p>
+      <p className="club-card-description">{club.oneLineIntro}</p>
 
       <div className="club-card-meta">
         <StarRating value={4.6} />
