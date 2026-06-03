@@ -12,7 +12,7 @@ const HomePage = () => {
   const [clubType, setClubType] = useState('internal');
 
   const navigate = useNavigate(); // 동아리카드연결
-  const [clubType, setClubType] = useState('internal'); // 'internal' 또는 'external'
+  
   const [clubs, setClubs] = useState([]);
   
   const [selectedCategory, setSelectedCategory] = useState('전체');

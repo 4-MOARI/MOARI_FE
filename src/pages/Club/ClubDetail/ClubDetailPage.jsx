@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { MOCK_CLUBS } from "../../../data/clubs"; //더미데이터
 import Header from "../../../components/common/Header/Header";
 import ClubInfoSection from './ClubInfoSection';
@@ -8,6 +9,7 @@ import axios from 'axios'; // 1. axios 추가 (서버 통신용)
 
 export default function ClubDetailPage() {
   const { clubId } = useParams();
+  const navigate = useNavigate();
   const [club, setClub] = useState(null);
 
   useEffect(() => {
