@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import CategoryBadge from "../../../components/common/Badge/CategoryBadge/CategoryBadge";
 import RecruitStatusBadge from "../../../components/common/Badge/RecruitStatusBadge/RecruitStatusBadge";
 import UrlButton from "../../../components/common/Button/UrlButton/UrlButton";
+import ReportSection from '../Report/ReportSection';
 
 const ClubInfoSection = ({ club }) => {
   const [isLiked, setIsLiked] = useState(false);
@@ -25,6 +26,8 @@ const ClubInfoSection = ({ club }) => {
       { type: "default", url: "#" }
     ]
   }; // <--- 여기서 한 번만 닫아야 합니다.
+
+  
 
   return (
     <div style={{ width: '760px', position: 'relative', background: 'white', boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.10)', borderRadius: '24px', padding: '32px', boxSizing: 'border-box', margin: '0 auto' }}>
@@ -79,10 +82,14 @@ const ClubInfoSection = ({ club }) => {
       </div>
 
       {/* 5. 신고 수정해주세요! */}
-      <div style={{ marginTop: '40px', background: '#FCEBEB', padding: '16px', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      {/* <div style={{ marginTop: '40px', background: '#FCEBEB', padding: '16px', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span style={{ color: '#A32D2D', fontSize: '13px', fontWeight: '700' }}>신고 3회 누적 동아리입니다. 정보 확인 후 이용하세요.</span>
         <button style={{ padding: '8px 16px', background: '#D45353', color: 'white', borderRadius: '10px', border: 'none', fontWeight: '700', cursor: 'pointer' }}>신고</button>
+      </div> */}
+      <div style={{ marginTop: '40px' }}>
+        <ReportSection clubId={club?.id} />
       </div>
+      
     </div>
   );
 };

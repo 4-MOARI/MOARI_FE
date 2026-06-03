@@ -1,15 +1,36 @@
 // 동아리 수정페이지
 
-import React, { useState, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom'; //추가
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import Header from '../../../components/common/Header/Header';
+import RecruitStatusSection from '../../../components/club/RecruitStatusSection/RecruitStatusSection';
+
 
 const ClubUpdatePage = () => {
   const navigate = useNavigate(); // 2. 여기 추가
   const { clubId } = useParams(); // 3. 여기 추가
   const [oneLineIntro, setOneLineIntro] = useState('');
-  const [urlFields, setUrlFields] = useState([{ id: Date.now(), type: 'select', selectedValue: 'URL' }]);
+  const [urlFields, setUrlFields] = useState([{ id: Date.now(), type: 'select', selectedValue: 'URL' , url: ''}]);
   const [isHovered, setIsHovered] = useState(false);
+
+
+  //모집상태 관련state
+  const [recruitInfo, setRecruitInfo]
+  = useState({
+    isRecruiting: false,
+    recruitStartAt: null,
+    recruitEndAt: null,
+  });
+
+  const [categoryId, setCategoryId]
+  = useState('');
+  const [description, setDescription]
+  = useState('');
+  const [activity, setActivity]
+  = useState('');
+ 
+
+  // [수정/추가] 이미지 상태 관리
 
   const [coverImage, setCoverImage] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
@@ -36,7 +57,7 @@ const ClubUpdatePage = () => {
   };
 
   const addUrlField = () => {
-    setUrlFields([...urlFields, { id: Date.now(), type: 'select', selectedValue: 'URL' }]);
+    setUrlFields([...urlFields, { id: Date.now(), type: 'select', selectedValue: 'URL' , url: ''}]);
   };
 
   const removeUrlField = (id) => {
@@ -52,7 +73,11 @@ const ClubUpdatePage = () => {
     }));
   };
 
+
+
+  //const schools = ["성신여자대학교", "외부"];
   const categories = ["전체", "학술", "체육", "공연·예술", "봉사", "취미·친목", "창업·취업", "어학", "기타"];
+
   const urlOptions = ["Web", "Instagram", "Discord", "Notion", "직접입력"];
 
   return (
@@ -115,11 +140,13 @@ const ClubUpdatePage = () => {
                   {categories.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
                 </select>
                 <div style={{ position: 'absolute', right: '20px', top: '15px', color: '#6B7280', pointerEvents: 'none' }}>▼</div>
+              
+
               </div>
-              <div style={{ position: 'relative', width: '362px' }}>
-                <select disabled style={{ ...disabledStyle, width: '100%', height: '44px', padding: '0 20px', borderRadius: '10px', border: '1px solid #D1D5DB', appearance: 'none' }}>
-                  <option>성신여자대학교</option>
-                </select>
+              {/*모집상태 */}
+              <div style={{marginBottom: '40px'}}>
+                <RecruitStatusSection
+                  onChange={setRecruitInfo} />
               </div>
             </div>
 
@@ -170,7 +197,7 @@ const ClubUpdatePage = () => {
           </div>
         </div>
       </div>
-    </div>
+   </div>
   );
 };
 export default ClubUpdatePage;

@@ -1,7 +1,11 @@
 import Header from "../../../components/common/Header/Header";
 import ClubInfoSection from './ClubInfoSection';
+import ReviewSection from "../Review/ReviewSection";
+import { useParams } from "react-router-dom";
 
 export default function ClubDetailPage() {
+  const {clubId} = useParams();
+  console.log('clubId = ', clubId);
   return (
     <div>
       
@@ -19,11 +23,11 @@ export default function ClubDetailPage() {
         
         {/* 동아리 상세 정보 */}
         <div style={{ width: '760px' }}>
-          <ClubInfoSection />
+          <ClubInfoSection club={club}/>
         </div>
 
         {/* 리뷰 영역 */}
-        <div style={{ 
+        {/*<div style={{ 
           width: '370px', 
           height: '620px', 
           border: '1px solid #E5E7EB', 
@@ -33,9 +37,13 @@ export default function ClubDetailPage() {
           alignItems: 'center',
           color: '#999',
           backgroundColor: '#FAFAFA'
-        }}>
-          리뷰 섹션 (작업 대기중)
+        }}>*/}
+        <div>
+          <ReviewSection 
+            clubId= {clubId}
+            clubName={club?.clubName} />
         </div>
+        
       </div>
       
     </div>

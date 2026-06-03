@@ -3,8 +3,7 @@
 
 import { useState } from 'react';
 
-import FilterButton
-  from '../../common/Button/FilterButton/FilterButton';
+import RecruitStatusFilterButton from '../../common/Button/FilterButton/RecruitStatusFilterButton';
 
 import RecruitDatePickerModal
   from '../../common/DatePicker/RecruitDatePickerModal';
@@ -22,7 +21,11 @@ function RecruitStatusSection({
     = useState(null);
 
   return (
-    <div>
+    <div
+        style={{
+            position: 'relative',
+            display: 'inline-block',
+        }}>
 
       <div
         style={{
@@ -31,12 +34,10 @@ function RecruitStatusSection({
         }}
       >
 
-        <FilterButton
-          label="모집중"
-          type="status"
-          isSelected={
-            selectedStat === '모집중'
-          }
+        <RecruitStatusFilterButton
+          status="모집중"
+          isActive={selectedStat === '모집중'}
+          
           onClick={() => {
             setSelectedStat('모집중');
 
@@ -44,12 +45,10 @@ function RecruitStatusSection({
           }}
         />
 
-        <FilterButton
-          label="마감"
-          type="status"
-          isSelected={
-            selectedStat === '마감'
-          }
+        <RecruitStatusFilterButton
+          status="마감"
+          isActive={selectedStat === '마감'}
+          
           onClick={() => {
             setSelectedStat('마감');
 
