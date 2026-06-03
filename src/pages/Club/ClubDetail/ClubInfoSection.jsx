@@ -4,6 +4,8 @@ import CategoryBadge from "../../../components/common/Badge/CategoryBadge/Catego
 import RecruitStatusBadge from "../../../components/common/Badge/RecruitStatusBadge/RecruitStatusBadge";
 import UrlButton from "../../../components/common/Button/UrlButton/UrlButton";
 import ReportSection from '../Report/ReportSection';
+import { MOCK_CLUBS } from "../../../data/clubs";
+
 
 const ClubInfoSection = ({ club }) => {
   // useParams를 호출하기 전에 컴포넌트 내부에서 안전하게 사용합니다.

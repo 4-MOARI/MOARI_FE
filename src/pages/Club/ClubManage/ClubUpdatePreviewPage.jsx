@@ -10,9 +10,29 @@ const ClubUpdatePreviewPage = () => {
   const navigate = useNavigate();
   const { clubId } = useParams();
   const { state } = useLocation(); // 1. 수정 페이지에서 보낸 데이터 받기
-  
-  // state(수정페이지에서 보낸 데이터)가 있으면 그걸 쓰고, 없으면 MOCK 데이터를 찾음
-  const clubData = state || MOCK_CLUBS.find(c => String(c.id) === String(clubId));
+
+  // ★ 수정: state가 있으면 state 사용, 없으면 MOCK 데이터 사용
+  const rawClubData = state || MOCK_CLUBS.find(c => String(c.id) === String(clubId));
+
+ 
+    // ★ 추가: urlFields를 ClubInfoSection이 읽는 links 객체로 변환
+    const linksFromUrlFields = Array.isArray(rawClubData?.urlFields)
+      ? rawClubData.urlFields.reduce((acc, field) => {
+          if (field?.selectedValue && field?.urlValue) {
+            acc[field.selectedValue] = field.urlValue;
+          }
+          return acc;
+        }, {})
+      : {};
+
+    // ★ 수정: ClubInfoSection에 넘길 최종 데이터
+    const clubData = {
+      ...rawClubData,
+      name: rawClubData?.name || rawClubData?.clubName || '',
+      category: rawClubData?.category || rawClubData?.categoryId || '',
+      activityContent: rawClubData?.activityContent || rawClubData?.activity || '',
+      links: rawClubData?.links || linksFromUrlFields,
+    };
 
   return (
     <div style={{ width: '100%', minHeight: '1400px', background: '#F8F8FB', paddingBottom: '100px', boxSizing: 'border-box' }}>
@@ -39,9 +59,31 @@ const ClubUpdatePreviewPage = () => {
 
           {/* 버튼 영역 */}
           <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 40px' }}>
-            <StyledButton variant="secondary" onClick={() => navigate(-1)}>이전</StyledButton>
+            <StyledButton
+              variant="secondary"
+              // ★ 수정: 이전 버튼 클릭 시 수정페이지로 이동하면서 현재 프리뷰 데이터를 다시 전달
+              onClick={() =>
+                navigate(`/club/update/${clubId}`, {
+                  state: clubData,
+                })
+              }
+            >
+              이전
+            </StyledButton>
             {/* 수정 완료 시 해당 동아리의 상세 페이지로 이동 (clubId 사용) */}
-            <StyledButton onClick={() => navigate(`/club/${clubId}`)}>제출</StyledButton>
+            <StyledButton
+              onClick={() => {
+                // ★ 추가: 수정된 동아리 정보를 localStorage에 저장
+                localStorage.setItem(`club-${clubId}`, JSON.stringify(clubData));
+
+                // ★ 수정된 데이터를 들고 상세페이지로 이동
+                navigate(`/club/${clubId}`, {
+                  state: clubData,
+                });
+              }}
+            >
+              제출
+            </StyledButton>
           </div>
         </div>
       </div>

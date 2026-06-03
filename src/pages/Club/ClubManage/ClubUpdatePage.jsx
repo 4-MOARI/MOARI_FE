@@ -1,28 +1,52 @@
 // 동아리 수정페이지
 import React, { useState, useRef, useEffect } from 'react'; // useEffect 추가
 import Header from '../../../components/common/Header/Header';
-import { useParams } from 'react-router-dom'; // ★ useParams 추가
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { MOCK_CLUBS } from "../../../data/clubs"; // 더미데이터 경로 확인 필수!
 
 const ClubUpdatePage = () => {
   const { clubId } = useParams(); // ★ ID 가져오기
+  const navigate = useNavigate();
 
+  const location = useLocation();
+  // ★ 추가: 프리뷰페이지에서 이전 버튼으로 돌아올 때 받은 데이터
+  const returnedData = location.state;
 
   useEffect(() => {
-    const foundClub = MOCK_CLUBS.find((c) => String(c.id) === String(clubId));
-    if (foundClub) {
-      setClubName(foundClub.name || '');
-      setOneLineIntro(foundClub.oneLineIntro || '');
-      setDescription(foundClub.description || '');
-      setActivity(foundClub.activityContent || '');
-      setCategoryId(foundClub.category || '');
-      
-      // ★ 이 부분을 추가하세요
-      if (foundClub.urls && foundClub.urls.length > 0) {
-        setUrlFields(foundClub.urls);
-      }
+  // ★ 수정: 프리뷰페이지에서 이전 버튼으로 돌아온 데이터가 있으면 그 데이터를 우선 사용
+  if (returnedData) {
+    setClubName(returnedData.clubName || '');
+    setOneLineIntro(returnedData.oneLineIntro || '');
+    setDescription(returnedData.description || '');
+    setActivity(returnedData.activity || '');
+    setCategoryId(returnedData.categoryId || '');
+    setRecruitStatus(returnedData.recruitStatus || '');
+    setCoverImage(returnedData.coverImage || null);
+    setProfileImage(returnedData.profileImage || null);
+
+    // ★ 수정: urlFields 그대로 복구
+    if (returnedData.urlFields && returnedData.urlFields.length > 0) {
+      setUrlFields(returnedData.urlFields);
     }
-  }, [clubId]);
+
+    return;
+  }
+
+  // 기존 MOCK_CLUBS 데이터 불러오기
+  const foundClub = MOCK_CLUBS.find((c) => String(c.id) === String(clubId));
+  if (foundClub) {
+    setClubName(foundClub.name || '');
+    setOneLineIntro(foundClub.oneLineIntro || '');
+    setDescription(foundClub.description || '');
+    setActivity(foundClub.activityContent || '');
+    setCategoryId(foundClub.category || '');
+    setRecruitStatus(foundClub.status || '');
+
+    if (foundClub.urls && foundClub.urls.length > 0) {
+      setUrlFields(foundClub.urls);
+    }
+  }
+}, [clubId, returnedData]);
 
 
   // ★ 상태 선언 (데이터를 저장할 변수들)
@@ -75,6 +99,14 @@ const ClubUpdatePage = () => {
     }));
   };
 
+  // ★ 추가: URL 입력값을 urlFields state에 저장
+  const handleUrlValueChange = (id, value) => {
+    setUrlFields(
+      urlFields.map((field) =>
+        field.id === id ? { ...field, urlValue: value } : field
+      )
+    );
+  };
   const categories = ["학술", "체육", "공연·예술", "봉사", "취미·친목", "창업·취업", "어학", "기타"];
   const urlOptions = ["Web", "Instagram", "Discord", "Notion", "직접입력"];
 
@@ -114,10 +146,29 @@ const ClubUpdatePage = () => {
             
             <div 
               onClick={() => coverInputRef.current.click()}
-              style={{ width: '763px', height: '170px', background: coverImage ? `url(${coverImage}) center/cover` : '#EEEDFE', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B7280', marginBottom: '20px', cursor: 'pointer' }}
+              style={{
+                width: '763px',
+                height: '170px',
+                background: coverImage ? `url(${coverImage}) center/cover` : '#EEEDFE',
+                borderRadius: '18px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#6B7280',
+                marginBottom: '20px',
+                cursor: 'pointer'
+              }}
             >
               {!coverImage && '+ 커버 이미지 업로드'}
-              <input type="file" ref={coverInputRef} hidden accept="image/*" onChange={(e) => handleFileChange(e, setCoverImage)} />
+
+              {/* ★ 원래 파일 업로드 input 복구 */}
+              <input
+                type="file"
+                ref={coverInputRef}
+                hidden
+                accept="image/*"
+                onChange={(e) => handleFileChange(e, setCoverImage)}
+              />
             </div>
 
             <div style={{ display: 'flex', gap: '20px', marginBottom: '20px', alignItems: 'center' }}>
@@ -134,7 +185,7 @@ const ClubUpdatePage = () => {
             <div style={{ display: 'flex', gap: '30px', marginBottom: '30px' }}>
               <div style={{ position: 'relative', width: '362px' }}>
                 <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} style={{ width: '100%', height: '44px', padding: '0 20px', borderRadius: '10px', border: '1px solid #D1D5DB', color: '#6B7280', backgroundColor: 'white', cursor: 'pointer', appearance: 'none' }}>
-                  <option value="" disabled selected>카테고리 선택</option>
+                  <option value="" disabled>카테고리 선택</option>
                   {categories.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
                 </select>
                 <div style={{ position: 'absolute', right: '20px', top: '15px', color: '#6B7280', pointerEvents: 'none' }}>▼</div>
@@ -173,7 +224,13 @@ const ClubUpdatePage = () => {
                   ) : (
                     <input type="text" placeholder="입력하세요" style={{ width: '120px', height: '44px', borderRadius: '10px', border: '1px solid #534AB7', padding: '0 10px' }} />
                   )}
-                  <input type="text" value={field.urlValue || ''} onChange={(e) => { /* 변경 로직 */ }} placeholder="URL을 입력하세요" style={{ width: '524px', height: '44px', padding: '0 15px', borderRadius: '10px', border: '1px solid #D1D5DB' }} />
+                    <input
+                      type="text"
+                      value={field.urlValue || ''}
+                      onChange={(e) => handleUrlValueChange(field.id, e.target.value)}
+                      placeholder="URL을 입력하세요"
+                      style={{ width: '524px', height: '44px', padding: '0 15px', borderRadius: '10px', border: '1px solid #D1D5DB' }}
+                    />
                   <button onClick={() => removeUrlField(field.id)} style={{ width: '40px', height: '40px', borderRadius: '10px', border: '1px solid #D1D5DB', cursor: 'pointer', background: 'white' }}>-</button>
                   {index === urlFields.length - 1 && (
                     <button onClick={addUrlField} style={{ width: '40px', height: '40px', borderRadius: '10px', border: '1px solid #534AB7', cursor: 'pointer', background: '#534AB7', color: 'white' }}>+</button>
@@ -185,6 +242,34 @@ const ClubUpdatePage = () => {
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', paddingRight: '40px' }}>
             <button 
+              onClick={() =>
+                navigate(`/club/update/${clubId}/preview`, {
+                  state: {
+                    clubName,
+                    oneLineIntro,
+                    description,
+                    activity,
+                    categoryId,
+                    recruitStatus,
+                    urlFields,
+                    coverImage,
+                    profileImage,
+
+                    // ★ 추가: ClubInfoSection에서 읽을 수 있게 이름 맞춤
+                    id: clubId,
+                    name: clubName,
+                    category: categoryId,
+                    activityContent: activity,
+                    status: recruitStatus,
+                    links: urlFields.reduce((acc, field) => {
+                      if (field.selectedValue && field.urlValue) {
+                        acc[field.selectedValue] = field.urlValue;
+                      }
+                      return acc;
+                    }, {}),
+                  },
+                })
+              }
               onMouseEnter={() => setIsHovered(true)} 
               onMouseLeave={() => setIsHovered(false)}
               style={{ 
