@@ -212,7 +212,7 @@ function AccountSettingsPage() {
     try {
       const result = await deleteMyAccount();
       setDeleteMessage(
-        `회원탈퇴가 완료되었습니다. 삭제된 등록 동아리 수: ${result.deletedClubCount || 0}개`
+        `회원탈퇴가 완료되었습니다. 등록 동아리 ${result.preservedClubCount || 0}개와 작성 리뷰는 보존됩니다.`
       );
     } catch {
       setDeleteMessage('회원탈퇴 처리에 실패했습니다.');
@@ -310,7 +310,7 @@ function AccountSettingsPage() {
               <section className="account-delete-box">
                 <div>
                   <h2>탈퇴</h2>
-                  <p>계정 삭제 시 찜, 리뷰, 등록한 동아리 정보가 함께 처리됩니다.</p>
+                  <p>계정 삭제 시 찜 정보만 삭제되며, 등록한 동아리와 작성 리뷰는 보존됩니다.</p>
                   {deleteMessage && (
                     <p className="account-message danger">{deleteMessage}</p>
                   )}
