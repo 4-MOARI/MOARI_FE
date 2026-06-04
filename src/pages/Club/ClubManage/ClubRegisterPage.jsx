@@ -3,6 +3,8 @@ import { getCategories } from '../../../api/clubApi';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '../../../components/common/Header/Header';
 import RecruitStatusSection from '../../../components/club/RecruitStatusSection/RecruitStatusSection';
+import { crawlClub } from '../../../api/clubApi'; // 크롤링테스트
+
 
 import StyledButton from '../../../components/common/Button/StyledButton'; // 버튼 컴포넌트
 
