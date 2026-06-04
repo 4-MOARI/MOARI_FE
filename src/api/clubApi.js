@@ -1,5 +1,17 @@
 import apiClient from './axios';
 
+
+// 크롤링 동아리 기본 정보 적재
+export const crawlClub = async (requestBody) => {
+  const response = await apiClient.post(
+    '/crawl',
+    requestBody
+  );
+
+  return response.data;
+};
+
+
 // 동아리 등록
 export const createClub = async (requestBody) => {
   const response = await apiClient.post(
@@ -108,26 +120,4 @@ export const updateClub = async (clubId, requestBody) => {
 
   return response.data;
 
-};
-
-// 크롤링 동아리 기본 정보 적재
-export const crawlClub = async (requestBody) => {
-  const response = await apiClient.post(
-    '/clubs/crawl',
-    requestBody
-  );
-
-  return response.data;
-};
-
-// 크롤링 동아리 외부 링크 매핑 저장
-export const saveCrawlClubLinks = async (clubId, links) => {
-  const response = await apiClient.post(
-    `/clubs/crawl/${clubId}/links`,
-    {
-      links,
-    }
-  );
-
-  return response.data;
 };

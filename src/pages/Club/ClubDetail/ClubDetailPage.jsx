@@ -9,8 +9,6 @@ import ReviewSection from "../Review/ReviewSection";
 
 export default function ClubDetailPage() {
   const { clubId } = useParams();
-  console.log('clubId=' , clubId);
-  console.log("clubId type=", typeof clubId);
   const navigate = useNavigate();
   const [club, setClub] = useState(null);
   const location = useLocation();
@@ -57,7 +55,6 @@ export default function ClubDetailPage() {
           categoryName: data.categoryName,
           schoolName: data.schoolName || data.campusLocation || '외부',
           status: data.isRecruiting,
-          isRecruiting: data.isRecruiting === '모집중',
           isRecruiting: data.isRecruiting,
           warningMessage: data.warningMessage,
           displayWarning: data.displayWarning,
@@ -73,8 +70,8 @@ export default function ClubDetailPage() {
 
         setClub(formattedClub);
       } catch (error) {
-        console.warn('API 상세 조회 실패 → 기존 데이터 사용:', error);
-        setClub(getFallbackClub());
+        console.error('API 상세 조회 실패:', error);
+        setClub(null);
       }
     };
 
