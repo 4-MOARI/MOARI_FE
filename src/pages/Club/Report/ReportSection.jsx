@@ -28,6 +28,8 @@ export default function ReportSection({
       const data =
         await getReportSummary(clubId);
 
+        console.log('reportSummary API 응답 = ', data);
+
       setReportSummary(data);
 
     } catch (error) {
