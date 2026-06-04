@@ -2,9 +2,8 @@
 import React, { useState, useRef, useEffect } from 'react'; // useEffect 추가
 import Header from '../../../components/common/Header/Header';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { MOCK_CLUBS } from "../../../data/clubs"; // 더미데이터 경로 확인 필수!
 import RecruitStatusSection from '../../../components/club/RecruitStatusSection/RecruitStatusSection';
-
+import { getClubDetail } from '../../../api/clubApi';
 
 const ClubUpdatePage = () => {
   const { clubId } = useParams(); // ★ ID 가져오기
@@ -15,76 +14,79 @@ const ClubUpdatePage = () => {
   const returnedData = location.state;
 
   useEffect(() => {
-  // ★ 수정: 프리뷰페이지에서 이전 버튼으로 돌아온 데이터가 있으면 그 데이터를 우선 사용
-  if (returnedData) {
-    setClubName(returnedData.clubName || '');
-    setOneLineIntro(returnedData.oneLineIntro || '');
-    setDescription(returnedData.description || '');
-    setActivity(returnedData.activity || '');
-    setCategoryId(returnedData.categoryId || '');
-    setRecruitStatus(returnedData.recruitStatus || '');
-    setCoverImage(returnedData.coverImage || null);
-    setProfileImage(returnedData.profileImage || null);
-    
-    setRecruitInfo(
-      returnedData.recruitInfo || {
-        isRecruiting: returnedData.status === '모집중',
-        recruitStartAt: returnedData.recruitStartAt || null,
-        recruitEndAt: returnedData.recruitEndAt || null,
+    if (returnedData) {
+      setClubName(returnedData.clubName || returnedData.name || '');
+      setOneLineIntro(returnedData.oneLineIntro || '');
+      setDescription(returnedData.description || '');
+      setActivity(returnedData.activity || returnedData.activityContent || '');
+      setCategoryId(returnedData.categoryId || returnedData.category || '');
+      setRecruitStatus(returnedData.recruitStatus || returnedData.status || '');
+      setCoverImage(returnedData.coverImage || null);
+      setProfileImage(returnedData.profileImage || null);
+
+      setRecruitInfo(
+        returnedData.recruitInfo || {
+          isRecruiting: returnedData.status === '모집중',
+          recruitStartAt: returnedData.recruitStartAt || null,
+          recruitEndAt: returnedData.recruitEndAt || null,
+        }
+      );
+
+      if (returnedData.urlFields && returnedData.urlFields.length > 0) {
+        setUrlFields(returnedData.urlFields);
       }
-    );
 
-    // ★ 수정: urlFields가 있으면 그대로 복구
-    if (returnedData.urlFields && returnedData.urlFields.length > 0) {
-      setUrlFields(returnedData.urlFields);
-    }
-    // ★ 추가: links만 있는 경우에도 urlFields로 변환해서 복구
-    else if (returnedData.links && typeof returnedData.links === 'object') {
-      const restoredUrlFields = Object.entries(returnedData.links).map(
-        ([key, url], index) => ({
-          id: Date.now() + index,
-          type: 'select',
-          selectedValue: key.charAt(0).toUpperCase() + key.slice(1),
-          urlValue: url,
-        })
-      );
-
-      setUrlFields(restoredUrlFields);
+      return;
     }
 
-    return;
-  }
+    const fetchClubDetailForUpdate = async () => {
+      try {
+        const data = await getClubDetail(clubId);
 
-  // 기존 MOCK_CLUBS 데이터 불러오기
-  const foundClub = MOCK_CLUBS.find((c) => String(c.id) === String(clubId));
-  if (foundClub) {
-    setClubName(foundClub.name || '');
-    setOneLineIntro(foundClub.oneLineIntro || '');
-    setDescription(foundClub.description || '');
-    setActivity(foundClub.activityContent || '');
-    setCategoryId(foundClub.category || '');
-    setRecruitStatus(foundClub.status || '');
+        setClubName(data.clubName || '');
+        setOneLineIntro(data.briefDescription || '');
+        setDescription(data.description || '');
+        setActivity(data.activity || '');
 
-      setRecruitInfo({
-        isRecruiting: foundClub.status === '모집중',
-        recruitStartAt: foundClub.recruitStartAt || null,
-        recruitEndAt: foundClub.recruitEndAt || null,
-      });
-      
-    if (foundClub.links && typeof foundClub.links === 'object') {
-      const restoredUrlFields = Object.entries(foundClub.links).map(
-        ([key, url], index) => ({
-          id: Date.now() + index,
-          type: 'select',
-          selectedValue: key.charAt(0).toUpperCase() + key.slice(1),
-          urlValue: url,
-        })
-      );
+        // 현재 select가 카테고리 이름 배열이므로 categoryName 사용
+        setCategoryId(data.categoryName || '');
 
-      setUrlFields(restoredUrlFields);
-    }
-  }
-}, [clubId, returnedData]);
+        setRecruitStatus(data.isRecruiting || '마감');
+
+        setRecruitInfo({
+          isRecruiting: data.isRecruiting === '모집중',
+          recruitStartAt: data.recruitPeriod?.start || null,
+          recruitEndAt: data.recruitPeriod?.end || null,
+        });
+
+        setCoverImage(data.coverImageUrl || null);
+        setProfileImage(data.profileImageUrl || null);
+
+        if (Array.isArray(data.links) && data.links.length > 0) {
+          const restoredUrlFields = data.links.map((link, index) => ({
+            id: Date.now() + index,
+            type: 'select',
+            selectedValue:
+              link.type === 'homepage'
+                ? 'Web'
+                : link.type
+                ? link.type.charAt(0).toUpperCase() + link.type.slice(1)
+                : 'URL',
+            urlValue: link.url || '',
+          }));
+
+          setUrlFields(restoredUrlFields);
+        } else {
+          setUrlFields([{ id: Date.now(), type: 'select', selectedValue: 'URL', urlValue: '' }]);
+        }
+      } catch (error) {
+        console.error('수정 페이지 동아리 조회 실패:', error);
+        alert('동아리 정보를 불러오지 못했습니다.');
+      }
+    };
+
+    fetchClubDetailForUpdate();
+  }, [clubId, returnedData]);
 
 
   // ★ 상태 선언 (데이터를 저장할 변수들)
@@ -122,7 +124,7 @@ const ClubUpdatePage = () => {
   };
 
   const handleIntroChange = (e) => {
-    if (e.target.value.length <= 30) setOneLineIntro(e.target.value);
+    if (e.target.value.length <= 25) setOneLineIntro(e.target.value);
   };
 
   const addUrlField = () => {
@@ -242,8 +244,8 @@ const ClubUpdatePage = () => {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '25px', marginBottom: '25px' }}>
               <div style={{ position: 'relative' }}>
-                <textarea value={oneLineIntro} onChange={handleIntroChange} placeholder="동아리 한 줄 소개 (30자 제한)" style={{ width: '754px', height: '40px', padding: '10px', borderRadius: '10px', border: '1px solid #D1D5DB', resize: 'none', boxSizing: 'border-box' }} />
-                <span style={{ position: 'absolute', right: '15px', bottom: '10px', fontSize: '12px', color: '#9CA3AF' }}>{oneLineIntro.length}/30</span>
+                <textarea value={oneLineIntro} onChange={handleIntroChange} placeholder="동아리 한 줄 소개 (25자 제한)" style={{ width: '754px', height: '40px', padding: '10px', borderRadius: '10px', border: '1px solid #D1D5DB', resize: 'none', boxSizing: 'border-box' }} />
+                <span style={{ position: 'absolute', right: '15px', bottom: '10px', fontSize: '12px', color: '#9CA3AF' }}>{oneLineIntro.length}/25</span>
               </div>
               <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="동아리 소개" style={{ width: '754px', height: '100px', padding: '10px', borderRadius: '10px', border: '1px solid #D1D5DB', boxSizing: 'border-box' }} />
               <textarea value={activity} onChange={(e) => setActivity(e.target.value)} placeholder="활동내용"style={{ width: '754px', height: '150px', padding: '10px', borderRadius: '10px', border: '1px solid #D1D5DB', boxSizing: 'border-box' }} />

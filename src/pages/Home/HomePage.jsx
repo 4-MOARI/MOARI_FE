@@ -5,6 +5,9 @@ import CategoryFilterButton from '../../components/common/Button/FilterButton/Ca
 import RecruitStatusFilterButton from '../../components/common/Button/FilterButton/RecruitStatusFilterButton';
 import ClubCardMain from '../../components/club/ClubCard/ClubCardMain';
 import Pagination from '../../components/common/Pagination/Pagination';
+import { getClubs } from '../../api/clubApi';
+
+
 
 const categories = ['전체', '학술', '체육', '공연·예술', '봉사', '취미·친목', '창업·취업', '어학', '기타'];
 const statuses = ['전체', '모집중', '마감'];
@@ -30,16 +33,46 @@ const HomePage = () => {
   };
   
   useEffect(() => {
-    const mockClubs = Array.from({ length: 30 }, (_, i) => ({
-      id: i + 1,
-      name: `${clubType === 'internal' ? '교내' : '외부'} 동아리 ${i + 1}`,
-      oneLineIntro: '동아리 활동과 스터디 정보를 확인할 수 있습니다.',
-      category: i % 2 === 0 ? '학술' : '체육',
-      status: i % 3 === 0 ? '마감' : '모집중',
-      type: i % 2 === 0 ? 'internal' : 'external',
-    })).filter((club) => club.type === clubType);
+    const fetchHomeClubs = async () => {
+      try {
+        const result = await getClubs({
+          schoolType: clubType === 'internal' ? '교내' : '외부',
+          page: 1,
+          pageSize: 100,
+        });
 
-    setClubs(mockClubs);
+        if (result.success) {
+          const formattedClubs = (result.data.clubs || []).map((club) => ({
+            id: club.clubId,
+            clubId: club.clubId,
+            name: club.clubName,
+            clubName: club.clubName,
+            oneLineIntro: club.briefDescription,
+            briefDescription: club.briefDescription,
+            category: club.categoryName,
+            categoryName: club.categoryName,
+            status:
+              club.recruitStartAt && club.recruitEndAt
+                ? '모집중'
+                : '마감',
+            recruitStartAt: club.recruitStartAt,
+            recruitEndAt: club.recruitEndAt,
+            type: club.schoolType,
+            coverImageUrl: club.coverImageUrl,
+            profileImageUrl: club.profileImageUrl,
+            favoriteCount: club.favoriteCount,
+            avgRating: club.avgRating,
+          }));
+
+          setClubs(formattedClubs);
+        }
+      } catch (error) {
+        console.error('메인 동아리 목록 조회 실패:', error);
+        setClubs([]);
+      }
+    };
+
+    fetchHomeClubs();
   }, [clubType]);
 
   useEffect(() => {
@@ -92,8 +125,8 @@ const HomePage = () => {
           {currentClubs.length > 0 ? (
             currentClubs.map((club) => (
               <div
-                key={club.id}
-                onClick={() => navigate(`/club/${club.id}`)}
+                key={club.clubId ?? club.id}
+                onClick={() => navigate(`/club/${club.clubId ?? club.id}`)}
                 style={{ cursor: 'pointer' }}
               >
                 <ClubCardMain club={club} />
