@@ -5,6 +5,33 @@ export default function Pagination({
   totalPages,
   onPageChange,
 }) {
+  const getVisiblePages = () => {
+    const maxVisiblePages = 5;
+
+    if (totalPages <= maxVisiblePages) {
+      return Array.from({ length: totalPages }, (_, index) => index + 1);
+    }
+
+    const halfRange = Math.floor(maxVisiblePages / 2);
+    let startPage = currentPage - halfRange;
+    let endPage = currentPage + halfRange;
+
+    if (startPage < 1) {
+      startPage = 1;
+      endPage = maxVisiblePages;
+    }
+
+    if (endPage > totalPages) {
+      endPage = totalPages;
+      startPage = totalPages - maxVisiblePages + 1;
+    }
+
+    return Array.from(
+      { length: endPage - startPage + 1 },
+      (_, index) => startPage + index
+    );
+  };
+
   const handlePrev = () => {
     if (currentPage > 1) {
       onPageChange(currentPage - 1);
@@ -27,10 +54,7 @@ export default function Pagination({
         {'<'}
       </button>
 
-      {Array.from({ length: totalPages }, (_, index) => {
-        const page = index + 1;
-
-        return (
+      {getVisiblePages().map((page) => (
           <button
             key={page}
             className={
@@ -42,8 +66,7 @@ export default function Pagination({
           >
             {page}
           </button>
-        );
-      })}
+      ))}
 
       <button
         className="pagination-button"
