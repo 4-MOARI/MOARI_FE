@@ -5,6 +5,7 @@ import StyledButton from '../../../components/common/Button/StyledButton';
 // 상세 페이지의 UI를 재사용하기 위해 import 합니다.
 import ClubInfoSection from '../ClubDetail/ClubInfoSection'; 
 import { MOCK_CLUBS } from "../../../data/clubs"; // 데이터 import
+import { updateClub } from '../../../api/clubApi';
 
 const ClubUpdatePreviewPage = () => {
   const navigate = useNavigate();
@@ -74,14 +75,51 @@ const ClubUpdatePreviewPage = () => {
             </StyledButton>
             {/* 수정 완료 시 해당 동아리의 상세 페이지로 이동 (clubId 사용) */}
             <StyledButton
-              onClick={() => {
-                // ★ 추가: 수정된 동아리 정보를 localStorage에 저장
-                localStorage.setItem(`club-${clubId}`, JSON.stringify(clubData));
+              onClick={async () => {
+                const requestBody = {
+                  categoryId: Number(clubData.categoryId),
+                  briefDescription: clubData.oneLineIntro,
+                  description: clubData.description,
+                  activity: clubData.activityContent || clubData.activity,
 
-                // ★ 수정된 데이터를 들고 상세페이지로 이동
-                navigate(`/club/${clubId}`, {
-                  state: clubData,
-                });
+                  profileImageUrl: clubData.profileImage || '',
+                  coverImageUrl: clubData.coverImage || '',
+
+                  recruitStartAt: clubData.recruitInfo?.recruitStartAt || clubData.recruitStartAt || null,
+                  recruitEndAt: clubData.recruitInfo?.recruitEndAt || clubData.recruitEndAt || null,
+
+                  links: clubData.urlFields
+                    ?.filter((field) => {
+                      const url = field.urlValue || field.url;
+
+                      return (
+                        field.selectedValue &&
+                        field.selectedValue !== 'URL' &&
+                        url
+                      );
+                    })
+                    .map((field) => ({
+                      title:
+                        field.selectedValue === '직접입력'
+                          ? field.customLabel || 'Link'
+                          : field.selectedValue,
+                      url: field.urlValue || field.url,
+                    })) || [],
+                };
+
+                try {
+                  await updateClub(clubId, requestBody);
+
+                  navigate(`/club/${clubId}`);
+                } catch (error) {
+                  console.error('동아리 수정 실패 → 프론트 테스트용 localStorage 사용:', error);
+
+                  localStorage.setItem(`club-${clubId}`, JSON.stringify(clubData));
+
+                  navigate(`/club/${clubId}`, {
+                    state: clubData,
+                  });
+                }
               }}
             >
               제출

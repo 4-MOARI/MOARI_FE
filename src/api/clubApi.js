@@ -98,3 +98,13 @@ export const getCategories = async () => {
 
   return response.data.data.categories;
 };
+
+// 동아리 수정
+export const updateClub = async (clubId, requestBody) => {
+  const response = await apiClient.patch(
+    `/clubs/${clubId}/update`,
+    requestBody
+  );
+
+  return response.data;
+};
