@@ -27,6 +27,7 @@ export function setAuthToken(token) {
 export function removeAuthToken() {
   localStorage.removeItem(AUTH_TOKEN_KEY);
   localStorage.removeItem(LEGACY_AUTH_TOKEN_KEY);
+  localStorage.removeItem('user');
 }
 
 export async function getMyProfile() {

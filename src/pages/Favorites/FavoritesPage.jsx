@@ -8,6 +8,7 @@ import {
   deleteFavoriteClub,
   getMyFavoriteClubs,
   getMyProfile,
+  removeAuthToken,
 } from '../../api/userApi';
 import '../MyPage/MyPage.css';
 import './FavoritesPage.css';
@@ -61,12 +62,17 @@ function Rating({ value }) {
   );
 }
 
-function FavoriteClubCard({ club, onRemove, removingClubId }) {
+function FavoriteClubCard({ club, onOpen, onRemove, removingClubId }) {
   const imageUrl = club.profileImageUrl || club.coverImageUrl;
-  const isRemoving = removingClubId === club.clubId;
+  const clubId = club.clubId ?? club.id;
+  const isRemoving = removingClubId === clubId;
 
   return (
-    <article className="favorite-card">
+    <article
+      className="favorite-card"
+      onClick={() => onOpen(clubId)}
+      style={{ cursor: 'pointer' }}
+    >
       {imageUrl ? (
         <img
           className="favorite-card-image"
@@ -92,7 +98,10 @@ function FavoriteClubCard({ club, onRemove, removingClubId }) {
             className="favorite-heart-button"
             aria-label={`${club.clubName} 찜 취소`}
             disabled={isRemoving}
-            onClick={() => onRemove(club.clubId)}
+            onClick={(event) => {
+              event.stopPropagation();
+              onRemove(clubId);
+            }}
           >
             <Heart size={24} fill="currentColor" strokeWidth={0} />
           </button>
@@ -114,6 +123,11 @@ function FavoritesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [removingClubId, setRemovingClubId] = useState(null);
+
+  const handleLogout = () => {
+    removeAuthToken();
+    navigate('/login');
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -173,7 +187,7 @@ function FavoritesPage() {
       }
 
       setClubs((prevClubs) => (
-        prevClubs.filter((club) => club.clubId !== clubId)
+        prevClubs.filter((club) => (club.clubId ?? club.id) !== clubId)
       ));
       setPagination({
         totalCount: nextTotalCount,
@@ -225,7 +239,7 @@ function FavoritesPage() {
           </nav>
 
           <div className="mypage-sidebar-footer">
-            <button type="button">로그아웃</button>
+            <button type="button" onClick={handleLogout}>로그아웃</button>
             <p>문의 : moari_sswu@gmail.com</p>
           </div>
         </aside>
@@ -254,8 +268,9 @@ function FavoritesPage() {
             <div className="favorite-card-grid">
               {clubs.map((club) => (
                 <FavoriteClubCard
-                  key={club.clubId}
+                  key={club.clubId ?? club.id}
                   club={club}
+                  onOpen={(clubId) => navigate(`/club/${clubId}`)}
                   onRemove={handleRemoveFavorite}
                   removingClubId={removingClubId}
                 />

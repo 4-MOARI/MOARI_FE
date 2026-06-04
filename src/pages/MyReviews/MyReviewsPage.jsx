@@ -5,7 +5,7 @@ import { UserRound } from 'lucide-react';
 import Header from '../../components/common/Header/Header';
 import Pagination from '../../components/common/Pagination/Pagination';
 import ReviewCard from '../../components/club/ReviewCard/ReviewCard';
-import { getMyProfile, getMyReviews } from '../../api/userApi';
+import { getMyProfile, getMyReviews, removeAuthToken } from '../../api/userApi';
 import '../MyPage/MyPage.css';
 import './MyReviewsPage.css';
 
@@ -42,6 +42,11 @@ function MyReviewsPage() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+
+  const handleLogout = () => {
+    removeAuthToken();
+    navigate('/login');
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -115,7 +120,7 @@ function MyReviewsPage() {
           </nav>
 
           <div className="mypage-sidebar-footer">
-            <button type="button">로그아웃</button>
+            <button type="button" onClick={handleLogout}>로그아웃</button>
             <p>문의 : moari_sswu@gmail.com</p>
           </div>
         </aside>

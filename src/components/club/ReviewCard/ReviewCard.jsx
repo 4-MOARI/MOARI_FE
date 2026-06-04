@@ -16,6 +16,28 @@ function maskUserId(userId) {
   return `${userId.slice(0, 2)}***${userId.slice(-2)}`;
 }
 
+function formatReviewDate(createdAt) {
+  if (!createdAt) return '';
+
+  const date = new Date(createdAt);
+
+  if (Number.isNaN(date.getTime())) return '';
+
+  const parts = new Intl.DateTimeFormat('ko-KR', {
+    timeZone: 'Asia/Seoul',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).formatToParts(date);
+
+  const getPart = (type) => parts.find((part) => part.type === type)?.value || '';
+
+  return `${getPart('year')}.${getPart('month')}.${getPart('day')} ${getPart('hour')}:${getPart('minute')}`;
+}
+
 function ReviewCard({
   userId,
   rating,
@@ -57,9 +79,7 @@ function ReviewCard({
 
       {/* 날짜 */}
       <span className="review-date">
-        {new Date(createdAt)
-            .toLocaleDateString('ko-KR')
-            .replaceAll('.', '.')}
+        {formatReviewDate(createdAt)}
       </span>
     </div>
   );
