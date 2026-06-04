@@ -5,6 +5,10 @@ import './ReviewCard.css';
 function maskUserId(userId) {
   if (!userId) return '';
 
+  if (userId.startsWith('deleted_')) {
+    return '알수없음';
+  }
+
   if (userId.length <= 2) {
     return `${userId[0]}*`;
   }
