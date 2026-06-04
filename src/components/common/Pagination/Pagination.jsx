@@ -6,29 +6,30 @@ export default function Pagination({
   onPageChange,
 }) {
   const getVisiblePages = () => {
-    if (totalPages <= 7) {
+    const maxVisiblePages = 5;
+
+    if (totalPages <= maxVisiblePages) {
       return Array.from({ length: totalPages }, (_, index) => index + 1);
     }
 
-    const pages = [1];
-    const startPage = Math.max(2, currentPage - 1);
-    const endPage = Math.min(totalPages - 1, currentPage + 1);
+    const halfRange = Math.floor(maxVisiblePages / 2);
+    let startPage = currentPage - halfRange;
+    let endPage = currentPage + halfRange;
 
-    if (startPage > 2) {
-      pages.push('start-ellipsis');
+    if (startPage < 1) {
+      startPage = 1;
+      endPage = maxVisiblePages;
     }
 
-    for (let page = startPage; page <= endPage; page += 1) {
-      pages.push(page);
+    if (endPage > totalPages) {
+      endPage = totalPages;
+      startPage = totalPages - maxVisiblePages + 1;
     }
 
-    if (endPage < totalPages - 1) {
-      pages.push('end-ellipsis');
-    }
-
-    pages.push(totalPages);
-
-    return pages;
+    return Array.from(
+      { length: endPage - startPage + 1 },
+      (_, index) => startPage + index
+    );
   };
 
   const handlePrev = () => {
@@ -53,19 +54,7 @@ export default function Pagination({
         {'<'}
       </button>
 
-      {getVisiblePages().map((page) => {
-        if (typeof page === 'string') {
-          return (
-            <span
-              key={page}
-              className="pagination-ellipsis"
-            >
-              ...
-            </span>
-          );
-        }
-
-        return (
+      {getVisiblePages().map((page) => (
           <button
             key={page}
             className={
@@ -77,8 +66,7 @@ export default function Pagination({
           >
             {page}
           </button>
-        );
-      })}
+      ))}
 
       <button
         className="pagination-button"
