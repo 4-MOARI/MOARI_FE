@@ -57,7 +57,9 @@ function ReviewCard({
 
       {/* 날짜 */}
       <span className="review-date">
-        {createdAt}
+        {new Date(createdAt)
+            .toLocaleDateString('ko-KR')
+            .replaceAll('.', '.')}
       </span>
     </div>
   );
