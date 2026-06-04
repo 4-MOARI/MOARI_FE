@@ -8,6 +8,8 @@ import axios from 'axios'; // 1. axios 추가 (서버 통신용)
 
 export default function ClubDetailPage() {
   const { clubId } = useParams();
+  console.log('clubId=' , clubId);
+  console.log("clubId type=", typeof clubId);
   const navigate = useNavigate();
   const [club, setClub] = useState(null);
   const location = useLocation();
