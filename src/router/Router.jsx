@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ProtectedRoute from "./ProtectedRoute";
 import AccountSettingsPage from "../pages/AccountSettings/AccountSettingsPage";
 import FavoritesPage from "../pages/Favorites/FavoritesPage";
 import HomePage from "../pages/Home/HomePage";
@@ -19,27 +20,27 @@ export default function Router() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<ProtectedRoute> <HomePage /> </ProtectedRoute>} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/find-account" element={<FindAccountPage />} />
-        <Route path="/mypage/account" element={<AccountSettingsPage />} />
-        <Route path="/mypage/favorites" element={<FavoritesPage />} />
-        <Route path="/mypage/reviews" element={<MyReviewsPage />} />
-        <Route path="/mypage" element={<MyPage />} />
-        <Route path="/search" element={<SearchPage />} />
+        <Route path="/mypage/account" element={<ProtectedRoute> <AccountSettingsPage /> </ProtectedRoute>} />
+        <Route path="/mypage/favorites" element={<ProtectedRoute> <FavoritesPage /> </ProtectedRoute>} />
+        <Route path="/mypage/reviews" element={<ProtectedRoute> <MyReviewsPage /> </ProtectedRoute>} />
+        <Route path="/mypage" element={<ProtectedRoute> <MyPage /> </ProtectedRoute>} />
+        <Route path="/search" element={<ProtectedRoute> <SearchPage /> </ProtectedRoute>} />
 
         {/* 동아리 관련 경로들 */}
-        <Route path="/clubs/:clubId/history" element={<HistoryPage />} />
-        <Route path="/club/:clubId" element={<ClubDetailPage />} />
+        <Route path="/clubs/:clubId/history" element={<ProtectedRoute> <HistoryPage /> </ProtectedRoute>} />
+        <Route path="/club/:clubId" element={<ProtectedRoute> <ClubDetailPage /> </ProtectedRoute>} />
         
         {/* 등록 관련 경로 */}
-        <Route path="/club/register" element={<ClubRegisterPage />} />
-        <Route path="/club/register/preview" element={<ClubRegisterPreviewPage />} />
+        <Route path="/club/register" element={<ProtectedRoute> <ClubRegisterPage /> </ProtectedRoute>} />
+        <Route path="/club/register/preview" element={<ProtectedRoute> <ClubRegisterPreviewPage /> </ProtectedRoute>} />
         
         {/* 수정 관련 경로 */}
-        <Route path="/club/update/:clubId" element={<ClubUpdatePage />} />
-        <Route path="/club/update/:clubId/preview" element={<ClubUpdatePreviewPage />} />
+        <Route path="/club/update/:clubId" element={<ProtectedRoute> <ClubUpdatePage /> </ProtectedRoute>} />
+        <Route path="/club/update/:clubId/preview" element={<ProtectedRoute> <ClubUpdatePreviewPage /> </ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   );
