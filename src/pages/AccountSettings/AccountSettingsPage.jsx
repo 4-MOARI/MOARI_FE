@@ -7,6 +7,7 @@ import {
   changeMyPassword,
   deleteMyAccount,
   getMyProfile,
+  removeAuthToken,
   verifyMyPassword,
 } from '../../api/userApi';
 import '../MyPage/MyPage.css';
@@ -72,6 +73,11 @@ function AccountSettingsPage() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const isPasswordModalOpen = passwordModalStep !== null;
+
+  const handleLogout = () => {
+    removeAuthToken();
+    navigate('/login');
+  };
 
   const openPasswordModal = () => {
     setPasswordModalStep('verify');
@@ -243,7 +249,7 @@ function AccountSettingsPage() {
           </nav>
 
           <div className="mypage-sidebar-footer">
-            <button type="button">로그아웃</button>
+            <button type="button" onClick={handleLogout}>로그아웃</button>
             <p>문의 : moari_sswu@gmail.com</p>
           </div>
         </aside>
