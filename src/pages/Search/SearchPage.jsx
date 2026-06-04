@@ -7,6 +7,7 @@ import './SearchPage.css';
 import { useEffect } from 'react';
 import { getClubs } from '../../api/clubApi';
 import { addFavoriteClub, deleteFavoriteClub } from '../../api/userApi';
+import { useNavigate } from 'react-router-dom';
 
 const categories = ['전체', '학술', '체육', '공연·예술', '봉사', '취미·친목', '창업·취업', '어학', '기타'];
 
@@ -108,9 +109,9 @@ export default function SearchPage() {
       const result = await getClubs({
         keyword: searchedKeyword,
         categoryId: selectedCategory !== '전체' ? categories.indexOf(selectedCategory) : undefined,
-        isRecruiting,
-        schoolType,
-        sort,
+        isRecruiting: isRecruiting,
+        schoolType: schoolType,
+        sort: sort,
         page: currentPage,
         pageSize: 10
       });
@@ -129,6 +130,8 @@ export default function SearchPage() {
       setLoading(false);
     }
   };
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchClubs();
@@ -242,8 +245,9 @@ export default function SearchPage() {
                   onFavoriteToggle={handleFavoriteToggle}
                   isFavorite={Boolean(club.isFavorite)}
                   isFavoriteLoading={favoriteUpdatingIds.has(club.clubId ?? club.id)}
-                  editLabel=""
-                  historyLabel=""
+                  editLabel={null}
+                  historyLabel={null}
+                  onClick={() => navigate(`/club/${club.clubId}`)}
                 />
               ))
             )}

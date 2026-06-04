@@ -96,7 +96,7 @@ export const getClubHistory = async (
 export const getCategories = async () => {
   const response = await apiClient.get('/categories');
 
-  return response.data.data.categories;
+  return response.data.data.categories
 };
 
 // 동아리 수정
@@ -107,4 +107,5 @@ export const updateClub = async (clubId, requestBody) => {
   );
 
   return response.data;
+
 };
