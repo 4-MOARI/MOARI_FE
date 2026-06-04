@@ -76,19 +76,56 @@ const ClubUpdatePreviewPage = () => {
             {/* 수정 완료 시 해당 동아리의 상세 페이지로 이동 (clubId 사용) */}
             <StyledButton
               onClick={async () => {
-                const requestBody = {
-                  categoryId: Number(clubData.categoryId),
-                  briefDescription: clubData.oneLineIntro,
-                  description: clubData.description,
-                  activity: clubData.activityContent || clubData.activity,
+              const categoryNameToId = {
+                '학술': 1,
+                '체육': 2,
+                '공연·예술': 3,
+                '봉사': 4,
+                '취미·친목': 5,
+                '창업·취업': 6,
+                '어학': 7,
+                '기타': 8,
+              };
+              const resolvedCategoryId =
+                Number(clubData.categoryId) ||
+                categoryNameToId[clubData.category] ||
+                categoryNameToId[clubData.categoryId];
 
-                  profileImageUrl: clubData.profileImage || '',
-                  coverImageUrl: clubData.coverImage || '',
+              const formatDateTimeForMySQL = (value) => {
+                if (!value) return null;
 
-                  recruitStartAt: clubData.recruitInfo?.recruitStartAt || clubData.recruitStartAt || null,
-                  recruitEndAt: clubData.recruitInfo?.recruitEndAt || clubData.recruitEndAt || null,
+                return value
+                  .replace('T', ' ')
+                  .replace('.000Z', '')
+                  .slice(0, 19);
+              };
 
-                  links: clubData.urlFields
+              const requestBody = {
+                categoryId: resolvedCategoryId,
+                briefDescription: clubData.oneLineIntro || clubData.briefDescription || null,
+                description: clubData.description || null,
+                activity: clubData.activityContent || clubData.activity || null,
+
+                profileImageUrl: clubData.profileImage || clubData.profileImageUrl || null,
+                coverImageUrl: clubData.coverImage || clubData.coverImageUrl || null,
+
+                isRecruiting:
+                  clubData.recruitInfo?.isRecruiting || clubData.status === '모집중'
+                    ? '모집중'
+                    : '마감',
+                    
+              recruitPeriod: {
+                start: formatDateTimeForMySQL(
+                  clubData.recruitInfo?.recruitStartAt ||
+                  clubData.recruitStartAt
+                ),
+                end: formatDateTimeForMySQL(
+                  clubData.recruitInfo?.recruitEndAt ||
+                  clubData.recruitEndAt
+                ),
+              },
+                links:
+                  clubData.urlFields
                     ?.filter((field) => {
                       const url = field.urlValue || field.url;
 
@@ -98,27 +135,32 @@ const ClubUpdatePreviewPage = () => {
                         url
                       );
                     })
-                    .map((field) => ({
-                      title:
-                        field.selectedValue === '직접입력'
+                    .map((field) => {
+                      const selectedValue = field.selectedValue;
+                      const isCustom = selectedValue === '직접입력';
+
+                      return {
+                        linkType: isCustom ? '직접입력' : selectedValue,
+                        linkTitle: isCustom
                           ? field.customLabel || 'Link'
-                          : field.selectedValue,
-                      url: field.urlValue || field.url,
-                    })) || [],
-                };
+                          : selectedValue,
+                        linkUrl: field.urlValue || field.url,
+                      };
+                    }) || [],
+              };
 
                 try {
-                  await updateClub(clubId, requestBody);
+                  console.log('수정 요청 body:', requestBody);
 
-                  navigate(`/club/${clubId}`);
+                  const result = await updateClub(clubId, requestBody);
+
+                  console.log('수정 성공 응답:', result);
+
+                  navigate(`/club/${clubId}`, { replace: true });
                 } catch (error) {
-                  console.error('동아리 수정 실패 → 프론트 테스트용 localStorage 사용:', error);
-
-                  localStorage.setItem(`club-${clubId}`, JSON.stringify(clubData));
-
-                  navigate(`/club/${clubId}`, {
-                    state: clubData,
-                  });
+                  console.error('동아리 수정 실패:', error);
+                  console.error('응답:', error.response?.data);
+                  alert(error.response?.data?.error?.message || '동아리 수정에 실패했습니다.');
                 }
               }}
             >

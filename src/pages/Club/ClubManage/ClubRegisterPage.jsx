@@ -70,7 +70,7 @@ const ClubRegisterPage = () => {
   };
 
   const handleIntroChange = (e) => {
-    if (e.target.value.length <= 30) setOneLineIntro(e.target.value);
+    if (e.target.value.length <= 25) setOneLineIntro(e.target.value);
   };
 
   const addUrlField = () => {
@@ -212,8 +212,8 @@ const ClubRegisterPage = () => {
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '25px', marginBottom: '25px' }}>
                 <div style={{ position: 'relative' }}>
-                  <textarea value={oneLineIntro} onChange={handleIntroChange} placeholder="동아리 한 줄 소개 (30자 제한)" style={{ width: '754px', height: '40px', padding: '10px', borderRadius: '10px', border: '1px solid #D1D5DB', resize: 'none', boxSizing: 'border-box' }} />
-                  <span style={{ position: 'absolute', right: '15px', bottom: '10px', fontSize: '12px', color: '#9CA3AF' }}>{oneLineIntro.length}/30</span>
+                  <textarea value={oneLineIntro} onChange={handleIntroChange} placeholder="동아리 한 줄 소개 (25자 제한)" style={{ width: '754px', height: '40px', padding: '10px', borderRadius: '10px', border: '1px solid #D1D5DB', resize: 'none', boxSizing: 'border-box' }} />
+                  <span style={{ position: 'absolute', right: '15px', bottom: '10px', fontSize: '12px', color: '#9CA3AF' }}>{oneLineIntro.length}/25</span>
                 </div>
                 <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="동아리 소개" style={{ width: '754px', height: '100px', padding: '10px', borderRadius: '10px', border: '1px solid #D1D5DB', boxSizing: 'border-box' }} />
                 <textarea value={activity} onChange={(e) => setActivity(e.target.value)} placeholder="활동내용" style={{ width: '754px', height: '150px', padding: '10px', borderRadius: '10px', border: '1px solid #D1D5DB', boxSizing: 'border-box' }} />
