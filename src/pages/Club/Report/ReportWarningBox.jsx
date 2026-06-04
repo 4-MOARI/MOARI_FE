@@ -1,18 +1,25 @@
 import './ReportWarningBox.css';
 
 export default function ReportWarningBox({
-  reportCount,
-  mainReason,
+  totalReportCount,
+  mostFrequentReason,
 }) {
-  const isDangerClub = reportCount >= 5;
+  const reasonMap = {
+    FALSE_INFO: '허위 정보',
+    ADVERTISEMENT: '광고/홍보',
+    HATE_SPEECH: '혐오·비방 표현',
+    ETC: '기타',
+    
+  };
+  const isDangerClub = totalReportCount >= 5;
 
   return (
     <div className="report-warning-box">
       {isDangerClub ? (
         <>
-          신고 {reportCount}회 누적 동아리입니다.
+          신고 {totalReportCount}회 누적 동아리입니다.
           {' '}
-          (주요 신고 사유 : {mainReason})
+          (주요 신고 사유 : {reasonMap[mostFrequentReason] || mostFrequentReason })
         </>
       ) : (
         <>

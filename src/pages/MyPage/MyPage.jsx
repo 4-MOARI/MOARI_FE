@@ -5,7 +5,7 @@ import { UserRound } from 'lucide-react';
 import ClubCard from '../../components/club/ClubCard/ClubCard';
 import Header from '../../components/common/Header/Header';
 import Pagination from '../../components/common/Pagination/Pagination';
-import { getMyClubs, getMyProfile } from '../../api/userApi';
+import { getMyClubs, getMyProfile, removeAuthToken } from '../../api/userApi';
 import './MyPage.css';
 
 const LIMIT = 2;
@@ -41,6 +41,11 @@ function MyPage() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+
+  const handleLogout = () => {
+    removeAuthToken();
+    navigate('/login');
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -114,7 +119,7 @@ function MyPage() {
           </nav>
 
           <div className="mypage-sidebar-footer">
-            <button type="button">로그아웃</button>
+            <button type="button" onClick={handleLogout}>로그아웃</button>
             <p>문의 : moari_sswu@gmail.com</p>
           </div>
         </aside>
@@ -142,7 +147,11 @@ function MyPage() {
           {!isLoading && !errorMessage && clubs.length > 0 && (
             <div className="my-club-list">
               {clubs.map((club) => (
-                <ClubCard key={club.clubId} club={club} />
+                <ClubCard
+                  key={club.clubId ?? club.id}
+                  club={club}
+                  onClick={() => navigate(`/club/${club.clubId ?? club.id}`)}
+                />
               ))}
             </div>
           )}

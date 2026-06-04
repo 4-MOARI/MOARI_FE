@@ -9,6 +9,8 @@ import ReviewSection from "../Review/ReviewSection";
 
 export default function ClubDetailPage() {
   const { clubId } = useParams();
+  console.log('clubId=' , clubId);
+  console.log("clubId type=", typeof clubId);
   const navigate = useNavigate();
   const [club, setClub] = useState(null);
   const location = useLocation();
