@@ -5,6 +5,32 @@ export default function Pagination({
   totalPages,
   onPageChange,
 }) {
+  const getVisiblePages = () => {
+    if (totalPages <= 7) {
+      return Array.from({ length: totalPages }, (_, index) => index + 1);
+    }
+
+    const pages = [1];
+    const startPage = Math.max(2, currentPage - 1);
+    const endPage = Math.min(totalPages - 1, currentPage + 1);
+
+    if (startPage > 2) {
+      pages.push('start-ellipsis');
+    }
+
+    for (let page = startPage; page <= endPage; page += 1) {
+      pages.push(page);
+    }
+
+    if (endPage < totalPages - 1) {
+      pages.push('end-ellipsis');
+    }
+
+    pages.push(totalPages);
+
+    return pages;
+  };
+
   const handlePrev = () => {
     if (currentPage > 1) {
       onPageChange(currentPage - 1);
@@ -27,8 +53,17 @@ export default function Pagination({
         {'<'}
       </button>
 
-      {Array.from({ length: totalPages }, (_, index) => {
-        const page = index + 1;
+      {getVisiblePages().map((page) => {
+        if (typeof page === 'string') {
+          return (
+            <span
+              key={page}
+              className="pagination-ellipsis"
+            >
+              ...
+            </span>
+          );
+        }
 
         return (
           <button
