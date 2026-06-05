@@ -108,7 +108,8 @@ const ClubUpdatePreviewPage = () => {
 
                 profileImageUrl: clubData.profileImage || clubData.profileImageUrl || null,
                 coverImageUrl: clubData.coverImage || clubData.coverImageUrl || null,
-
+                lastModifiedBy: 'test01',
+                
                 isRecruiting:
                   clubData.recruitInfo?.isRecruiting || clubData.status === '모집중'
                     ? '모집중'
