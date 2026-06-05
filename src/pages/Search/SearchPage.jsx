@@ -154,7 +154,6 @@ export default function SearchPage() {
               onChange={(e) => setKeyword(e.target.value)}
               onKeyDown={handleKeyDown}
             />
-            <span className="search-icon">🔍</span>
           </div>
           <button className="search-btn" onClick={handleSearch}>검색</button>
           {searchedKeyword && (
