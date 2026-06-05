@@ -125,11 +125,22 @@ const ClubInfoSection = ({ club }) => {
                 </span>
               )}
 
-              <span style={{ color: '#6B7280', fontSize: '13px' }}>
-                {schoolToDisplay} · 찜 {displayClub.likeCount || displayClub.favoriteCount || 0}명
-              </span>
               <span style={{ color: '#6B7280', fontSize: '13px' }}>{displayClub.schoolName || '외부'} · 찜 {favoriteCount}명</span>
-              <button style={{ background: 'none', border: 'none', color: 'rgba(0,0,0,0.5)', fontSize: '10px', cursor: 'pointer', textDecoration: 'underline' }}>[수정 로그]</button>
+
+              <button
+                onClick={() => navigate(`/clubs/${displayClub.clubId || displayClub.id || clubId}/history`)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'rgba(0,0,0,0.5)',
+                  fontSize: '10px',
+                  cursor: 'pointer',
+                  textDecoration: 'underline'
+                }}
+              >
+                [수정 로그]
+              </button>
+
             </div>
           </div>
         </div>
