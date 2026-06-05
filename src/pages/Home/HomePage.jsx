@@ -6,6 +6,7 @@ import RecruitStatusFilterButton from '../../components/common/Button/FilterButt
 import ClubCardMain from '../../components/club/ClubCard/ClubCardMain';
 import Pagination from '../../components/common/Pagination/Pagination';
 import { getClubs } from '../../api/clubApi';
+import { addFavoriteClub, deleteFavoriteClub } from '../../api/userApi';
 
 
 
@@ -21,6 +22,7 @@ const HomePage = () => {
   const [selectedCategory, setSelectedCategory] = useState('전체');
   const [selectedStatus, setSelectedStatus] = useState('전체');
   const [currentPage, setCurrentPage] = useState(1);
+  const [favoriteUpdatingIds, setFavoriteUpdatingIds] = useState(new Set());
   const itemsPerPage = 12;
 
   const handleSearch = () => {
@@ -61,6 +63,7 @@ const HomePage = () => {
             coverImageUrl: club.coverImageUrl,
             profileImageUrl: club.profileImageUrl,
             favoriteCount: club.favoriteCount,
+            isFavorite: Boolean(club.isFavorite ?? club.isLiked ?? false),
             avgRating: club.avgRating,
           }));
 
@@ -89,6 +92,65 @@ const HomePage = () => {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentClubs = filteredClubs.slice(indexOfFirstItem, indexOfLastItem);
+
+  const updateClubFavoriteState = (clubId, isFavorite, favoriteDelta) => {
+    setClubs((prevClubs) =>
+      prevClubs.map((club) => {
+        const currentClubId = club.clubId ?? club.id;
+
+        if (currentClubId !== clubId) return club;
+
+        const currentCount = Number(club.favoriteCount || 0);
+
+        return {
+          ...club,
+          isFavorite,
+          favoriteCount: Math.max(currentCount + favoriteDelta, 0),
+        };
+      })
+    );
+  };
+
+  const handleFavoriteToggle = async (club) => {
+    const clubId = club.clubId ?? club.id;
+
+    if (!clubId) {
+      alert('동아리 정보를 확인할 수 없어 찜 처리에 실패했습니다.');
+      return;
+    }
+
+    const nextIsFavorite = !club.isFavorite;
+    const favoriteDelta = nextIsFavorite ? 1 : -1;
+
+    setFavoriteUpdatingIds((prevIds) => new Set(prevIds).add(clubId));
+    updateClubFavoriteState(clubId, nextIsFavorite, favoriteDelta);
+
+    try {
+      if (nextIsFavorite) {
+        await addFavoriteClub(clubId);
+      } else {
+        await deleteFavoriteClub(clubId);
+      }
+    } catch (error) {
+      const errorCode = error.response?.data?.error?.code || '';
+
+      if (
+        (nextIsFavorite && errorCode === 'FAVORITE_ALREADY_EXISTS') ||
+        (!nextIsFavorite && errorCode === 'FAVORITE_NOT_FOUND')
+      ) {
+        return;
+      }
+
+      updateClubFavoriteState(clubId, !nextIsFavorite, -favoriteDelta);
+      alert(error.response?.data?.error?.message || '찜 처리에 실패했습니다.');
+    } finally {
+      setFavoriteUpdatingIds((prevIds) => {
+        const nextIds = new Set(prevIds);
+        nextIds.delete(clubId);
+        return nextIds;
+      });
+    }
+  };
 
   return (
     <div>
@@ -129,7 +191,12 @@ const HomePage = () => {
                 onClick={() => navigate(`/club/${club.clubId ?? club.id}`)}
                 style={{ cursor: 'pointer' }}
               >
-                <ClubCardMain club={club} />
+                <ClubCardMain
+                  club={club}
+                  isFavorite={Boolean(club.isFavorite)}
+                  isFavoriteLoading={favoriteUpdatingIds.has(club.clubId ?? club.id)}
+                  onFavoriteToggle={handleFavoriteToggle}
+                />
               </div>
             ))
           ) : (
