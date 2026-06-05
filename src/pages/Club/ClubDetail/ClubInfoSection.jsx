@@ -22,10 +22,33 @@ const ClubInfoSection = ({ club }) => {
   const [favoriteCount, setFavoriteCount] = useState(Number(displayClub.favoriteCount || displayClub.likeCount || 0));
   const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
   const [modalImage, setModalImage] = useState(null);
-  const statusToDisplay =
-    displayClub.status ||
-    displayClub.isRecruiting ||
-    "마감";
+
+  const recruitStartDate =
+    displayClub.recruitStartAt || displayClub.recruitPeriod?.start;
+
+  const recruitEndDate =
+    displayClub.recruitEndAt || displayClub.recruitPeriod?.end;
+
+  const getRecruitStatusByDate = (startDate, endDate) => {
+    if (!startDate || !endDate) return '마감';
+
+    const now = new Date();
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    if (now >= start && now <= end) {
+      return '모집중';
+    }
+
+    return '마감';
+  };
+
+  const statusToDisplay = getRecruitStatusByDate(
+    recruitStartDate,
+    recruitEndDate
+  ); 
 
   const schoolToDisplay =
     displayClub.schoolName ||
@@ -107,9 +130,7 @@ const ClubInfoSection = ({ club }) => {
 
               <RecruitStatusBadge status={statusToDisplay} />
 
-              {statusToDisplay === '모집중' &&
-              (displayClub.recruitStartAt || displayClub.recruitPeriod?.start) &&
-              (displayClub.recruitEndAt || displayClub.recruitPeriod?.end) && (
+              {recruitStartDate && recruitEndDate && (
                 <span
                   style={{
                     color: '#534AB7',
@@ -117,11 +138,7 @@ const ClubInfoSection = ({ club }) => {
                     fontWeight: '600',
                   }}
                 >
-                  {formatDate(
-                    displayClub.recruitStartAt || displayClub.recruitPeriod?.start
-                  )} ~ {formatDate(
-                    displayClub.recruitEndAt || displayClub.recruitPeriod?.end
-                  )}
+                  {formatDate(recruitStartDate)} ~ {formatDate(recruitEndDate)}
                 </span>
               )}
 

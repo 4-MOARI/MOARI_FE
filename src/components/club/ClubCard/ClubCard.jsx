@@ -63,7 +63,12 @@ function ClubCard({
     }
     return false;
   })();
-  const cardRating = rating ?? club.averageRating;
+  const cardRating =
+    rating ??
+    club.avgRating ??
+    club.averageRating ??
+    club.rating ??
+    0;
   const cardFavoriteCount = favoriteCount ?? club.favoriteCount;
   const cardImageUrl = imageUrl || club.profileImageUrl || club.coverImageUrl;
   const cardIsFavorite = isFavorite ?? club.isFavorite ?? club.isLiked ?? false;

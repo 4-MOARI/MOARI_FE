@@ -26,13 +26,22 @@ const ClubUpdatePage = () => {
       setCoverImageFile(returnedData.coverImageFile || null);
       setProfileImageFile(returnedData.profileImageFile || null);
 
-      setRecruitInfo(
-        returnedData.recruitInfo || {
-          isRecruiting: returnedData.status === '모집중',
-          recruitStartAt: returnedData.recruitStartAt || null,
-          recruitEndAt: returnedData.recruitEndAt || null,
-        }
-      );
+      const returnedRecruitStartAt =
+        returnedData.recruitInfo?.recruitStartAt ||
+        returnedData.recruitStartAt ||
+        null;
+
+      const returnedRecruitEndAt =
+        returnedData.recruitInfo?.recruitEndAt ||
+        returnedData.recruitEndAt ||
+        null;
+
+      setRecruitInfo({
+        ...(returnedData.recruitInfo || {}),
+        isRecruiting: !!(returnedRecruitStartAt && returnedRecruitEndAt),
+        recruitStartAt: returnedRecruitStartAt,
+        recruitEndAt: returnedRecruitEndAt,
+      });
 
       if (returnedData.urlFields && returnedData.urlFields.length > 0) {
         setUrlFields(returnedData.urlFields);
@@ -56,10 +65,20 @@ const ClubUpdatePage = () => {
 
         setRecruitStatus(data.isRecruiting || '마감');
 
+        const recruitStartAt =
+          data.recruitPeriod?.start ||
+          data.recruitStartAt ||
+          null;
+
+        const recruitEndAt =
+          data.recruitPeriod?.end ||
+          data.recruitEndAt ||
+          null;
+
         setRecruitInfo({
-          isRecruiting: data.isRecruiting === '모집중',
-          recruitStartAt: data.recruitPeriod?.start || null,
-          recruitEndAt: data.recruitPeriod?.end || null,
+          isRecruiting: !!(recruitStartAt && recruitEndAt),
+          recruitStartAt,
+          recruitEndAt,
         });
 
         setCoverImage(data.coverImageUrl || null);
@@ -124,6 +143,17 @@ const ClubUpdatePage = () => {
 
     return `${year}-${month}-${day}`;
   };
+
+
+  const formatDisplayDate = (date) => {
+    if (!date) return '';
+
+    const formatted = formatLocalDate(date);
+    if (!formatted) return '';
+
+    return formatted.replaceAll('-', '.');
+  };
+
 
   const coverInputRef = useRef(null);
   const profileInputRef = useRef(null);
@@ -324,8 +354,28 @@ const ClubUpdatePage = () => {
                 onChange={setRecruitInfo}
                 initialValue={recruitInfo}
               />
-            </div>
 
+              { recruitInfo.recruitStartAt &&
+                recruitInfo.recruitEndAt && (
+                  <div
+                    style={{
+                      marginTop: '12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '7px',
+                      fontSize: '13px',
+                      fontWeight: '700',
+                      color: '#534AB7',
+                    }}
+                  >
+                    <span>모집기간</span>
+                    <span>
+                      {formatDisplayDate(recruitInfo.recruitStartAt)} ~{' '}
+                      {formatDisplayDate(recruitInfo.recruitEndAt)}
+                    </span>
+                  </div>
+                )}
+            </div>
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', paddingRight: '40px' }}>

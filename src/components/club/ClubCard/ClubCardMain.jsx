@@ -32,7 +32,16 @@ const ClubCardMain = ({
       </p>
 
       <div className="club-card-meta">
-        <StarRating value={4.6} />
+        <StarRating
+          value={
+            Number(
+              club.avgRating ??
+              club.averageRating ??
+              club.rating ??
+              0
+            )
+          }
+        />
         
         <div 
           onClick={toggleLike}

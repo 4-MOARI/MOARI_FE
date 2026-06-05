@@ -78,6 +78,15 @@ const ClubRegisterPage = () => {
     return `${year}-${month}-${day}`;
   };
 
+  const formatDisplayDate = (date) => {
+    if (!date) return '';
+
+    const formatted = formatLocalDate(date);
+    if (!formatted) return '';
+
+    return formatted.replaceAll('-', '.');
+  };
+
   const handleFileChange = (e, setPreview, setImageFile) => {
     const file = e.target.files[0];
     if (file) {
@@ -282,11 +291,32 @@ const ClubRegisterPage = () => {
 
               </div>
               {/* 모집 상태 */}
-              <div style={{marginBottom: '40px'}}>
+              <div style={{ marginBottom: '40px' }}>
                 <RecruitStatusSection 
                   onChange={setRecruitInfo}
                   initialValue={recruitInfo}
                 />
+
+                { recruitInfo.recruitStartAt &&
+                  recruitInfo.recruitEndAt && (
+                    <div
+                      style={{
+                        marginTop: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '7px',
+                        fontSize: '13px',
+                        fontWeight: '700',
+                        color: '#534AB7',
+                      }}
+                    >
+                      <span>모집기간</span>
+                      <span>
+                        {formatDisplayDate(recruitInfo.recruitStartAt)} ~{' '}
+                        {formatDisplayDate(recruitInfo.recruitEndAt)}
+                      </span>
+                    </div>
+                  )}
               </div>
             </div>
 
