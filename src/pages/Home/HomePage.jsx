@@ -65,7 +65,11 @@ const HomePage = () => {
             profileImageUrl: club.profileImageUrl,
             favoriteCount: club.favoriteCount,
             isFavorite: Boolean(club.isFavorite ?? club.isLiked ?? false),
-            avgRating: club.avgRating,
+            avgRating:
+              club.avgRating ??
+              club.averageRating ??
+              club.rating ??
+              0,
           }));
 
           setClubs(formattedClubs);
