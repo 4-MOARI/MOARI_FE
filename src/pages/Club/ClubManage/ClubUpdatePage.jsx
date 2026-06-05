@@ -23,6 +23,8 @@ const ClubUpdatePage = () => {
       setRecruitStatus(returnedData.recruitStatus || returnedData.status || '');
       setCoverImage(returnedData.coverImage || null);
       setProfileImage(returnedData.profileImage || null);
+      setCoverImageFile(returnedData.coverImageFile || null);
+      setProfileImageFile(returnedData.profileImageFile || null);
 
       setRecruitInfo(
         returnedData.recruitInfo || {
@@ -106,6 +108,8 @@ const ClubUpdatePage = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [coverImage, setCoverImage] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
+  const [coverImageFile, setCoverImageFile] = useState(null);
+  const [profileImageFile, setProfileImageFile] = useState(null);
   
   const formatLocalDate = (date) => {
     if (!date) return null;
@@ -124,10 +128,11 @@ const ClubUpdatePage = () => {
   const coverInputRef = useRef(null);
   const profileInputRef = useRef(null);
 
-  const handleFileChange = (e, setFile) => {
+  const handleFileChange = (e, setPreview, setImageFile) => {
     const file = e.target.files[0];
     if (file) {
-      setFile(URL.createObjectURL(file));
+      setImageFile(file);
+      setPreview(URL.createObjectURL(file));
     }
   };
 
@@ -227,7 +232,7 @@ const ClubUpdatePage = () => {
                 ref={coverInputRef}
                 hidden
                 accept="image/*"
-                onChange={(e) => handleFileChange(e, setCoverImage)}
+                onChange={(e) => handleFileChange(e, setCoverImage, setCoverImageFile)}
               />
             </div>
 
@@ -237,7 +242,7 @@ const ClubUpdatePage = () => {
                 style={{ width: '95px', height: '87px', background: profileImage ? `url(${profileImage}) center/cover` : '#EEEDFE', borderRadius: '14px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#6B7280', boxShadow: '4px 4px 2px rgba(0, 0, 0, 0.25)', cursor: 'pointer' }}
               >
                 {!profileImage && '+ 프로필'}
-                <input type="file" ref={profileInputRef} hidden accept="image/*" onChange={(e) => handleFileChange(e, setProfileImage)} />
+                <input type="file" ref={profileInputRef} hidden accept="image/*" onChange={(e) => handleFileChange(e, setProfileImage, setProfileImageFile)} />
               </div>
               <input type="text" value={clubName} disabled style={{ ...disabledStyle, width: '627px', height: '44px', padding: '0 20px', borderRadius: '10px', border: '1px solid #D1D5DB' }} />
             </div>
@@ -346,6 +351,8 @@ const ClubUpdatePage = () => {
                     urlFields,
                     coverImage,
                     profileImage,
+                    coverImageFile,
+                    profileImageFile,
 
                     // ★ 추가: ClubInfoSection에서 읽을 수 있게 이름 맞춤
                     id: clubId,

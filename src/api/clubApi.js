@@ -22,6 +22,23 @@ export const createClub = async (requestBody) => {
   return response.data;
 };
 
+export const uploadClubImage = async (file) => {
+  const formData = new FormData();
+  formData.append('image', file);
+
+  const response = await apiClient.post(
+    '/uploads/clubs/images',
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  );
+
+  return response.data.data.imageUrl;
+};
+
 // 동아리 상세조회
 export const getClubDetail = async (clubId) => {
   const response = await apiClient.get(

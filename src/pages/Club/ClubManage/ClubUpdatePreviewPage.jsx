@@ -5,7 +5,7 @@ import StyledButton from '../../../components/common/Button/StyledButton';
 // 상세 페이지의 UI를 재사용하기 위해 import 합니다.
 import ClubInfoSection from '../ClubDetail/ClubInfoSection'; 
 import { MOCK_CLUBS } from "../../../data/clubs"; // 데이터 import
-import { updateClub } from '../../../api/clubApi';
+import { updateClub, uploadClubImage } from '../../../api/clubApi';
 
 const ClubUpdatePreviewPage = () => {
   const navigate = useNavigate();
@@ -45,6 +45,18 @@ const ClubUpdatePreviewPage = () => {
         ? linksFromUrlFields
         : rawClubData?.links || {},
     };
+
+  const resolveImageUrl = async (file, fallbackUrl = null) => {
+    if (file) {
+      return uploadClubImage(file);
+    }
+
+    if (typeof fallbackUrl === 'string' && fallbackUrl.startsWith('blob:')) {
+      return null;
+    }
+
+    return fallbackUrl || null;
+  };
 
   return (
     <div style={{ width: '100%', minHeight: '1400px', background: '#F8F8FB', paddingBottom: '100px', boxSizing: 'border-box' }}>
@@ -120,8 +132,14 @@ const ClubUpdatePreviewPage = () => {
                 description: clubData.description || null,
                 activity: clubData.activityContent || clubData.activity || null,
 
-                profileImageUrl: clubData.profileImage || clubData.profileImageUrl || null,
-                coverImageUrl: clubData.coverImage || clubData.coverImageUrl || null,
+                profileImageUrl: await resolveImageUrl(
+                  clubData.profileImageFile,
+                  clubData.profileImage || clubData.profileImageUrl
+                ),
+                coverImageUrl: await resolveImageUrl(
+                  clubData.coverImageFile,
+                  clubData.coverImage || clubData.coverImageUrl
+                ),
                 lastModifiedBy: 'test01',
                 
                 isRecruiting:
