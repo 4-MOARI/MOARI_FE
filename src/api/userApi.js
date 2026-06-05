@@ -81,6 +81,12 @@ export async function addFavoriteClub(clubId) {
   return response.data.data;
 }
 
+export async function getFavoriteStatus(clubId) {
+  const response = await apiClient.get(`/clubs/${clubId}/favorites`);
+
+  return response.data.data;
+}
+
 export async function verifyMyPassword(password) {
   const response = await apiClient.post('/users/me/password/verify', {
     password,

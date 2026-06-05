@@ -43,9 +43,15 @@ export default function ReviewModal({
         //모달 달기
         onClose();
     } catch (error) {
-        console.error(error);
+        //console.error(error);
 
-        alert('리뷰 등록 실패');
+        //console.log(error.response);
+        //console.log(error.response?.data);
+
+        alert(
+            error.response?.data?.message ||
+            error.response?.data?.error?.message ||
+            '리뷰 등록 실패');
     } finally {
         setIsLoading(false);
     }
