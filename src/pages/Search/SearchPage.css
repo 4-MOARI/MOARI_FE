@@ -37,15 +37,6 @@ body {
   border-color: var(--input-focus-border);
 }
 
-.search-icon {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-md);
-}
-
 .search-btn {
   padding: 10px 20px;
   background: var(--color-primary);
