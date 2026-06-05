@@ -40,7 +40,11 @@ function ClubCard({
   const cardTitle = title || club.clubName;
   const cardCategory = category || club.categoryName || '기타';
   const cardDescription =
-    description || club.briefDescription || '동아리 소개가 아직 등록되지 않았습니다.';
+    description ||
+    club.briefDescription ||
+    club.oneLineIntro ||
+    club.description ||
+    '동아리 소개가 아직 등록되지 않았습니다.';
   const isRecruiting = (() => {
     if (recruiting !== undefined) return recruiting;
     if (club.isRecruiting !== undefined) return club.isRecruiting;

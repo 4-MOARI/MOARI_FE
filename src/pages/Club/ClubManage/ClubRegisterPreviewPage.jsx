@@ -78,58 +78,78 @@ const ClubRegisterPreviewPage = () => {
               onClick={async () => {
                 const requestBody = {
                   clubName: clubData.name,
-                  categoryId: clubData.categoryId,
-                  schoolId: clubData.schoolId,
-                  briefDescription: clubData.oneLineIntro,
-                  description: clubData.description,
-                  activity: clubData.activityContent || clubData.activity,
+                  categoryId: Number(clubData.categoryId),
 
-                  // ★ 지금은 이미지 업로드 서버가 따로 없으니 임시로 문자열 전달
+                  schoolType:
+                    clubData.schoolId === null ||
+                    clubData.schoolId === 'external' ||
+                    clubData.school === '외부' ||
+                    clubData.schoolName === '외부'
+                      ? '외부'
+                      : '본인학교',
+
+                  schoolId:
+                    clubData.schoolId === null ||
+                    clubData.schoolId === 'external' ||
+                    clubData.school === '외부' ||
+                    clubData.schoolName === '외부'
+                      ? null
+                      : Number(clubData.schoolId),
+
+                  briefDescription: clubData.oneLineIntro || '',
+                  description: clubData.description || '',
+                  activity: clubData.activityContent || clubData.activity || '',
+
                   profileImageUrl: clubData.profileImage || '',
                   coverImageUrl: clubData.coverImage || '',
 
-                  recruitStartAt: clubData.recruitInfo?.recruitStartAt || null,
-                  recruitEndAt: clubData.recruitInfo?.recruitEndAt || null,
+                  isRecruiting: clubData.status === '모집중' ? '모집중' : '마감',
 
-                  links: clubData.urlFields
-                    ?.filter((field) => {
-                      const url = field.url || field.urlValue;
+                  recruitPeriod: {
+                    start: clubData.recruitStartAt || clubData.recruitInfo?.recruitStartAt || null,
+                    end: clubData.recruitEndAt || clubData.recruitInfo?.recruitEndAt || null,
+                  },
 
-                      return (
-                        field.selectedValue &&
-                        field.selectedValue !== 'URL' &&
-                        url
-                      );
-                    })
-                    .map((field) => ({
-                      title: field.selectedValue,
-                      url: field.url || field.urlValue,
-                    })) || [],
+                  links:
+                    clubData.urlFields
+                      ?.filter((field) => {
+                        const url = field.url || field.urlValue;
+
+                        return (
+                          field.selectedValue &&
+                          field.selectedValue !== 'URL' &&
+                          field.selectedValue !== '직접입력' &&
+                          url
+                        );
+                      })
+                      .map((field) => ({
+                        linkType: field.selectedValue.toLowerCase(),
+                        linkUrl: field.url || field.urlValue,
+                      })) || [],
                 };
 
                 try {
-                  // ★ 1순위: 백엔드 등록 API 호출
                   const result = await createClub(requestBody);
-                  const newClubId = result.data.clubId;
+
+                  console.log('동아리 등록 응답 전체 =', result);
+
+                  const newClubId =
+                    result?.clubId ||
+                    result?.data?.clubId ||
+                    result?.data?.data?.clubId;
+
+                  console.log('이동할 newClubId =', newClubId);
+
+                  if (!newClubId) {
+                    alert('등록은 되었지만 동아리 ID를 받지 못했습니다.');
+                    return;
+                  }
 
                   navigate(`/club/${newClubId}`);
                 } catch (error) {
-                  console.error('동아리 등록 실패 → 프론트 테스트용 localStorage 사용:', error);
-
-                  // ★ API 실패 시 기존 더미 테스트 방식 유지
-                  const newClubId = clubData.id || Date.now();
-
-                  const savedClubData = {
-                    ...clubData,
-                    id: newClubId,
-                  };
-
-                  localStorage.setItem(`club-${newClubId}`, JSON.stringify(savedClubData));
-
-                  navigate(`/club/${newClubId}`, {
-                    state: savedClubData,
-                  });
-                }
+                    console.error('동아리 등록 실패:', error);
+                    alert('동아리 등록에 실패했습니다. 백엔드에 저장되지 않았습니다.');
+                  }
               }}
             >
               제출

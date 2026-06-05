@@ -62,6 +62,20 @@ const ClubRegisterPage = () => {
   const coverInputRef = useRef(null);
   const profileInputRef = useRef(null);
 
+  const formatLocalDate = (date) => {
+    if (!date) return null;
+
+    if (typeof date === 'string') {
+      return date.slice(0, 10);
+    }
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  };
+
   const handleFileChange = (e, setFile) => {
     const file = e.target.files[0];
     if (file) {
@@ -114,8 +128,8 @@ const ClubRegisterPage = () => {
         category: categories.find((cat) => String(cat.categoryId) === String(categoryId))?.categoryName || '',
         categoryId: Number(categoryId),
 
-        school: schoolId,
-        schoolId: schoolId === '외부' ? null : 1,
+        school: schoolId === 'external' ? '외부' : '성신여자대학교',
+        schoolId: schoolId === 'external' ? null : Number(schoolId),
         oneLineIntro, 
         description, 
         activity, 
@@ -136,16 +150,28 @@ const ClubRegisterPage = () => {
           return acc;
         }, {}),
         
-        recruitInfo: recruitInfo,
+        recruitInfo: {
+          ...recruitInfo,
+          recruitStartAt: formatLocalDate(recruitInfo.recruitStartAt),
+          recruitEndAt: formatLocalDate(recruitInfo.recruitEndAt),
+        },
+        status: recruitInfo.isRecruiting ? '모집중' : '마감',
+        recruitStartAt: formatLocalDate(recruitInfo.recruitStartAt),
+        recruitEndAt: formatLocalDate(recruitInfo.recruitEndAt),
+
         coverImage, 
-        profileImage 
+        profileImage
       } 
     });
   };
   
 
 
-  const schools = ["성신여자대학교", "외부"];
+  const schools = [
+    { label: "성신여자대학교", value: "1" },
+    { label: "외부", value: "external" },
+  ];
+
   const urlOptions = ["Web", "Instagram", "Discord", "Notion", "직접입력"];
 
   return (
@@ -204,7 +230,11 @@ const ClubRegisterPage = () => {
                 <div style={{ position: 'relative', width: '362px' }}>
                   <select value={schoolId} onChange={(e) => setSchoolId(e.target.value)} style={{ width: '100%', height: '44px', padding: '0 20px', borderRadius: '10px', border: '1px solid #D1D5DB', color: '#6B7280', backgroundColor: 'white', cursor: 'pointer', appearance: 'none' }}>
                     <option value="" disabled >* 소속 선택 (필수)</option>
-                    {schools.map((school) => <option key={school} value={school}>{school}</option>)}
+                    {schools.map((school) => (
+                      <option key={school.value} value={school.value}>
+                        {school.label}
+                      </option>
+                    ))}
                   </select>
                   <div style={{ position: 'absolute', right: '20px', top: '15px', color: '#6B7280', pointerEvents: 'none' }}>▼</div>
                 </div>
@@ -249,7 +279,9 @@ const ClubRegisterPage = () => {
               {/* 모집 상태 */}
               <div style={{marginBottom: '40px'}}>
                 <RecruitStatusSection 
-                  onChange={setRecruitInfo}/>
+                  onChange={setRecruitInfo}
+                  initialValue={recruitInfo}
+                />
               </div>
             </div>
 

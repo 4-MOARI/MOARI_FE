@@ -27,7 +27,9 @@ const ClubCardMain = ({
       </div>
 
       <h3>{club.name}</h3>
-      <p className="club-card-description">{club.oneLineIntro}</p>
+      <p className="club-card-description">
+        {club.oneLineIntro || club.briefDescription || club.description || '동아리 소개가 아직 등록되지 않았습니다.'}
+      </p>
 
       <div className="club-card-meta">
         <StarRating value={4.6} />

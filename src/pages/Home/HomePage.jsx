@@ -49,8 +49,9 @@ const HomePage = () => {
             clubId: club.clubId,
             name: club.clubName,
             clubName: club.clubName,
-            oneLineIntro: club.briefDescription,
-            briefDescription: club.briefDescription,
+            oneLineIntro: club.briefDescription || club.description || '',
+            briefDescription: club.briefDescription || club.description || '',
+            description: club.description || club.briefDescription || '',
             category: club.categoryName,
             categoryName: club.categoryName,
             status:

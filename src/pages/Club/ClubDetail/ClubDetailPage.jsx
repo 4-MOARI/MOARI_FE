@@ -57,10 +57,19 @@ export default function ClubDetailPage() {
           activityContent: data.activity,
           category: data.categoryName,
           categoryName: data.categoryName,
-          schoolName: data.schoolName || data.campusLocation || '외부',
+          schoolType: data.schoolType,
+          schoolName:
+            data.schoolName ||
+            data.campusLocation ||
+            (data.schoolType === '본인학교' ? '성신여자대학교' : '외부'),
+
           status: data.isRecruiting,
           isRecruiting: data.isRecruiting,
-          warningMessage: data.warningMessage,
+          recruitPeriod: data.recruitPeriod,
+          recruitStartAt: data.recruitPeriod?.start,
+          recruitEndAt: data.recruitPeriod?.end,
+          warningMessage: data.
+          warningMessage,
           displayWarning: data.displayWarning,
           favoriteCount: data.favoriteCount ?? data.likeCount ?? 0,
           isFavorite: Boolean(favoriteData?.isFavorite ?? data.isFavorite ?? data.isLiked ?? false),
