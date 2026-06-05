@@ -35,6 +35,7 @@ export default function HistoryPage() {
   const [club, setClub] = useState({ clubName: '', profileImageUrl: null });
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [failedImageUrl, setFailedImageUrl] = useState('');
 
   const fetchHistory = async () => {
     setLoading(true);
@@ -129,8 +130,12 @@ export default function HistoryPage() {
         {/* 오른쪽 사이드바 */}
         <aside className="history-sidebar">
           <div className="sidebar-image">
-            {club.profileImageUrl ? (
-              <img src={club.profileImageUrl} alt={club.clubName} />
+            {club.profileImageUrl && failedImageUrl !== club.profileImageUrl ? (
+              <img
+                src={club.profileImageUrl}
+                alt={club.clubName}
+                onError={() => setFailedImageUrl(club.profileImageUrl)}
+              />
             ) : (
               <div className="sidebar-image-placeholder">IMAGE</div>
             )}
