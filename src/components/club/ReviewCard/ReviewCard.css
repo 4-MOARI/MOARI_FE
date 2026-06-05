@@ -54,6 +54,11 @@
   cursor: pointer;
 }
 
+.review-delete-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
 /* 리뷰 내용 */
 .review-content {
   color: #6B7280;
