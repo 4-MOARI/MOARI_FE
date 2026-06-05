@@ -1,7 +1,7 @@
 //등록, 수정 페이지에 들어갈 모집중, 모집 마감 버튼(+datePicker) 필터버튼, 
 // 실제 사용은  <RecruitStatusSection /> 이것만 들어가면 되고 위치 조정만 해주시면 될겁니다!
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import RecruitStatusFilterButton from '../../common/Button/FilterButton/RecruitStatusFilterButton';
 
@@ -10,6 +10,7 @@ import RecruitDatePickerModal
 
 function RecruitStatusSection({
   onChange,
+  initialValue,
 }) {
   const [selectedStat, setSelectedStat]
     = useState('마감');
@@ -19,6 +20,23 @@ function RecruitStatusSection({
 
   const [recruitRange, setRecruitRange]
     = useState(null);
+  console.log('selectedStat =', selectedStat);
+  useEffect(() => {
+    
+    if (!initialValue) return;
+
+    if (initialValue.isRecruiting) {
+        setSelectedStat('모집중');
+
+        setRecruitRange({
+            startDate: initialValue.recruitStartAt,
+            endDate: initialValue.recruitEndAt,
+        });
+    } else {
+        setSelectedStat('마감');
+        setRecruitRange(null);
+    }
+  }, [initialValue]);
 
   return (
     <div

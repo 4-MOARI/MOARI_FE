@@ -43,6 +43,7 @@ const ClubUpdatePage = () => {
       try {
         const data = await getClubDetail(clubId);
 
+
         setClubName(data.clubName || '');
         setOneLineIntro(data.briefDescription || '');
         setDescription(data.description || '');
