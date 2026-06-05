@@ -15,7 +15,7 @@ export const crawlClub = async (requestBody) => {
 // 동아리 등록
 export const createClub = async (requestBody) => {
   const response = await apiClient.post(
-    '/clubs/register',
+    '/register',
     requestBody
   );
 

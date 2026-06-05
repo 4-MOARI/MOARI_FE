@@ -19,7 +19,31 @@ const ClubInfoSection = ({ club }) => {
   
   const [isLiked, setIsLiked] = useState(false);
   const [modalImage, setModalImage] = useState(null);
-  const statusToDisplay = displayClub.status || "마감";
+  const statusToDisplay =
+    displayClub.status ||
+    displayClub.isRecruiting ||
+    "마감";
+
+  const schoolToDisplay =
+    displayClub.schoolName ||
+    (displayClub.schoolType === '본인학교' || displayClub.schoolType === 'internal'
+      ? '성신여자대학교'
+      : '외부');
+      
+  const formatDate = (date) => {
+    if (!date) return "미정";
+
+    if (Array.isArray(date)) {
+      const [year, month, day] = date;
+      return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    }
+
+    if (typeof date === "string") {
+      return date.slice(0, 10);
+    }
+
+    return "미정";
+  };
 
   return (
     <div style={{ width: '760px', position: 'relative', background: 'white', boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.10)', borderRadius: '24px', padding: '32px', boxSizing: 'border-box', margin: '0 auto' }}>
@@ -35,8 +59,30 @@ const ClubInfoSection = ({ club }) => {
             <h1 style={{ fontSize: '30px', fontWeight: '700', margin: 0 }}>{displayClub.name}</h1>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <CategoryBadge>{displayClub.category}</CategoryBadge>
+
               <RecruitStatusBadge status={statusToDisplay} />
-              <span style={{ color: '#6B7280', fontSize: '13px' }}>{displayClub.schoolName || '외부'} · 찜 {displayClub.likeCount || 0}명</span>
+
+              {statusToDisplay === '모집중' &&
+              (displayClub.recruitStartAt || displayClub.recruitPeriod?.start) &&
+              (displayClub.recruitEndAt || displayClub.recruitPeriod?.end) && (
+                <span
+                  style={{
+                    color: '#534AB7',
+                    fontSize: '13px',
+                    fontWeight: '600',
+                  }}
+                >
+                  {formatDate(
+                    displayClub.recruitStartAt || displayClub.recruitPeriod?.start
+                  )} ~ {formatDate(
+                    displayClub.recruitEndAt || displayClub.recruitPeriod?.end
+                  )}
+                </span>
+              )}
+
+              <span style={{ color: '#6B7280', fontSize: '13px' }}>
+                {schoolToDisplay} · 찜 {displayClub.likeCount || displayClub.favoriteCount || 0}명
+              </span>
               <button style={{ background: 'none', border: 'none', color: 'rgba(0,0,0,0.5)', fontSize: '10px', cursor: 'pointer', textDecoration: 'underline' }}>[수정 로그]</button>
             </div>
           </div>
@@ -90,7 +136,7 @@ const ClubInfoSection = ({ club }) => {
         <button style={{ padding: '8px 16px', background: '#D45353', color: 'white', borderRadius: '10px', border: 'none', fontWeight: '700', cursor: 'pointer' }}>신고</button>
       </div> */}
       <div style={{ marginTop: '40px' }}>
-        <ReportSection clubId={club?.id} />
+        <ReportSection clubId={displayClub.id || displayClub.clubId || clubId} />
       </div>
       
     </div>

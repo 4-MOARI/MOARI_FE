@@ -32,6 +32,15 @@ const ClubUpdatePreviewPage = () => {
       name: rawClubData?.name || rawClubData?.clubName || '',
       category: rawClubData?.category || rawClubData?.categoryId || '',
       activityContent: rawClubData?.activityContent || rawClubData?.activity || '',
+
+
+      schoolType: rawClubData?.schoolType || '본인학교',
+      schoolName:
+        rawClubData?.schoolName ||
+        rawClubData?.school ||
+        (rawClubData?.schoolType === '외부' ? '외부' : '성신여자대학교'),
+
+        
       links: Object.keys(linksFromUrlFields).length > 0
         ? linksFromUrlFields
         : rawClubData?.links || {},
@@ -94,7 +103,12 @@ const ClubUpdatePreviewPage = () => {
               const formatDateTimeForMySQL = (value) => {
                 if (!value) return null;
 
-                return value
+                const date = value instanceof Date ? value : new Date(value);
+
+                if (Number.isNaN(date.getTime())) return null;
+
+                return date
+                  .toISOString()
                   .replace('T', ' ')
                   .replace('.000Z', '')
                   .slice(0, 19);

@@ -106,6 +106,20 @@ const ClubUpdatePage = () => {
   const [coverImage, setCoverImage] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
   
+  const formatLocalDate = (date) => {
+    if (!date) return null;
+
+    if (typeof date === 'string') {
+      return date.slice(0, 10);
+    }
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  };
+
   const coverInputRef = useRef(null);
   const profileInputRef = useRef(null);
 
@@ -320,11 +334,14 @@ const ClubUpdatePage = () => {
                     categoryId,
                     recruitStatus,
 
-                    recruitInfo,
-                      status: recruitInfo.isRecruiting ? '모집중' : '마감',
-                      recruitStartAt: recruitInfo.recruitStartAt,
-                      recruitEndAt: recruitInfo.recruitEndAt,
-
+                    recruitInfo: {
+                      ...recruitInfo,
+                      recruitStartAt: formatLocalDate(recruitInfo.recruitStartAt),
+                      recruitEndAt: formatLocalDate(recruitInfo.recruitEndAt),
+                    },
+                    status: recruitInfo.isRecruiting ? '모집중' : '마감',
+                    recruitStartAt: formatLocalDate(recruitInfo.recruitStartAt),
+                    recruitEndAt: formatLocalDate(recruitInfo.recruitEndAt),
                     urlFields,
                     coverImage,
                     profileImage,
