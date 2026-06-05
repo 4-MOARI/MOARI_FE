@@ -5,7 +5,7 @@ import StyledButton from '../../../components/common/Button/StyledButton';
 // 기존 상세 페이지에서 사용하던 컴포넌트를 import 합니다.
 import ClubInfoSection from '../ClubDetail/ClubInfoSection'; 
 import { useLocation } from 'react-router-dom'; // 1. import 추가
-import { createClub } from '../../../api/clubApi';
+import { createClub, uploadClubImage } from '../../../api/clubApi';
 
 const ClubRegisterPreviewPage = () => {
   const navigate = useNavigate();
@@ -41,6 +41,18 @@ const ClubRegisterPreviewPage = () => {
     links: Object.keys(linksFromUrlFields).length > 0
       ? linksFromUrlFields
       : state?.links || {},
+  };
+
+  const resolveImageUrl = async (file, fallbackUrl = '') => {
+    if (file) {
+      return uploadClubImage(file);
+    }
+
+    if (typeof fallbackUrl === 'string' && fallbackUrl.startsWith('blob:')) {
+      return '';
+    }
+
+    return fallbackUrl || '';
   };
 
   return (
@@ -100,8 +112,8 @@ const ClubRegisterPreviewPage = () => {
                   description: clubData.description || '',
                   activity: clubData.activityContent || clubData.activity || '',
 
-                  profileImageUrl: clubData.profileImage || '',
-                  coverImageUrl: clubData.coverImage || '',
+                  profileImageUrl: await resolveImageUrl(clubData.profileImageFile, clubData.profileImage),
+                  coverImageUrl: await resolveImageUrl(clubData.coverImageFile, clubData.coverImage),
 
                   isRecruiting: clubData.status === '모집중' ? '모집중' : '마감',
 

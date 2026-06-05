@@ -57,8 +57,10 @@ const ClubRegisterPage = () => {
   const [schoolId, setSchoolId] = useState(state?.school || ''); // 수정됨
   const [description, setDescription] = useState(state?.description || ''); // 수정됨
   const [activity, setActivity] = useState(state?.activity || ''); // 수정됨
-  const [coverImage, setCoverImage] = useState(null);
-  const [profileImage, setProfileImage] = useState(null);
+  const [coverImage, setCoverImage] = useState(state?.coverImage || null);
+  const [profileImage, setProfileImage] = useState(state?.profileImage || null);
+  const [coverImageFile, setCoverImageFile] = useState(state?.coverImageFile || null);
+  const [profileImageFile, setProfileImageFile] = useState(state?.profileImageFile || null);
   const coverInputRef = useRef(null);
   const profileInputRef = useRef(null);
 
@@ -76,10 +78,11 @@ const ClubRegisterPage = () => {
     return `${year}-${month}-${day}`;
   };
 
-  const handleFileChange = (e, setFile) => {
+  const handleFileChange = (e, setPreview, setImageFile) => {
     const file = e.target.files[0];
     if (file) {
-      setFile(URL.createObjectURL(file));
+      setImageFile(file);
+      setPreview(URL.createObjectURL(file));
     }
   };
 
@@ -159,8 +162,10 @@ const ClubRegisterPage = () => {
         recruitStartAt: formatLocalDate(recruitInfo.recruitStartAt),
         recruitEndAt: formatLocalDate(recruitInfo.recruitEndAt),
 
-        coverImage, 
-        profileImage
+        coverImage,
+        profileImage,
+        coverImageFile,
+        profileImageFile
       } 
     });
   };
@@ -198,7 +203,7 @@ const ClubRegisterPage = () => {
               style={{ width: '763px', height: '170px', background: coverImage ? `url(${coverImage}) center/cover` : '#EEEDFE', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B7280', marginBottom: '20px', cursor: 'pointer' }}
             >
               {!coverImage && '+ 커버 이미지 업로드'}
-              <input type="file" ref={coverInputRef} hidden accept="image/*" onChange={(e) => handleFileChange(e, setCoverImage)} />
+              <input type="file" ref={coverInputRef} hidden accept="image/*" onChange={(e) => handleFileChange(e, setCoverImage, setCoverImageFile)} />
             </div>
 
             {/* 프로필 및 동아리명 */}
@@ -210,7 +215,7 @@ const ClubRegisterPage = () => {
                   style={{ width: '95px', height: '87px', background: profileImage ? `url(${profileImage}) center/cover` : '#EEEDFE', borderRadius: '14px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#6B7280', boxShadow: '4px 4px 2px rgba(0, 0, 0, 0.25)', cursor: 'pointer' }}
                 >
                   {!profileImage && '+ 프로필'}
-                  <input type="file" ref={profileInputRef} hidden accept="image/*" onChange={(e) => handleFileChange(e, setProfileImage)} />
+                  <input type="file" ref={profileInputRef} hidden accept="image/*" onChange={(e) => handleFileChange(e, setProfileImage, setProfileImageFile)} />
                 </div>
                 <input type="text" value={clubName} onChange={(e) => setClubName(e.target.value)} placeholder="* 동아리명 (필수)" style={{ width: '627px', height: '44px', padding: '0 20px', borderRadius: '10px', border: '1px solid #D1D5DB' }} />
               </div>
