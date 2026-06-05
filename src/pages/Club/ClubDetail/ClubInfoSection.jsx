@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom'; // useNavigate 추가
 import CategoryBadge from "../../../components/common/Badge/CategoryBadge/CategoryBadge";
 import RecruitStatusBadge from "../../../components/common/Badge/RecruitStatusBadge/RecruitStatusBadge";
 import UrlButton from "../../../components/common/Button/UrlButton/UrlButton";
 import ReportSection from '../Report/ReportSection';
 import { MOCK_CLUBS } from "../../../data/clubs";
+import { addFavoriteClub, deleteFavoriteClub } from '../../../api/userApi';
 
 
 const ClubInfoSection = ({ club }) => {
@@ -17,9 +18,53 @@ const ClubInfoSection = ({ club }) => {
 
   const navigate = useNavigate();
   
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState(Boolean(displayClub.isFavorite));
+  const [favoriteCount, setFavoriteCount] = useState(Number(displayClub.favoriteCount || displayClub.likeCount || 0));
+  const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
   const [modalImage, setModalImage] = useState(null);
   const statusToDisplay = displayClub.status || "마감";
+
+  useEffect(() => {
+    setIsLiked(Boolean(displayClub.isFavorite));
+    setFavoriteCount(Number(displayClub.favoriteCount || displayClub.likeCount || 0));
+  }, [displayClub.isFavorite, displayClub.favoriteCount, displayClub.likeCount]);
+
+  const handleFavoriteToggle = async () => {
+    if (!clubId) {
+      alert('동아리 정보를 확인할 수 없어 찜 처리에 실패했습니다.');
+      return;
+    }
+
+    const nextIsLiked = !isLiked;
+    const favoriteDelta = nextIsLiked ? 1 : -1;
+
+    setIsFavoriteLoading(true);
+    setIsLiked(nextIsLiked);
+    setFavoriteCount((prevCount) => Math.max(Number(prevCount || 0) + favoriteDelta, 0));
+
+    try {
+      if (nextIsLiked) {
+        await addFavoriteClub(clubId);
+      } else {
+        await deleteFavoriteClub(clubId);
+      }
+    } catch (error) {
+      const errorCode = error.response?.data?.error?.code || '';
+
+      if (
+        (nextIsLiked && errorCode === 'FAVORITE_ALREADY_EXISTS') ||
+        (!nextIsLiked && errorCode === 'FAVORITE_NOT_FOUND')
+      ) {
+        return;
+      }
+
+      setIsLiked(!nextIsLiked);
+      setFavoriteCount((prevCount) => Math.max(Number(prevCount || 0) - favoriteDelta, 0));
+      alert(error.response?.data?.error?.message || '찜 처리에 실패했습니다.');
+    } finally {
+      setIsFavoriteLoading(false);
+    }
+  };
 
   return (
     <div style={{ width: '760px', position: 'relative', background: 'white', boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.10)', borderRadius: '24px', padding: '32px', boxSizing: 'border-box', margin: '0 auto' }}>
@@ -36,7 +81,7 @@ const ClubInfoSection = ({ club }) => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <CategoryBadge>{displayClub.category}</CategoryBadge>
               <RecruitStatusBadge status={statusToDisplay} />
-              <span style={{ color: '#6B7280', fontSize: '13px' }}>{displayClub.schoolName || '외부'} · 찜 {displayClub.likeCount || 0}명</span>
+              <span style={{ color: '#6B7280', fontSize: '13px' }}>{displayClub.schoolName || '외부'} · 찜 {favoriteCount}명</span>
               <button style={{ background: 'none', border: 'none', color: 'rgba(0,0,0,0.5)', fontSize: '10px', cursor: 'pointer', textDecoration: 'underline' }}>[수정 로그]</button>
             </div>
           </div>
@@ -45,7 +90,7 @@ const ClubInfoSection = ({ club }) => {
 
       {/* 3. 찜/수정 버튼 */}
       <div style={{ position: 'absolute', top: '223px', right: '32px', display: 'flex', gap: '10px' }}>
-        <button onClick={() => setIsLiked(!isLiked)} style={{ padding: '10px 20px', border: '1px solid #D4537E', borderRadius: '10px', color: isLiked ? 'white' : '#D4537E', background: isLiked ? '#D4537E' : 'white', fontWeight: '700', cursor: 'pointer', transition: '0.2s' }}>{isLiked ? '♥ 찜하기' : '♡ 찜하기'}</button>
+        <button onClick={handleFavoriteToggle} disabled={isFavoriteLoading} style={{ padding: '10px 20px', border: '1px solid #D4537E', borderRadius: '10px', color: isLiked ? 'white' : '#D4537E', background: isLiked ? '#D4537E' : 'white', fontWeight: '700', cursor: isFavoriteLoading ? 'default' : 'pointer', transition: '0.2s', opacity: isFavoriteLoading ? 0.6 : 1 }}>{isLiked ? '♥ 찜하기' : '♡ 찜하기'}</button>
         <button 
             onClick={() => navigate(`/club/update/${clubId}`)} 
             style={{ padding: '10px 20px', background: '#534AB7', borderRadius: '10px', color: 'white', border: 'none', fontWeight: '700', cursor: 'pointer' }}

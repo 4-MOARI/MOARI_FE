@@ -1,4 +1,5 @@
 import { getClubDetail } from '../../../api/clubApi';
+import { getFavoriteStatus } from '../../../api/userApi';
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from "react-router-dom";
@@ -35,7 +36,10 @@ export default function ClubDetailPage() {
     const fetchClubDetail = async () => {
       try {
         // ★ 1순위: API 상세 조회
-        const data = await getClubDetail(clubId);
+        const [data, favoriteData] = await Promise.all([
+          getClubDetail(clubId),
+          getFavoriteStatus(clubId).catch(() => null),
+        ]);
 
         if (!data) {
           throw new Error('API 응답 데이터 없음');
@@ -58,6 +62,8 @@ export default function ClubDetailPage() {
           isRecruiting: data.isRecruiting,
           warningMessage: data.warningMessage,
           displayWarning: data.displayWarning,
+          favoriteCount: data.favoriteCount ?? data.likeCount ?? 0,
+          isFavorite: Boolean(favoriteData?.isFavorite ?? data.isFavorite ?? data.isLiked ?? false),
           links: Array.isArray(data.links)
             ? data.links.reduce((acc, link) => {
                 if (link?.type && link?.url) {
