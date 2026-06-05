@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import CategoryBadge from '../../common/Badge/CategoryBadge/CategoryBadge';
 import RecruitStatusBadge from '../../common/Badge/RecruitStatusBadge/RecruitStatusBadge';
 import StarRating from '../../common/StarRating/StarRating';
@@ -6,11 +8,15 @@ import FavoriteButton from '../../common/Button/FavoriteButton/FavoriteButton';
 import './ClubCard.css';
 
 function ClubImage({ imageUrl, title }) {
-  if (imageUrl) {
+  const [failedImageUrl, setFailedImageUrl] = useState('');
+  const shouldShowImage = imageUrl && failedImageUrl !== imageUrl;
+
+  if (shouldShowImage) {
     return (
       <img
         className="club-card-image"
         src={imageUrl}
+        onError={() => setFailedImageUrl(imageUrl)}
         alt={`${title} 이미지`}
       />
     );

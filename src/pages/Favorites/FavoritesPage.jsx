@@ -66,6 +66,8 @@ function FavoriteClubCard({ club, onOpen, onRemove, removingClubId }) {
   const imageUrl = club.profileImageUrl || club.coverImageUrl;
   const clubId = club.clubId ?? club.id;
   const isRemoving = removingClubId === clubId;
+  const [failedImageUrl, setFailedImageUrl] = useState('');
+  const shouldShowImage = imageUrl && failedImageUrl !== imageUrl;
 
   return (
     <article
@@ -73,10 +75,11 @@ function FavoriteClubCard({ club, onOpen, onRemove, removingClubId }) {
       onClick={() => onOpen(clubId)}
       style={{ cursor: 'pointer' }}
     >
-      {imageUrl ? (
+      {shouldShowImage ? (
         <img
           className="favorite-card-image"
           src={imageUrl}
+          onError={() => setFailedImageUrl(imageUrl)}
           alt={`${club.clubName} 이미지`}
         />
       ) : (
