@@ -49,6 +49,7 @@ function ReviewCard({
   createdAt,
   isMine = false,
   onDelete,
+  isDeleting = false,
 }) {
   return (
     <div className="review-card">
@@ -68,8 +69,10 @@ function ReviewCard({
 
         {isMine && (
           <button
+            type="button"
             className="review-delete-button"
             onClick={onDelete}
+            disabled={isDeleting}
           >
             삭제
           </button>

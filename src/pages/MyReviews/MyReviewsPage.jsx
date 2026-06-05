@@ -5,6 +5,7 @@ import { UserRound } from 'lucide-react';
 import Header from '../../components/common/Header/Header';
 import Pagination from '../../components/common/Pagination/Pagination';
 import ReviewCard from '../../components/club/ReviewCard/ReviewCard';
+import { deleteReview } from '../../api/reviewApi';
 import { getMyProfile, getMyReviews, removeAuthToken } from '../../api/userApi';
 import '../MyPage/MyPage.css';
 import './MyReviewsPage.css';
@@ -42,6 +43,7 @@ function MyReviewsPage() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const [deletingReviewId, setDeletingReviewId] = useState(null);
 
   const handleLogout = () => {
     removeAuthToken();
@@ -91,6 +93,49 @@ function MyReviewsPage() {
       isMounted = false;
     };
   }, [page]);
+
+  const handleDeleteReview = async (reviewId) => {
+    if (!reviewId || deletingReviewId) return;
+
+    const shouldDelete = window.confirm('리뷰를 삭제하시겠습니까?');
+
+    if (!shouldDelete) return;
+
+    setDeletingReviewId(reviewId);
+    setErrorMessage('');
+
+    const removeReviewFromList = () => {
+      const nextTotalCount = Math.max(pagination.totalCount - 1, 0);
+      const nextTotalPages = Math.max(Math.ceil(nextTotalCount / LIMIT), 1);
+
+      if (page > nextTotalPages) {
+        setPage(nextTotalPages);
+        return;
+      }
+
+      setReviews((prevReviews) =>
+        prevReviews.filter((review) => review.reviewId !== reviewId)
+      );
+      setPagination({
+        totalCount: nextTotalCount,
+        totalPages: nextTotalPages,
+      });
+    };
+
+    try {
+      await deleteReview(reviewId);
+      removeReviewFromList();
+    } catch (error) {
+      if (error.response?.status === 404) {
+        removeReviewFromList();
+        return;
+      }
+
+      setErrorMessage('리뷰 삭제에 실패했습니다.');
+    } finally {
+      setDeletingReviewId(null);
+    }
+  };
 
   return (
     <>
@@ -160,7 +205,9 @@ function MyReviewsPage() {
                     rating={review.rating}
                     content={review.content}
                     createdAt={review.createdAt}
-                    isMine={false}
+                    isMine
+                    onDelete={() => handleDeleteReview(review.reviewId)}
+                    isDeleting={deletingReviewId === review.reviewId}
                   />
                 </article>
               ))}
