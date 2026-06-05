@@ -151,6 +151,7 @@ function MyPage() {
                   key={club.clubId ?? club.id}
                   club={club}
                   onClick={() => navigate(`/club/${club.clubId ?? club.id}`)}
+                  onEdit={() => navigate(`/club/update/${club.clubId ?? club.id}`)}
                 />
               ))}
             </div>
