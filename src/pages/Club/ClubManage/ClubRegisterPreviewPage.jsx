@@ -76,7 +76,7 @@ const ClubRegisterPreviewPage = () => {
             {/* 상세페이지 미리보기 컴포넌트 호출 */}
             {/* ClubInfoSection이 props를 필요로 하지 않는다면 그대로 쓰시고, 만약 데이터를 요구한다면 data={...} 처럼 넘겨주어야 합니다. */}
             <div style={{ width: '100%' }}>
-              <ClubInfoSection club={clubData} />
+              <ClubInfoSection club={clubData} isPreview />
             </div>
           </div>
 
