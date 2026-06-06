@@ -10,7 +10,14 @@ const ClubCardMain = ({
   isFavoriteLoading = false,
   onFavoriteToggle,
 }) => {
-  const imageUrl = club.profileImageUrl || club.coverImageUrl;
+  const imageUrl =
+    club.profileImageUrl ||
+    club.profileImage ||
+    club.imageUrl ||
+    club.thumbnailUrl ||
+    club.coverImageUrl ||
+    club.coverImage ||
+    '';
   const [failedImageUrl, setFailedImageUrl] = useState('');
   const shouldShowImage = imageUrl && failedImageUrl !== imageUrl;
 
@@ -35,11 +42,11 @@ const ClubCardMain = ({
       )}
       
       <div className="club-card-badges">
-        <CategoryBadge>{club.category}</CategoryBadge>
+        <CategoryBadge>{club.category || club.categoryName || '기타'}</CategoryBadge>
         <RecruitStatusBadge status={club.status} />
       </div>
 
-      <h3>{club.name}</h3>
+      <h3>{club.name || club.clubName}</h3>
       <p className="club-card-description">
         {club.oneLineIntro || club.briefDescription || club.description || '동아리 소개가 아직 등록되지 않았습니다.'}
       </p>
