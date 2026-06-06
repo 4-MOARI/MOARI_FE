@@ -11,17 +11,27 @@
   box-sizing: border-box;
 }
 
+.club-card-main-image,
 .club-card-image-placeholder {
   width: 122px;
   height: 122px;
-  background: #EEEDFE;
+  flex: 0 0 122px;
   border-radius: 14px;
+  margin-bottom: 15px;
+}
+
+.club-card-main-image {
+  display: block;
+  object-fit: cover;
+}
+
+.club-card-image-placeholder {
+  background: #EEEDFE;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #534AB7;
   font-weight: 700;
-  margin-bottom: 15px;
 }
 
 .club-card-badges {
