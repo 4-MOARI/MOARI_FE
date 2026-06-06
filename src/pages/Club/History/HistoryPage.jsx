@@ -36,6 +36,19 @@ const fieldNameMap = {
   'clubName': '동아리명',
 };
 
+const linkTypeMap = {
+  'Web': '웹',
+  'web': '웹',
+  'Instagram': '인스타그램',
+  'instagram': '인스타그램',
+  'Notion': '노션',
+  'notion': '노션',
+  'Discord': '디스코드',
+  'discord': '디스코드',
+  'Etc': '기타',
+  'etc': '기타',
+};
+
 const getFieldName = (field) => fieldNameMap[field] || field;
 const isImageField = (field) => {
   return field.includes('Image') || field.includes('image') || field.includes('Url') || field.includes('url');
@@ -56,6 +69,42 @@ const formatHistoryValue = (field, value) => {
   } catch (error) {
     return value || '-';
   }
+};
+
+const parseLinks = (value) => {
+  if (!value || value === '-' || value === '[]') return [];
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    return [];
+  }
+};
+
+const renderLinks = (value) => {
+  const linkList = parseLinks(value);
+
+  if (linkList.length === 0) return <span>-</span>;
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+      {linkList.map((link, index) => {
+        // 사전에 정의된 값이면 한국어로 바꾸고, 없으면 입력값 그대로 활용
+        const displayType = linkTypeMap[link.type] || link.type || '기타';
+
+        return (
+          <div 
+            key={index} 
+            className="history-change-text" 
+            style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)' }}
+          >
+            {/* 플랫폼 이름과 URL을 한 줄로 연결 */}
+            {displayType}: {link.url}
+          </div>
+        );
+      })}
+    </div>
+  );
 };
 
 export default function HistoryPage() {
@@ -136,26 +185,32 @@ export default function HistoryPage() {
                           <div className="history-change-content">
                             <div className="history-change-box">
                               <p className="history-change-title">수정 전</p>
-                              <p className="history-change-text">
+                              <div className="history-change-text">
                                 {isImageField(item.modifiedField) && item.oldValue && item.oldValue !== '-' ? (
                                   <img src={item.oldValue} alt="수정 전" style={{width: '100%', borderRadius: '8px'}} />
                                 ) : isDateField(item.modifiedField) ? (
-                                  formatDate(item.oldValue) || '-'
+                                  formatDate(item.oldValue)
+                                ) : item.modifiedField === 'links' ? (
+                                  renderLinks(item.oldValue)
                                 ) : (
                                   item.oldValue || '-'
                                 )}
-                              </p>
+                              </div>
                             </div>
                             <span className="history-arrow">→</span>
                             <div className="history-change-box">
                               <p className="history-change-title">수정 후</p>
-                              <p className="history-change-text">
-                                {isImageField(item.modifiedField) && item.newValue ? (
-                                  <img src={item.newValue} alt="수정 후" style={{width: '100%', borderRadius: '8px'}} />
-                                ) : (
+                              <div className="history-change-text">
+                                {isImageField(item.modifiedField) && item.newValue && item.newValue !== '-' ? (
+                                  <img src={item.newValue} alt="수정 후" style={{ width: '100%', borderRadius: '8px' }} />
+                                  ) : isDateField(item.modifiedField) ? (
+                                    formatDate(item.newValue)
+                                  ) : item.modifiedField === 'links' ? (
+                                    renderLinks(item.newValue)
+                                  ) : (
                                     item.newValue || '-'
-                                )}
-                              </p>
+                                  )}
+                              </div>
                             </div>
                           </div>
                         </div>
