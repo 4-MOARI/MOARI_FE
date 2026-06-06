@@ -25,6 +25,25 @@ const fieldNameMap = {
   profileImage: '프로필 이미지',
   activity: '활동 내용',
   categoryId: '카테고리',
+  links: '외부 링크',
+};
+
+const formatHistoryValue = (field, value) => {
+  if (field !== 'links') return value || '-';
+
+  try {
+    const links = JSON.parse(value || '[]');
+
+    if (!Array.isArray(links) || links.length === 0) {
+      return '없음';
+    }
+
+    return links
+      .map((link) => `${link.type}: ${link.url}`)
+      .join('\n');
+  } catch (error) {
+    return value || '-';
+  }
 };
 
 export default function HistoryPage() {
@@ -105,12 +124,16 @@ export default function HistoryPage() {
                           <div className="history-change-content">
                             <div className="history-change-box">
                               <p className="history-change-title">수정 전</p>
-                              <p className="history-change-text">{item.oldValue}</p>
+                              <p className="history-change-text">
+                                {formatHistoryValue(item.modifiedField, item.oldValue)}
+                              </p>
                             </div>
                             <span className="history-arrow">→</span>
                             <div className="history-change-box">
                               <p className="history-change-title">수정 후</p>
-                              <p className="history-change-text">{item.newValue}</p>
+                              <p className="history-change-text">
+                                {formatHistoryValue(item.modifiedField, item.newValue)}
+                              </p>
                             </div>
                           </div>
                         </div>
