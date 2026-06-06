@@ -166,6 +166,8 @@
   font-size: var(--font-size-sm);
   color: var(--color-text-primary);
   line-height: 1.6;
+  word-break: break-all;
+  overflow-wrap: break-word;
 }
 
 .history-arrow {
@@ -195,6 +197,12 @@
   height: 140px;
   border-radius: var(--border-radius-md);
   overflow: hidden;
+}
+
+.sidebar-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .sidebar-image-placeholder {
