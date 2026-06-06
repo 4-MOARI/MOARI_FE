@@ -70,7 +70,15 @@ function ClubCard({
     club.rating ??
     0;
   const cardFavoriteCount = favoriteCount ?? club.favoriteCount;
-  const cardImageUrl = imageUrl || club.profileImageUrl || club.coverImageUrl;
+  const cardImageUrl =
+    imageUrl ||
+    club.profileImageUrl ||
+    club.profileImage ||
+    club.imageUrl ||
+    club.thumbnailUrl ||
+    club.coverImageUrl ||
+    club.coverImage ||
+    '';
   const cardIsFavorite = isFavorite ?? club.isFavorite ?? club.isLiked ?? false;
 
   return (
