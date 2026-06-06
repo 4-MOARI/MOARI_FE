@@ -23,12 +23,21 @@ export const createClub = async (requestBody) => {
 };
 
 export const uploadClubImage = async (file) => {
+  if (!(file instanceof File)) {
+    throw new Error('업로드할 이미지 파일이 올바르지 않습니다.');
+  }
+
   const formData = new FormData();
   formData.append('image', file);
 
   const response = await apiClient.post(
     '/uploads/clubs/images',
-    formData
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
   );
 
   return response.data.data.imageUrl;
