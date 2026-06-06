@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './ClubCardMain.css';
 import CategoryBadge from '../../common/Badge/CategoryBadge/CategoryBadge';
 import RecruitStatusBadge from '../../common/Badge/RecruitStatusBadge/RecruitStatusBadge';
@@ -10,6 +10,10 @@ const ClubCardMain = ({
   isFavoriteLoading = false,
   onFavoriteToggle,
 }) => {
+  const imageUrl = club.profileImageUrl || club.coverImageUrl;
+  const [failedImageUrl, setFailedImageUrl] = useState('');
+  const shouldShowImage = imageUrl && failedImageUrl !== imageUrl;
+
   const toggleLike = (e) => {
     e.stopPropagation(); // ★ 핵심: 이벤트가 부모(카드 전체)로 퍼지는 것을 막음
     if (!isFavoriteLoading) {
@@ -19,7 +23,16 @@ const ClubCardMain = ({
 
   return (
     <article className="club-card-main">
-      <div className="club-card-image-placeholder">IMAGE</div>
+      {shouldShowImage ? (
+        <img
+          className="club-card-main-image"
+          src={imageUrl}
+          alt={`${club.name || club.clubName} 이미지`}
+          onError={() => setFailedImageUrl(imageUrl)}
+        />
+      ) : (
+        <div className="club-card-image-placeholder">IMAGE</div>
+      )}
       
       <div className="club-card-badges">
         <CategoryBadge>{club.category}</CategoryBadge>

@@ -88,7 +88,8 @@ const ClubRegisterPreviewPage = () => {
             >이전</StyledButton>
             <StyledButton
               onClick={async () => {
-                const requestBody = {
+                try {
+                  const requestBody = {
                   clubName: clubData.name,
                   categoryId: Number(clubData.categoryId),
 
@@ -138,9 +139,8 @@ const ClubRegisterPreviewPage = () => {
                         linkType: field.selectedValue.toLowerCase(),
                         linkUrl: field.url || field.urlValue,
                       })) || [],
-                };
+                  };
 
-                try {
                   const result = await createClub(requestBody);
 
                   console.log('동아리 등록 응답 전체 =', result);
@@ -159,9 +159,17 @@ const ClubRegisterPreviewPage = () => {
 
                   navigate(`/club/${newClubId}`);
                 } catch (error) {
-                    console.error('동아리 등록 실패:', error);
-                    alert('동아리 등록에 실패했습니다. 백엔드에 저장되지 않았습니다.');
-                  }
+                  console.error('동아리 등록 실패:', error);
+
+                  const status = error.response?.status;
+                  const message = error.response?.data?.error?.message;
+
+                  alert(
+                    status === 404
+                      ? '이미지 업로드 API가 서버에 반영되지 않았습니다. 백엔드 develop 배포를 확인해주세요.'
+                      : message || '동아리 등록에 실패했습니다.',
+                  );
+                }
               }}
             >
               제출

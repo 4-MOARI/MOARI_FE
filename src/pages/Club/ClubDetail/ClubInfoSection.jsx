@@ -22,7 +22,6 @@ const ClubInfoSection = ({ club, isPreview = false }) => {
   const [favoriteCount, setFavoriteCount] = useState(Number(displayClub.favoriteCount || displayClub.likeCount || 0));
   const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
   const [modalImage, setModalImage] = useState(null);
-
   const recruitStartDate =
     displayClub.recruitStartAt || displayClub.recruitPeriod?.start;
 
@@ -48,7 +47,12 @@ const ClubInfoSection = ({ club, isPreview = false }) => {
   const statusToDisplay = getRecruitStatusByDate(
     recruitStartDate,
     recruitEndDate
-  ); 
+  );
+
+  const [failedCoverImageUrl, setFailedCoverImageUrl] = useState('');
+  const [failedProfileImageUrl, setFailedProfileImageUrl] = useState('');
+  const coverImageUrl = displayClub.coverImageUrl || displayClub.coverImage;
+  const profileImageUrl = displayClub.profileImageUrl || displayClub.profileImage;
 
   const schoolToDisplay =
     displayClub.schoolName ||
@@ -117,12 +121,34 @@ const ClubInfoSection = ({ club, isPreview = false }) => {
     <div style={{ width: '760px', position: 'relative', background: 'white', boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.10)', borderRadius: '24px', padding: '32px', boxSizing: 'border-box', margin: '0 auto' }}>
       
       {/* 1. 커버 이미지 */}
-      <div onClick={() => setModalImage('커버 이미지')} style={{ width: '696px', height: '170px', background: '#EEEDFE', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#534AB7', fontWeight: '700', cursor: 'pointer' }}>커버 이미지</div>
+      <div onClick={() => setModalImage(coverImageUrl)} style={{ width: '696px', height: '170px', background: '#EEEDFE', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#534AB7', fontWeight: '700', cursor: 'pointer', overflow: 'hidden' }}>
+        {coverImageUrl && failedCoverImageUrl !== coverImageUrl ? (
+          <img
+            src={coverImageUrl}
+            alt={`${displayClub.name || displayClub.clubName} 커버 이미지`}
+            onError={() => setFailedCoverImageUrl(coverImageUrl)}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+        ) : (
+          '커버 이미지'
+        )}
+      </div>
       
       {/* 2. 헤더 정보 */}
       <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <div onClick={() => setModalImage('프로필 사진')} style={{ width: '87px', height: '87px', background: '#EEEDFE', borderRadius: '14px', boxShadow: '4px 4px 2px rgba(0, 0, 0, 0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#534AB7', fontWeight: '700', fontSize: '12px', cursor: 'pointer' }}>프로필</div>
+          <div onClick={() => setModalImage(profileImageUrl)} style={{ width: '87px', height: '87px', background: '#EEEDFE', borderRadius: '14px', boxShadow: '4px 4px 2px rgba(0, 0, 0, 0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#534AB7', fontWeight: '700', fontSize: '12px', cursor: 'pointer', overflow: 'hidden' }}>
+            {profileImageUrl && failedProfileImageUrl !== profileImageUrl ? (
+              <img
+                src={profileImageUrl}
+                alt={`${displayClub.name || displayClub.clubName} 프로필 이미지`}
+                onError={() => setFailedProfileImageUrl(profileImageUrl)}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            ) : (
+              '프로필'
+            )}
+          </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <h1 style={{ fontSize: '30px', fontWeight: '700', margin: 0 }}>{displayClub.name}</h1>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
