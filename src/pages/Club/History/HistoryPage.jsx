@@ -7,7 +7,9 @@ import { useEffect } from 'react';
 import { getClubHistory } from '../../../api/clubApi';
 
 const formatDate = (dateStr) => {
+  if (!dateStr || dateStr === '-') return '-';
   const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return dateStr;
   const yyyy = d.getFullYear();
   const MM = String(d.getMonth() + 1).padStart(2, '0');
   const dd = String(d.getDate()).padStart(2, '0');
@@ -16,18 +18,28 @@ const formatDate = (dateStr) => {
   return `${yyyy}.${MM}.${dd}  ${HH}:${mm}`;
 };
 
-const fieldNameMap = {
-  description: '동아리 소개',
-  briefDescription: '한줄 소개',
-  clubName: '동아리 이름',
-  recruitPeriod: '모집 기간',
-  coverImage: '커버 이미지',
-  profileImage: '프로필 이미지',
-  activity: '활동 내용',
-  categoryId: '카테고리',
-  links: '외부 링크',
+const isDateField = (field) => {
+  return field.includes('At') || field.includes('Date');
 };
 
+const fieldNameMap = {
+  'description': '동아리 소개',
+  'activity': '활동 내용',
+  'recruitPeriod': '모집 기간',
+  'recruitStartAt': '모집 시작일',
+  'recruitEndAt': '모집 종료일',
+  'category': '카테고리',
+  'links': '외부 링크',
+  'coverImage': '커버 이미지',
+  'profileImageUrl': '프로필 이미지',
+  'coverImageUrl': '커버 이미지',
+  'clubName': '동아리명',
+};
+
+const getFieldName = (field) => fieldNameMap[field] || field;
+const isImageField = (field) => {
+  return field.includes('Image') || field.includes('image') || field.includes('Url') || field.includes('url');
+};
 const formatHistoryValue = (field, value) => {
   if (field !== 'links') return value || '-';
 
@@ -115,7 +127,7 @@ export default function HistoryPage() {
                         </div>
                         <div className="history-field-info">
                           <span className="history-field-label">수정 항목</span>
-                          <span className="history-field-value">{fieldNameMap[item.modifiedField] || item.modifiedField}</span>
+                          <span className="history-field-value">{getFieldName(item.modifiedField)}</span>
                         </div>
                       </div>
                       <div className="history-card-body">
@@ -125,14 +137,24 @@ export default function HistoryPage() {
                             <div className="history-change-box">
                               <p className="history-change-title">수정 전</p>
                               <p className="history-change-text">
-                                {formatHistoryValue(item.modifiedField, item.oldValue)}
+                                {isImageField(item.modifiedField) && item.oldValue && item.oldValue !== '-' ? (
+                                  <img src={item.oldValue} alt="수정 전" style={{width: '100%', borderRadius: '8px'}} />
+                                ) : isDateField(item.modifiedField) ? (
+                                  formatDate(item.oldValue) || '-'
+                                ) : (
+                                  item.oldValue || '-'
+                                )}
                               </p>
                             </div>
                             <span className="history-arrow">→</span>
                             <div className="history-change-box">
                               <p className="history-change-title">수정 후</p>
                               <p className="history-change-text">
-                                {formatHistoryValue(item.modifiedField, item.newValue)}
+                                {isImageField(item.modifiedField) && item.newValue ? (
+                                  <img src={item.newValue} alt="수정 후" style={{width: '100%', borderRadius: '8px'}} />
+                                ) : (
+                                    item.newValue || '-'
+                                )}
                               </p>
                             </div>
                           </div>
