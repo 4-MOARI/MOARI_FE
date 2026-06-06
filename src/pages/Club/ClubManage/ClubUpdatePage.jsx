@@ -84,8 +84,12 @@ const ClubUpdatePage = () => {
         setCoverImage(data.coverImageUrl || null);
         setProfileImage(data.profileImageUrl || null);
 
+        let restoredUrlFields = [
+          { id: Date.now(), type: 'select', selectedValue: 'URL', urlValue: '' },
+        ];
+
         if (Array.isArray(data.links) && data.links.length > 0) {
-          const restoredUrlFields = data.links.map((link, index) => ({
+          restoredUrlFields = data.links.map((link, index) => ({
             id: Date.now() + index,
             type: 'select',
             selectedValue:
@@ -96,11 +100,25 @@ const ClubUpdatePage = () => {
                 : 'URL',
             urlValue: link.url || '',
           }));
-
-          setUrlFields(restoredUrlFields);
-        } else {
-          setUrlFields([{ id: Date.now(), type: 'select', selectedValue: 'URL', urlValue: '' }]);
         }
+
+setUrlFields(restoredUrlFields);
+
+        setOriginalData(
+          normalizeUpdateData({
+            categoryId: data.categoryName || '',
+            oneLineIntro: data.briefDescription || '',
+            description: data.description || '',
+            activity: data.activity || '',
+            recruitInfo: {
+              recruitStartAt,
+              recruitEndAt,
+            },
+            urlFields: restoredUrlFields,
+            coverImage: data.coverImageUrl || null,
+            profileImage: data.profileImageUrl || null,
+          })
+        );
       } catch (error) {
         console.error('수정 페이지 동아리 조회 실패:', error);
         alert('동아리 정보를 불러오지 못했습니다.');
@@ -129,6 +147,8 @@ const ClubUpdatePage = () => {
   const [profileImage, setProfileImage] = useState(null);
   const [coverImageFile, setCoverImageFile] = useState(null);
   const [profileImageFile, setProfileImageFile] = useState(null);
+
+  const [originalData, setOriginalData] = useState(null);
   
   const formatLocalDate = (date) => {
     if (!date) return null;
@@ -154,6 +174,24 @@ const ClubUpdatePage = () => {
     return formatted.replaceAll('-', '.');
   };
 
+
+  const normalizeUpdateData = (data) => ({
+    categoryId: data.categoryId || '',
+    oneLineIntro: data.oneLineIntro || '',
+    description: data.description || '',
+    activity: data.activity || '',
+    recruitStartAt: formatLocalDate(data.recruitInfo?.recruitStartAt),
+    recruitEndAt: formatLocalDate(data.recruitInfo?.recruitEndAt),
+    links: (data.urlFields || [])
+      .filter((field) => field.selectedValue && field.selectedValue !== 'URL' && field.urlValue)
+      .map((field) => ({
+        selectedValue: field.selectedValue,
+        customLabel: field.customLabel || '',
+        urlValue: field.urlValue || '',
+      })),
+    coverImage: data.coverImage || null,
+    profileImage: data.profileImage || null,
+  });
 
   const coverInputRef = useRef(null);
   const profileInputRef = useRef(null);
@@ -380,7 +418,28 @@ const ClubUpdatePage = () => {
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', paddingRight: '40px' }}>
             <button 
-              onClick={() =>
+              onClick={() => {
+                const currentData = normalizeUpdateData({
+                  categoryId,
+                  oneLineIntro,
+                  description,
+                  activity,
+                  recruitInfo,
+                  urlFields,
+                  coverImage,
+                  profileImage,
+                });
+
+                const hasChanged =
+                  JSON.stringify(originalData) !== JSON.stringify(currentData) ||
+                  !!coverImageFile ||
+                  !!profileImageFile;
+
+                if (!hasChanged) {
+                  alert('수정사항이 없습니다.');
+                  return;
+                }
+
                 navigate(`/club/update/${clubId}/preview`, {
                   state: {
                     clubName,
@@ -404,26 +463,25 @@ const ClubUpdatePage = () => {
                     coverImageFile,
                     profileImageFile,
 
-                    // ★ 추가: ClubInfoSection에서 읽을 수 있게 이름 맞춤
                     id: clubId,
                     name: clubName,
                     category: categoryId,
                     activityContent: activity,
-                
+
                     links: urlFields.reduce((acc, field) => {
                       if (
                         field.selectedValue &&
                         field.selectedValue !== 'URL' &&
                         field.urlValue
                       ) {
-                        // ★ 수정: UrlButton이 읽을 수 있게 web, instagram, discord, notion 소문자로 저장
                         acc[field.selectedValue.toLowerCase()] = field.urlValue;
                       }
                       return acc;
                     }, {}),
                   },
-                })
-              }
+                });
+              }}
+              
               onMouseEnter={() => setIsHovered(true)} 
               onMouseLeave={() => setIsHovered(false)}
               style={{ 
