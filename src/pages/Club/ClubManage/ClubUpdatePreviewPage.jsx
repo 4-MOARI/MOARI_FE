@@ -77,7 +77,7 @@ const ClubUpdatePreviewPage = () => {
             
             {/* 실제 상세페이지 UI를 호출 */}
             <div style={{ width: '100%' }}>
-              <ClubInfoSection club={clubData} />
+              <ClubInfoSection club={clubData} isPreview />
             </div>
           </div>
 
