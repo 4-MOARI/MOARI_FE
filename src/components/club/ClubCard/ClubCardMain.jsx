@@ -13,10 +13,6 @@ const ClubCardMain = ({
   const imageUrl =
     club.profileImageUrl ||
     club.profileImage ||
-    club.imageUrl ||
-    club.thumbnailUrl ||
-    club.coverImageUrl ||
-    club.coverImage ||
     '';
   const [failedImageUrl, setFailedImageUrl] = useState('');
   const shouldShowImage = imageUrl && failedImageUrl !== imageUrl;

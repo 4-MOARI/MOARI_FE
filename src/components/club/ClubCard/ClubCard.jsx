@@ -74,10 +74,6 @@ function ClubCard({
     imageUrl ||
     club.profileImageUrl ||
     club.profileImage ||
-    club.imageUrl ||
-    club.thumbnailUrl ||
-    club.coverImageUrl ||
-    club.coverImage ||
     '';
   const cardIsFavorite = isFavorite ?? club.isFavorite ?? club.isLiked ?? false;
 
