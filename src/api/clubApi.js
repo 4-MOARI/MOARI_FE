@@ -28,12 +28,7 @@ export const uploadClubImage = async (file) => {
 
   const response = await apiClient.post(
     '/uploads/clubs/images',
-    formData,
-    {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    }
+    formData
   );
 
   return response.data.data.imageUrl;

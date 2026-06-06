@@ -97,6 +97,7 @@ const ClubUpdatePreviewPage = () => {
             {/* 수정 완료 시 해당 동아리의 상세 페이지로 이동 (clubId 사용) */}
             <StyledButton
               onClick={async () => {
+              try {
               const categoryNameToId = {
                 '학술': 1,
                 '체육': 2,
@@ -182,7 +183,6 @@ const ClubUpdatePreviewPage = () => {
                     }) || [],
               };
 
-                try {
                   console.log('수정 요청 body:', requestBody);
 
                   const result = await updateClub(clubId, requestBody);
@@ -193,7 +193,15 @@ const ClubUpdatePreviewPage = () => {
                 } catch (error) {
                   console.error('동아리 수정 실패:', error);
                   console.error('응답:', error.response?.data);
-                  alert(error.response?.data?.error?.message || '동아리 수정에 실패했습니다.');
+
+                  const status = error.response?.status;
+                  const message = error.response?.data?.error?.message;
+
+                  alert(
+                    status === 404
+                      ? '이미지 업로드 API가 서버에 반영되지 않았습니다. 백엔드 develop 배포를 확인해주세요.'
+                      : message || '동아리 수정에 실패했습니다.',
+                  );
                 }
               }}
             >
