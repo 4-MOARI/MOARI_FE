@@ -7,7 +7,9 @@ import { useEffect } from 'react';
 import { getClubHistory } from '../../../api/clubApi';
 
 const formatDate = (dateStr) => {
+  if (!dateStr || dateStr === '-') return '-';
   const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return dateStr;
   const yyyy = d.getFullYear();
   const MM = String(d.getMonth() + 1).padStart(2, '0');
   const dd = String(d.getDate()).padStart(2, '0');
@@ -16,18 +18,41 @@ const formatDate = (dateStr) => {
   return `${yyyy}.${MM}.${dd}  ${HH}:${mm}`;
 };
 
-const fieldNameMap = {
-  description: '동아리 소개',
-  briefDescription: '한줄 소개',
-  clubName: '동아리 이름',
-  recruitPeriod: '모집 기간',
-  coverImage: '커버 이미지',
-  profileImage: '프로필 이미지',
-  activity: '활동 내용',
-  categoryId: '카테고리',
-  links: '외부 링크',
+const isDateField = (field) => {
+  return field.includes('At') || field.includes('Date');
 };
 
+const fieldNameMap = {
+  'description': '동아리 소개',
+  'activity': '활동 내용',
+  'recruitPeriod': '모집 기간',
+  'recruitStartAt': '모집 시작일',
+  'recruitEndAt': '모집 종료일',
+  'category': '카테고리',
+  'links': '외부 링크',
+  'coverImage': '커버 이미지',
+  'profileImageUrl': '프로필 이미지',
+  'coverImageUrl': '커버 이미지',
+  'clubName': '동아리명',
+};
+
+const linkTypeMap = {
+  'Web': '웹',
+  'web': '웹',
+  'Instagram': '인스타그램',
+  'instagram': '인스타그램',
+  'Notion': '노션',
+  'notion': '노션',
+  'Discord': '디스코드',
+  'discord': '디스코드',
+  'Etc': '기타',
+  'etc': '기타',
+};
+
+const getFieldName = (field) => fieldNameMap[field] || field;
+const isImageField = (field) => {
+  return field.includes('Image') || field.includes('image') || field.includes('Url') || field.includes('url');
+};
 const formatHistoryValue = (field, value) => {
   if (field !== 'links') return value || '-';
 
@@ -44,6 +69,42 @@ const formatHistoryValue = (field, value) => {
   } catch (error) {
     return value || '-';
   }
+};
+
+const parseLinks = (value) => {
+  if (!value || value === '-' || value === '[]') return [];
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    return [];
+  }
+};
+
+const renderLinks = (value) => {
+  const linkList = parseLinks(value);
+
+  if (linkList.length === 0) return <span>-</span>;
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+      {linkList.map((link, index) => {
+        // 사전에 정의된 값이면 한국어로 바꾸고, 없으면 입력값 그대로 활용
+        const displayType = linkTypeMap[link.type] || link.type || '기타';
+
+        return (
+          <div 
+            key={index} 
+            className="history-change-text" 
+            style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)' }}
+          >
+            {/* 플랫폼 이름과 URL을 한 줄로 연결 */}
+            {displayType}: {link.url}
+          </div>
+        );
+      })}
+    </div>
+  );
 };
 
 export default function HistoryPage() {
@@ -115,7 +176,7 @@ export default function HistoryPage() {
                         </div>
                         <div className="history-field-info">
                           <span className="history-field-label">수정 항목</span>
-                          <span className="history-field-value">{fieldNameMap[item.modifiedField] || item.modifiedField}</span>
+                          <span className="history-field-value">{getFieldName(item.modifiedField)}</span>
                         </div>
                       </div>
                       <div className="history-card-body">
@@ -124,16 +185,32 @@ export default function HistoryPage() {
                           <div className="history-change-content">
                             <div className="history-change-box">
                               <p className="history-change-title">수정 전</p>
-                              <p className="history-change-text">
-                                {formatHistoryValue(item.modifiedField, item.oldValue)}
-                              </p>
+                              <div className="history-change-text">
+                                {isImageField(item.modifiedField) && item.oldValue && item.oldValue !== '-' ? (
+                                  <img src={item.oldValue} alt="수정 전" style={{width: '100%', borderRadius: '8px'}} />
+                                ) : isDateField(item.modifiedField) ? (
+                                  formatDate(item.oldValue)
+                                ) : item.modifiedField === 'links' ? (
+                                  renderLinks(item.oldValue)
+                                ) : (
+                                  item.oldValue || '-'
+                                )}
+                              </div>
                             </div>
                             <span className="history-arrow">→</span>
                             <div className="history-change-box">
                               <p className="history-change-title">수정 후</p>
-                              <p className="history-change-text">
-                                {formatHistoryValue(item.modifiedField, item.newValue)}
-                              </p>
+                              <div className="history-change-text">
+                                {isImageField(item.modifiedField) && item.newValue && item.newValue !== '-' ? (
+                                  <img src={item.newValue} alt="수정 후" style={{ width: '100%', borderRadius: '8px' }} />
+                                  ) : isDateField(item.modifiedField) ? (
+                                    formatDate(item.newValue)
+                                  ) : item.modifiedField === 'links' ? (
+                                    renderLinks(item.newValue)
+                                  ) : (
+                                    item.newValue || '-'
+                                  )}
+                              </div>
                             </div>
                           </div>
                         </div>
