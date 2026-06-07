@@ -56,9 +56,9 @@ const ClubInfoSection = ({ club, isPreview = false }) => {
 
   const schoolToDisplay =
     displayClub.schoolName ||
-    (displayClub.schoolType === '본인학교' || displayClub.schoolType === 'internal'
-      ? '성신여자대학교'
-      : '외부');
+    (displayClub.schoolType === '외부' || displayClub.schoolType === 'external'
+      ? '외부'
+      : '소속 학교');
       
   const formatDate = (date) => {
     if (!date) return "미정";
@@ -168,7 +168,9 @@ const ClubInfoSection = ({ club, isPreview = false }) => {
                 </span>
               )}
 
-              <span style={{ color: '#6B7280', fontSize: '13px' }}>{displayClub.schoolName || '외부'} · 찜 {favoriteCount}명</span>
+              <span style={{ color: '#6B7280', fontSize: '13px' }}>
+                {schoolToDisplay} · 찜 {favoriteCount}명
+              </span>
 
               <button
                 onClick={

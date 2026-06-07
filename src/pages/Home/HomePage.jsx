@@ -161,30 +161,51 @@ const HomePage = () => {
     <div>
       <Header showSwitch={true} clubType={clubType} setClubType={setClubType} />
 
-      <div style={{ width: '100%', height: '180px', background: '#EEEDFE', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-        <div style={{ color: '#534AB7', fontSize: '36px', fontWeight: '700', marginBottom: '20px' }}>
+      <div style={{ width: '100%', height: '250px', background: '#EEEDFE', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+        <div style={{ color: '#534AB7', fontSize: '45px', fontWeight: '700', marginBottom: '20px' }}>
           {clubType === 'internal' ? '우리 학교 동아리를 한눈에' : '전국의 동아리를 한눈에'}
         </div>
-        <div style={{ width: '520px', height: '50px', position: 'relative' }}>
-          <input type="text" placeholder="동아리 이름, 소개, 활동내용으로 검색" value={keyword} onChange={(e) => setKeyword(e.target.value)} onKeyDown={handleKeyDown} style={{ width: '100%', height: '100%', padding: '0 20px', borderRadius: '25px', border: 'none', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }} />
-          <button onClick={handleSearch} style={{ width: '66px', height: '38px', position: 'absolute', right: '6px', top: '6px', background: '#534AB7', color: 'white', borderRadius: '10px', border: 'none', fontWeight: '700', cursor: 'pointer' }}>검색</button>
+        <div style={{ width: '800px', height: '75px', position: 'relative' }}>
+          <input type="text" placeholder="동아리 이름, 소개, 활동내용으로 검색" value={keyword} onChange={(e) => setKeyword(e.target.value)} onKeyDown={handleKeyDown} style={{ width: '100%', height: '100%', padding: '0 23px', borderRadius: '38px', border: 'none', fontSize: '21px', outline: 'none', boxSizing: 'border-box' }} />
+          <button onClick={handleSearch} style={{ width: '100px', height: '57px', position: 'absolute', right: '20px', top: '9px', background: '#534AB7', color: 'white', borderRadius: '10px', border: 'none', fontSize: '18px', fontWeight: '700', cursor: 'pointer' }}>검색</button>
         </div>
       </div>
 
       <div style={{ width: '1280px', margin: '0 auto', padding: '40px 0' }}>
-        <div style={{ display: 'flex', gap: '24px', marginBottom: '20px' }}>
-          {categories.map((cat) => (
-            <CategoryFilterButton key={cat} label={cat} isActive={selectedCategory === cat} onClick={() => setSelectedCategory(cat)} />
-          ))}
-        </div>
+        <div
+        style={{
+          display: 'flex',
+          gap: '24px',
+          marginBottom: '40px',
+          transform: 'scale(1.3)',
+          transformOrigin: 'left center',
+        }}
+      >
+        {categories.map((cat) => (
+          <CategoryFilterButton
+            key={cat}
+            label={cat}
+            isActive={selectedCategory === cat}
+            onClick={() => setSelectedCategory(cat)}
+          />
+        ))}
+      </div>
 
-        <div style={{ display: 'flex', gap: '24px', marginBottom: '40px' }}>
+        <div
+          style={{
+            display: 'flex',
+            gap: '24px',
+            marginBottom: '60px',
+            transform: 'scale(1.3)',
+            transformOrigin: 'left center',
+          }}
+        >
           {statuses.map((status) => (
             <RecruitStatusFilterButton key={status} status={status} isActive={selectedStatus === status} onClick={() => setSelectedStatus(status)} />
           ))}
         </div>
 
-        <div style={{ color: '#6B7280', fontSize: '14px', fontWeight: '700', marginBottom: '20px' }}>
+        <div style={{ color: '#6B7280', fontSize: '14px', fontWeight: '700', marginBottom: '30px' }}>
           총 {filteredClubs.length}개 동아리
         </div>
 
