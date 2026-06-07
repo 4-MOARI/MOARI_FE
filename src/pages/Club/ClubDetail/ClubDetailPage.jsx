@@ -62,8 +62,7 @@ export default function ClubDetailPage() {
           schoolType: data.schoolType,
           schoolName:
             data.schoolName ||
-            data.campusLocation ||
-            (data.schoolType === '본인학교' ? '성신여자대학교' : '외부'),
+            (data.schoolType === '외부' || data.schoolType === 'external' ? '외부' : ''),
 
           status: data.isRecruiting,
           isRecruiting: data.isRecruiting,
