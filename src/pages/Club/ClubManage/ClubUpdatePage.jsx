@@ -16,6 +16,11 @@ const ClubUpdatePage = () => {
   useEffect(() => {
     if (returnedData) {
       setClubName(returnedData.clubName || returnedData.name || '');
+      setSchoolName(
+        returnedData.schoolName ||
+        returnedData.school ||
+        ''
+      );
       setOneLineIntro(returnedData.oneLineIntro || '');
       setDescription(returnedData.description || '');
       setActivity(returnedData.activity || returnedData.activityContent || '');
@@ -56,6 +61,11 @@ const ClubUpdatePage = () => {
 
 
         setClubName(data.clubName || '');
+        setSchoolName(
+          data.schoolName ||
+          data.school ||
+          (data.schoolType === '외부' || data.schoolType === 'external' ? '외부' : '')
+        );
         setOneLineIntro(data.briefDescription || '');
         setDescription(data.description || '');
         setActivity(data.activity || '');
@@ -135,6 +145,7 @@ setUrlFields(restoredUrlFields);
   const [description, setDescription] = useState(''); // ★ 추가
   const [activity, setActivity] = useState('');       // ★ 추가
   const [categoryId, setCategoryId] = useState('');   // ★ 추가
+  const [schoolName, setSchoolName] = useState('');
   const [recruitStatus, setRecruitStatus] = useState(''); 
   const [recruitInfo, setRecruitInfo] = useState({
     isRecruiting: false,
@@ -324,8 +335,22 @@ setUrlFields(restoredUrlFields);
                 <div style={{ position: 'absolute', right: '20px', top: '15px', color: '#6B7280', pointerEvents: 'none' }}>▼</div>
               </div>
               <div style={{ position: 'relative', width: '362px' }}>
-                <select disabled style={{ ...disabledStyle, width: '100%', height: '44px', padding: '0 20px', borderRadius: '10px', border: '1px solid #D1D5DB', appearance: 'none' }}>
-                  <option>성신여자대학교</option>
+                <select
+                  disabled
+                  value={schoolName}
+                  style={{
+                    ...disabledStyle,
+                    width: '100%',
+                    height: '44px',
+                    padding: '0 20px',
+                    borderRadius: '10px',
+                    border: '1px solid #D1D5DB',
+                    appearance: 'none',
+                  }}
+                >
+                  <option value={schoolName}>
+                    {schoolName || '소속 정보 없음'}
+                  </option>
                 </select>
               </div>
             </div>
@@ -443,6 +468,8 @@ setUrlFields(restoredUrlFields);
                 navigate(`/club/update/${clubId}/preview`, {
                   state: {
                     clubName,
+                    schoolName,
+                    school: schoolName,
                     oneLineIntro,
                     description,
                     activity,

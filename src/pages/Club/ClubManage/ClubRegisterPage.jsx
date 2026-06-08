@@ -1,12 +1,28 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { getCategories } from '../../../api/clubApi';
+import { getMyProfile } from '../../../api/userApi';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '../../../components/common/Header/Header';
 import RecruitStatusSection from '../../../components/club/RecruitStatusSection/RecruitStatusSection';
-import { crawlClub } from '../../../api/clubApi'; // 크롤링테스트
 
 
 import StyledButton from '../../../components/common/Button/StyledButton'; // 버튼 컴포넌트
+
+const SCHOOL_NAMES = {
+  1: '성신여자대학교',
+  2: '서울대학교',
+  3: '연세대학교',
+  4: '고려대학교',
+  5: '서강대학교',
+  6: '성균관대학교',
+  7: '한양대학교',
+  8: '중앙대학교',
+  9: '경희대학교',
+  10: '한국외국어대학교',
+  11: '서울시립대학교',
+  12: '이화여자대학교',
+  13: '숙명여자대학교',
+};
 
 const ClubRegisterPage = () => {
   const navigate = useNavigate(); // 페이지 이동용
@@ -54,7 +70,14 @@ const ClubRegisterPage = () => {
   const [categoryId, setCategoryId] = useState(
     state?.categoryId || ''
   );
-  const [schoolId, setSchoolId] = useState(state?.school || ''); // 수정됨
+  const [schoolId, setSchoolId] = useState(
+    state?.schoolId === null
+      ? 'external'
+      : state?.schoolId
+        ? String(state.schoolId)
+        : ''
+  );
+  const [mySchool, setMySchool] = useState(null);
   const [description, setDescription] = useState(state?.description || ''); // 수정됨
   const [activity, setActivity] = useState(state?.activity || ''); // 수정됨
   const [coverImage, setCoverImage] = useState(state?.coverImage || null);
@@ -128,20 +151,84 @@ const ClubRegisterPage = () => {
 
     fetchCategories();
   }, []);
+  useEffect(() => {
+    const fetchMySchool = async () => {
+      try {
+        const profile = await getMyProfile();
+
+        const resolvedSchoolId =
+          profile?.schoolId ||
+          profile?.school?.schoolId ||
+          profile?.school?.id;
+
+        const resolvedSchoolName =
+          profile?.schoolName ||
+          profile?.school?.schoolName ||
+          profile?.school?.name ||
+          SCHOOL_NAMES[resolvedSchoolId];
+
+        if (resolvedSchoolId && resolvedSchoolName) {
+          setMySchool({
+            label: resolvedSchoolName,
+            value: String(resolvedSchoolId),
+          });
+
+          if (!state?.schoolId && !state?.school) {
+            setSchoolId(String(resolvedSchoolId));
+          }
+        }
+      } catch (error) {
+        console.error('내 학교 정보 조회 실패:', error);
+
+        const savedUser = JSON.parse(localStorage.getItem('user') || '{}');
+
+        const resolvedSchoolId =
+          savedUser?.schoolId ||
+          savedUser?.school?.schoolId ||
+          savedUser?.school?.id;
+
+        const resolvedSchoolName =
+          savedUser?.schoolName ||
+          savedUser?.school?.schoolName ||
+          savedUser?.school?.name ||
+          SCHOOL_NAMES[resolvedSchoolId];
+
+        if (resolvedSchoolId && resolvedSchoolName) {
+          setMySchool({
+            label: resolvedSchoolName,
+            value: String(resolvedSchoolId),
+          });
+
+          if (!state?.schoolId && !state?.school) {
+            setSchoolId(String(resolvedSchoolId));
+          }
+        }
+      }
+    };
+
+    fetchMySchool();
+  }, [state?.schoolId, state?.school]);
 
   const handleNext = () => {
     if (!clubName || !categoryId || !schoolId) {
       alert("동아리명, 카테고리, 소속 학교는 필수 입력 사항입니다.");
       return;
     }
+
+    const selectedSchool = schools.find(
+      (school) => String(school.value) === String(schoolId)
+    );
+
     navigate('/club/register/preview', { 
       state: { 
         name: clubName,            // 수정: 전달하는 키값 name
         category: categories.find((cat) => String(cat.categoryId) === String(categoryId))?.categoryName || '',
         categoryId: Number(categoryId),
 
-        school: schoolId === 'external' ? '외부' : '성신여자대학교',
+        school: selectedSchool?.label || '',
+        schoolName: selectedSchool?.label || '',
         schoolId: schoolId === 'external' ? null : Number(schoolId),
+        schoolType: schoolId === 'external' ? '외부' : '본인학교',
         oneLineIntro, 
         description, 
         activity, 
@@ -179,11 +266,9 @@ const ClubRegisterPage = () => {
     });
   };
   
-
-
   const schools = [
-    { label: "성신여자대학교", value: "1" },
-    { label: "외부", value: "external" },
+    ...(mySchool ? [mySchool] : []),
+    { label: '외부', value: 'external' },
   ];
 
   const urlOptions = ["Web", "Instagram", "Discord", "Notion", "직접입력"];
