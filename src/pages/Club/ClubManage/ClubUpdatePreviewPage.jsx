@@ -174,11 +174,10 @@ const ClubUpdatePreviewPage = () => {
                       const isCustom = selectedValue === '직접입력';
 
                       return {
-                        linkType: isCustom ? '직접입력' : selectedValue,
-                        linkTitle: isCustom
+                        title: isCustom
                           ? field.customLabel || 'Link'
                           : selectedValue,
-                        linkUrl: field.urlValue || field.url,
+                        url: field.urlValue || field.url,
                       };
                     }) || [],
               };

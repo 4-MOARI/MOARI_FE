@@ -76,13 +76,19 @@ export default function ClubDetailPage() {
           isFavorite: Boolean(favoriteData?.isFavorite ?? data.isFavorite ?? data.isLiked ?? false),
           links: Array.isArray(data.links)
             ? data.links.reduce((acc, link) => {
-                if (link?.type && link?.url) {
-                  acc[link.type.toLowerCase()] = link.url;
+                const type = link.type || link.linkType || link.title || link.linkTitle;
+                const url = link.url || link.linkUrl;
+
+                if (type && url) {
+                  acc[String(type).toLowerCase()] = url;
                 }
+
                 return acc;
               }, {})
             : {},
         };
+        console.log('상세 GET 원본 data.links =', data.links);
+        console.log('상세 변환 후 formattedClub.links =', formattedClub.links);
 
         setClub(formattedClub);
       } catch (error) {
