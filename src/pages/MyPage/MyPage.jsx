@@ -112,7 +112,7 @@ function MyPage() {
               찜한 동아리
             </MyPageMenuItem>
             <MyPageMenuItem onClick={() => navigate('/mypage/reviews')}>내가 쓴 리뷰</MyPageMenuItem>
-            <MyPageMenuItem active>내가 등록한 동아리</MyPageMenuItem>
+            <MyPageMenuItem active>내가 등록,수정한 동아리</MyPageMenuItem>
             <MyPageMenuItem onClick={() => navigate('/mypage/account')}>
               계정 설정
             </MyPageMenuItem>
@@ -127,8 +127,8 @@ function MyPage() {
         <section className="mypage-content">
           <div className="mypage-content-header">
             <div>
-              <h1>내가 등록한 동아리</h1>
-              <p>관심 있는 동아리를 모아두고 모집 상태를 빠르게 확인합니다.</p>
+              <h1>내가 등록,수정한 동아리</h1>
+              <p>직접 등록했거나 수정한 동아리 정보를 한눈에 확인합니다.</p>
             </div>
 
             <span>총 {pagination.totalCount}개</span>
@@ -158,7 +158,7 @@ function MyPage() {
           )}
 
           <div className="mypage-guide">
-            내가 등록한 동아리를 수정할 수 있습니다.
+            등록하거나 수정한 동아리 정보를 다시 확인하고 관리할 수 있습니다.
           </div>
 
           <Pagination

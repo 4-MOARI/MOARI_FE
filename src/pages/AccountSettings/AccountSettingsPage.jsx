@@ -243,7 +243,7 @@ function AccountSettingsPage() {
             </MenuItem>
             <MenuItem onClick={() => navigate('/mypage/reviews')}>내가 쓴 리뷰</MenuItem>
             <MenuItem onClick={() => navigate('/mypage')}>
-              내가 등록한 동아리
+              내가 등록,수정한 동아리
             </MenuItem>
             <MenuItem active>계정 설정</MenuItem>
           </nav>
