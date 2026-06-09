@@ -69,9 +69,10 @@ export default function ClubDetailPage() {
           recruitPeriod: data.recruitPeriod,
           recruitStartAt: data.recruitPeriod?.start,
           recruitEndAt: data.recruitPeriod?.end,
-          warningMessage: data.
-          warningMessage,
-          displayWarning: data.displayWarning,
+          warningMessage: data.warningMessage,
+          displayWarning: Boolean(data.displayWarning),
+          yearsSinceUpdate: data.yearsSinceUpdate,
+          updatedAt: data.updatedAt,
           favoriteCount: data.favoriteCount ?? data.likeCount ?? 0,
           isFavorite: Boolean(favoriteData?.isFavorite ?? data.isFavorite ?? data.isLiked ?? false),
           links: Array.isArray(data.links)
