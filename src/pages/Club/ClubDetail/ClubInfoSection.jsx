@@ -242,12 +242,37 @@ const ClubInfoSection = ({ club, isPreview = false }) => {
         <span style={{ color: '#A32D2D', fontSize: '13px', fontWeight: '700' }}>신고 3회 누적 동아리입니다. 정보 확인 후 이용하세요.</span>
         <button style={{ padding: '8px 16px', background: '#D45353', color: 'white', borderRadius: '10px', border: 'none', fontWeight: '700', cursor: 'pointer' }}>신고</button>
       </div> */}
-      <div style={{ marginTop: '40px' }}>
-        {!isPreview && (
-        <ReportSection clubId={displayClub.id || displayClub.clubId || clubId} />
+      {displayClub.displayWarning && displayClub.warningMessage && (
+        <div
+          style={{
+            marginTop: '40px',
+            background: '#FFF4E5',
+            padding: '16px',
+            borderRadius: '12px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            border: '1px solid #FFD591',
+          }}
+        >
+          <span
+            style={{
+              color: '#9A5B00',
+              fontSize: '13px',
+              fontWeight: '700',
+              lineHeight: '1.5',
+            }}
+          >
+            {displayClub.warningMessage}
+          </span>
+        </div>
       )}
+
+      <div style={{ marginTop: displayClub.displayWarning ? '16px' : '40px' }}>
+        {!isPreview && (
+          <ReportSection clubId={displayClub.id || displayClub.clubId || clubId} />
+        )}
       </div>
-      
     </div>
   );
 };
