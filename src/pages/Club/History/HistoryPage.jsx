@@ -34,6 +34,7 @@ const fieldNameMap = {
   'profileImageUrl': '프로필 이미지',
   'coverImageUrl': '커버 이미지',
   'clubName': '동아리명',
+  'briefDescription':'한 줄 소개'
 };
 
 const linkTypeMap = {
