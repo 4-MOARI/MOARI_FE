@@ -1,13 +1,22 @@
-# MOARI_FE
-<<<<<<< HEAD
-서구실 4팀 모아리 프론트엔드 레포지토리입니다.
-=======
+# MOARI (모아리)
 
-## 실행 방법
+## 📌 프로젝트 소개
+대학교 동아리 정보를 쉽게 탐색하고 공유할 수 있는 통합 동아리 플랫폼입니다.
 
-npm install
-npm run dev
+## 🛠️ 개발 환경
+- Frontend: React, JavaScript, CSS
+- Backend: Node.js, Express.js
+- Database: MySQL
+- Collaboration: GitHub, Figma, Notion
 
-#axios 설치 추천
-npm install axios react-router-dom zustand
->>>>>>> develop
+## 📁 프로젝트 구조
+frontend/
+backend/
+
+## 👥 팀원
+- 김○○ : Frontend
+- 이○○ : Backend
+- 박○○ : Backend
+
+## 📅 개발 기간
+2026.03 ~ 2026.06
