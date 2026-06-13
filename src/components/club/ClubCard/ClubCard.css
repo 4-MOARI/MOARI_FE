@@ -1,0 +1,154 @@
+.registered-club-card {
+  background-color: var(--color-white);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.registered-club-card.club-card--registered {
+  position: relative;
+  width: 660px;
+  height: 157px;
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  box-sizing: border-box;
+  border-radius: 16px;
+  cursor: default;
+  padding: 20px 106px 20px 24px;
+}
+
+.registered-club-card .club-card-image,
+.registered-club-card .club-card-placeholder {
+  width: 120px;
+  height: 120px;
+  flex: 0 0 120px;
+  border-radius: 12px;
+}
+
+.registered-club-card .club-card-image {
+  object-fit: cover;
+}
+
+.registered-club-card .club-card-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  background-color: var(--color-primary-bg);
+  font-size: 12px;
+  font-weight: var(--font-weight-bold);
+}
+
+.registered-club-card .registered-club-card-main {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.registered-club-card .registered-club-card-badges {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 8px;
+  position: static;
+}
+
+.registered-club-card .registered-club-card-main h3 {
+  overflow: hidden;
+  color: var(--color-text-primary);
+  font-size: 20px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.registered-club-card .registered-club-card-main p {
+  overflow: hidden;
+  margin-top: 8px;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.registered-club-card .registered-club-card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 30px;
+  margin-top: 12px;
+  padding-top: 0;
+  font-size: 13px;
+}
+
+.registered-club-card .registered-club-card-actions {
+  position: absolute;
+  top: 21px;
+  right: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.registered-club-card .registered-club-card-actions button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-family);
+}
+
+.registered-club-card .registered-club-card-actions button:first-child {
+  min-width: 64px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 10px;
+  color: var(--color-white);
+  background-color: var(--color-primary);
+  font-size: 14px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+@media (max-width: 960px) {
+  .registered-club-card.club-card--registered {
+    width: 100%;
+    max-width: 660px;
+    padding-right: 120px;
+  }
+
+  .registered-club-card .club-card-image,
+  .registered-club-card .club-card-placeholder {
+    width: 96px;
+    height: 96px;
+    flex-basis: 96px;
+  }
+
+  .registered-club-card .registered-club-card-actions {
+    top: 24px;
+    right: 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  .registered-club-card.club-card--registered {
+    height: auto;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 18px;
+  }
+
+  .registered-club-card .club-card-image,
+  .registered-club-card .club-card-placeholder {
+    width: 100%;
+    height: 160px;
+    flex-basis: auto;
+  }
+
+  .registered-club-card .registered-club-card-actions {
+    position: static;
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}

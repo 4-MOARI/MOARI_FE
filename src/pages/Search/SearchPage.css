@@ -1,0 +1,256 @@
+@import '../../styles/variables.css';
+
+body {
+  background-color: var(--color-white);
+}
+
+.search-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px;
+}
+
+/* 검색창 */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.search-input-wrapper {
+  position: relative;
+  width: 500px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 40px 10px 16px;
+  border: 1px solid var(--input-border);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-md);
+  font-family: var(--font-family);
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: var(--input-focus-border);
+}
+
+.search-btn {
+  padding: 10px 20px;
+  background: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-md);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+}
+
+.search-btn:hover {
+  background: var(--color-primary-dark);
+}
+
+.search-result {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+/* 컨텐츠 영역 */
+.search-content {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 40px;
+  margin-bottom: 32px;
+}
+
+/* 필터 패널 */
+.filter-panel {
+  background: var(--color-white);
+  border-radius: var(--border-radius-lg);
+  padding: 24px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.1);
+  height: fit-content;
+}
+
+.filter-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: 20px;
+}
+
+.filter-section {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.filter-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.filter-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: 8px;
+}
+
+.filter-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+
+.filter-option {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.filter-option:hover {
+  color: var(--color-primary);
+}
+
+.filter-option-active {
+  font-size: var(--font-size-sm);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+}
+
+/* 동아리 목록 */
+.club-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* 동아리 카드 */
+.club-card {
+  display: flex;
+  gap: 20px;
+  background: var(--color-white);
+  border-radius: var(--border-radius-lg);
+  padding: 20px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.club-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.club-image {
+  width: 120px;
+  height: 100px;
+  flex-shrink: 0;
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+}
+
+.image-placeholder {
+  width: 100%;
+  height: 100%;
+  background: var(--color-primary-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  border-radius: var(--border-radius-md);
+}
+
+.club-info {
+  flex: 1;
+}
+
+.club-badges {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.category-badge {
+  background: var(--color-primary-bg);
+  color: var(--color-primary);
+  padding: 2px 10px;
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.recruiting-badge {
+  background: var(--color-recruiting-bg);
+  color: var(--color-recruiting-text);
+  padding: 2px 10px;
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.closed-badge {
+  background: var(--color-closed-bg);
+  color: var(--color-closed-text);
+  padding: 2px 10px;
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.club-name {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: 6px;
+}
+
+.club-desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: 10px;
+}
+
+.club-footer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* 별점 */
+.star-rating {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.star-filled {
+  color: var(--color-star);
+  font-size: var(--font-size-md);
+}
+
+.star-empty {
+  color: #ccc;
+  font-size: var(--font-size-md);
+}
+
+.rating-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-left: 4px;
+}
+
+.favorite-count {
+  font-size: var(--font-size-sm);
+  color: var(--color-favourite);
+}
+
+.club-list .club-card-actions {
+  display: none;
+}

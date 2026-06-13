@@ -1,0 +1,93 @@
+.review-section {
+  width: 360px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  padding: 24px;
+
+  background-color: var(--color-white);
+
+  border-radius: 20px;
+
+  box-shadow: var(--shadow-md);
+}
+
+/* 제목 */
+.review-section-title {
+  color: #111827;
+
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* 평균 별점 */
+.review-score {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.review-score-value {
+  font-size: 42px;
+  font-weight: 700;
+
+  color: #111827;
+}
+
+/* 리뷰 작성 버튼 */
+.review-write-button {
+  width: 300px;
+  height: 42px;
+
+  align-self: center;
+
+  border: 1px solid #534AB7;
+  border-radius: 10px;
+
+  background-color: #FFFFFF;
+
+  color: #534AB7;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+/* 리뷰 리스트 */
+.review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  max-height: 500px;
+
+  overflow-y: auto;
+}
+
+/* 리뷰 더보기 버튼 */
+.review-more-button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 10px 47px;
+
+  border: none;
+  border-radius: 20px;
+
+  background-color: #F5F5FF;
+
+  color: #503FAF;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.review-more-button:hover {
+  opacity: 0.8;
+}

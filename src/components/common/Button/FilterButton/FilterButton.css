@@ -1,0 +1,38 @@
+/* FilterButton.css (전체 수정본) */
+
+/* 1. 카테고리 타입 - 선택됨 */
+.btn-filter.category.selected {
+  background: #534AB7;
+  color: #FFF;
+}
+
+/* 2. 모집상태 타입 - 선택됨 */
+.btn-filter.status.selected {
+  background: #1F116D;
+  color: #FFF;
+}
+
+/* 선택 안 된 버튼들의 공통 스타일 */
+.btn-filter.unselected {
+  background: #EEEDFE;
+  color: #534AB7;
+}
+
+/* 공통 기본 스타일 */
+.btn-filter {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 17px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-filter.category { padding: 5px 10px; font-size: 14px; }
+.btn-filter.status { height: 25px; padding: 0 8px; font-size: 12px; }
+
+/* 누를 때 효과 */
+.btn-filter:active { transform: scale(0.85); }

@@ -1,0 +1,28 @@
+/* ReportWarningBox.css */
+
+.report-warning-box {
+  width: 640px;
+  height: 37px;
+
+  border-radius: 12px;
+  background: #FCEBEB;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 14px;
+
+  color: #A32D2D;
+
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
