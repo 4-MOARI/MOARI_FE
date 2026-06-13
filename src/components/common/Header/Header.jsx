@@ -30,8 +30,15 @@ function Header({
 
       <nav className="header-nav">
         <button 
-            className="nav-button"
-            onClick={() => navigate('/search')}>
+          className="nav-button"
+          onClick={() => {
+            if (showSwitch && clubType) {
+              navigate(`/search?schoolType=${clubType}`);
+            } else {
+              navigate('/search');
+            }
+          }}
+        >
           동아리 탐색
         </button>
 

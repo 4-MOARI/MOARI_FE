@@ -91,6 +91,21 @@ export default function ClubDetailPage() {
         console.log('상세 GET 원본 data.links =', data.links);
         console.log('상세 변환 후 formattedClub.links =', formattedClub.links);
 
+        console.log('상세 경고 원본 data =', {
+          updatedAt: data.updatedAt,
+          yearsSinceUpdate: data.yearsSinceUpdate,
+          displayWarning: data.displayWarning,
+          warningMessage: data.warningMessage,
+        });
+
+        console.log('상세 경고 변환 formattedClub =', {
+          updatedAt: formattedClub.updatedAt,
+          yearsSinceUpdate: formattedClub.yearsSinceUpdate,
+          displayWarning: formattedClub.displayWarning,
+          warningMessage: formattedClub.warningMessage,
+        });
+
+
         setClub(formattedClub);
       } catch (error) {
         console.error('API 상세 조회 실패:', error);
