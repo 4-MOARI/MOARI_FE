@@ -13,7 +13,7 @@ const CategoryFilterButton = ({ label, isActive, onClick }) => {
         fontWeight: '700',
         fontSize: '14px',
         fontFamily: 'Inter',
-        // transform 애니메이션을 transition에 명시하여 부드럽게 만듭니다.
+       
         transition: 'background 0.2s ease, color 0.2s ease, transform 0.1s ease',
         background: isActive ? '#534AB7' : '#EEEDFE',
         color: isActive ? 'white' : '#534AB7',

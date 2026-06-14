@@ -1,16 +1,14 @@
 // 동아리 수정페이지
-import React, { useState, useRef, useEffect } from 'react'; // useEffect 추가
+import React, { useState, useRef, useEffect } from 'react';
 import Header from '../../../components/common/Header/Header';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import RecruitStatusSection from '../../../components/club/RecruitStatusSection/RecruitStatusSection';
 import { getClubDetail } from '../../../api/clubApi';
 
 const ClubUpdatePage = () => {
-  const { clubId } = useParams(); // ★ ID 가져오기
+  const { clubId } = useParams();
   const navigate = useNavigate();
-
   const location = useLocation();
-  // ★ 추가: 프리뷰페이지에서 이전 버튼으로 돌아올 때 받은 데이터
   const returnedData = location.state;
 
   useEffect(() => {
@@ -70,7 +68,7 @@ const ClubUpdatePage = () => {
         setDescription(data.description || '');
         setActivity(data.activity || '');
 
-        // 현재 select가 카테고리 이름 배열이므로 categoryName 사용
+
         setCategoryId(data.categoryName || '');
 
         setRecruitStatus(data.isRecruiting || '마감');
@@ -139,12 +137,12 @@ setUrlFields(restoredUrlFields);
   }, [clubId, returnedData]);
 
 
-  // ★ 상태 선언 (데이터를 저장할 변수들)
+
   const [clubName, setClubName] = useState('');
   const [oneLineIntro, setOneLineIntro] = useState('');
-  const [description, setDescription] = useState(''); // ★ 추가
-  const [activity, setActivity] = useState('');       // ★ 추가
-  const [categoryId, setCategoryId] = useState('');   // ★ 추가
+  const [description, setDescription] = useState('');
+  const [activity, setActivity] = useState('');
+  const [categoryId, setCategoryId] = useState('');
   const [schoolName, setSchoolName] = useState('');
   const [recruitStatus, setRecruitStatus] = useState(''); 
   const [recruitInfo, setRecruitInfo] = useState({
@@ -243,7 +241,7 @@ setUrlFields(restoredUrlFields);
     }));
   };
 
-  // ★ 추가: URL 입력값을 urlFields state에 저장
+  
   const handleUrlValueChange = (id, value) => {
     setUrlFields(
       urlFields.map((field) =>

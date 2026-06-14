@@ -1,22 +1,17 @@
 import React from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router-dom'; // useLocation 추가
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import Header from '../../../components/common/Header/Header';
 import StyledButton from '../../../components/common/Button/StyledButton';
-// 상세 페이지의 UI를 재사용하기 위해 import 합니다.
 import ClubInfoSection from '../ClubDetail/ClubInfoSection'; 
-import { MOCK_CLUBS } from "../../../data/clubs"; // 데이터 import
+import { MOCK_CLUBS } from "../../../data/clubs";
 import { updateClub, uploadClubImage } from '../../../api/clubApi';
 
 const ClubUpdatePreviewPage = () => {
   const navigate = useNavigate();
   const { clubId } = useParams();
-  const { state } = useLocation(); // 1. 수정 페이지에서 보낸 데이터 받기
-
-  // ★ 수정: state가 있으면 state 사용, 없으면 MOCK 데이터 사용
+  const { state } = useLocation();
   const rawClubData = state || MOCK_CLUBS.find(c => String(c.id) === String(clubId));
 
- 
-    // ★ 추가: urlFields를 ClubInfoSection이 읽는 links 객체로 변환
     const linksFromUrlFields = Array.isArray(rawClubData?.urlFields)
       ? rawClubData.urlFields.reduce((acc, field) => {
           if (field?.selectedValue && field?.urlValue) {
@@ -26,7 +21,6 @@ const ClubUpdatePreviewPage = () => {
         }, {})
       : {};
 
-    // ★ 수정: ClubInfoSection에 넘길 최종 데이터
     const clubData = {
       ...rawClubData,
       name: rawClubData?.name || rawClubData?.clubName || '',
@@ -85,7 +79,6 @@ const ClubUpdatePreviewPage = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 40px' }}>
             <StyledButton
               variant="secondary"
-              // ★ 수정: 이전 버튼 클릭 시 수정페이지로 이동하면서 현재 프리뷰 데이터를 다시 전달
               onClick={() =>
                 navigate(`/club/update/${clubId}`, {
                   state: clubData,

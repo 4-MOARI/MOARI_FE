@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom'; // useNavigate 추가
+import { useParams, useNavigate } from 'react-router-dom'; 
 import CategoryBadge from "../../../components/common/Badge/CategoryBadge/CategoryBadge";
 import RecruitStatusBadge from "../../../components/common/Badge/RecruitStatusBadge/RecruitStatusBadge";
 import UrlButton from "../../../components/common/Button/UrlButton/UrlButton";
@@ -9,11 +9,9 @@ import { addFavoriteClub, deleteFavoriteClub } from '../../../api/userApi';
 
 
 const ClubInfoSection = ({ club, isPreview = false }) => {
-  // useParams를 호출하기 전에 컴포넌트 내부에서 안전하게 사용합니다.
+
   const params = useParams();
   const clubId = params?.clubId;
-
-  // club 데이터가 없으면 MOCK_CLUBS에서 찾고, 그것도 없으면 빈 객체를 반환합니다.
   const displayClub = club || (clubId ? MOCK_CLUBS.find(c => String(c.id) === String(clubId)) : {}) || {};
 
   const navigate = useNavigate();

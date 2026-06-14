@@ -6,7 +6,7 @@ import Header from '../../../components/common/Header/Header';
 import RecruitStatusSection from '../../../components/club/RecruitStatusSection/RecruitStatusSection';
 
 
-import StyledButton from '../../../components/common/Button/StyledButton'; // 버튼 컴포넌트
+import StyledButton from '../../../components/common/Button/StyledButton';
 
 const SCHOOL_NAMES = {
   1: '성신여자대학교',
@@ -48,7 +48,7 @@ const ClubRegisterPage = () => {
   
 
 
-  // 🔥 아예 처음 진입할 때(state가 없을 때)의 초기값 설정
+
   const [urlFields, setUrlFields] = useState(
     state?.urlFields ||
     (state?.links && typeof state.links === 'object'
@@ -78,8 +78,8 @@ const ClubRegisterPage = () => {
         : ''
   );
   const [mySchool, setMySchool] = useState(null);
-  const [description, setDescription] = useState(state?.description || ''); // 수정됨
-  const [activity, setActivity] = useState(state?.activity || ''); // 수정됨
+  const [description, setDescription] = useState(state?.description || '');
+  const [activity, setActivity] = useState(state?.activity || '');
   const [coverImage, setCoverImage] = useState(state?.coverImage || null);
   const [profileImage, setProfileImage] = useState(state?.profileImage || null);
   const [coverImageFile, setCoverImageFile] = useState(state?.coverImageFile || null);
@@ -221,7 +221,7 @@ const ClubRegisterPage = () => {
 
     navigate('/club/register/preview', { 
       state: { 
-        name: clubName,            // 수정: 전달하는 키값 name
+        name: clubName,
         category: categories.find((cat) => String(cat.categoryId) === String(categoryId))?.categoryName || '',
         categoryId: Number(categoryId),
 
