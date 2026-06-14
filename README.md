@@ -10,6 +10,7 @@
 - Collaboration: GitHub, Figma, Notion
 
 ## 📁 프로젝트 구조
+```text
 📦 MOARI
 ├── 📂 MOARI_FE                          # React + Vite 기반 프론트엔드
 │   ├── 📂 public                        # 정적 파일
