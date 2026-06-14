@@ -237,7 +237,7 @@ const ClubInfoSection = ({ club, isPreview = false }) => {
         </div>
       </div>
 
-      {/* 5. 신고 수정해주세요! */}
+      {/* 5. 신고  */}
       {/* <div style={{ marginTop: '40px', background: '#FCEBEB', padding: '16px', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span style={{ color: '#A32D2D', fontSize: '13px', fontWeight: '700' }}>신고 3회 누적 동아리입니다. 정보 확인 후 이용하세요.</span>
         <button style={{ padding: '8px 16px', background: '#D45353', color: 'white', borderRadius: '10px', border: 'none', fontWeight: '700', cursor: 'pointer' }}>신고</button>
