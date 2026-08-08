@@ -1,0 +1,254 @@
+.interview-review-page {
+  min-height: 100vh;
+  background: #f8f8fc;
+  color: #111827;
+}
+
+.interview-review-container {
+  width: min(900px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 56px 0 100px;
+}
+
+.interview-review-heading {
+  margin-bottom: 28px;
+}
+
+.interview-review-heading h1 {
+  margin: 0 0 10px;
+  font-size: 32px;
+  font-weight: 800;
+}
+
+.interview-review-heading p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 15px;
+}
+
+.interview-review-card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 42px 48px;
+  box-shadow: 0 12px 35px rgba(31, 24, 80, 0.07);
+}
+
+.club-name-box {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 20px 22px;
+  margin-bottom: 38px;
+  border-radius: 14px;
+  background: #f1efff;
+}
+
+.club-name-label {
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.club-name-box strong {
+  color: #342b86;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.interview-section {
+  padding: 30px 0;
+  border-bottom: 1px solid #eeeeF5;
+}
+
+.interview-section h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 16px;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.optional-text {
+  color: #9ca3af;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.section-description {
+  margin: -5px 0 14px;
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+.option-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.option-button,
+.competency-button {
+  min-width: 100px;
+  height: 44px;
+  padding: 0 20px;
+  border: 1px solid #d8d8e5;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #4b5563;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.option-button:hover,
+.competency-button:hover {
+  border-color: #6658cc;
+}
+
+.option-button.active,
+.competency-button.active {
+  border-color: #574bc4;
+  background: #574bc4;
+  color: #ffffff;
+}
+
+.atmosphere-button {
+  min-width: 170px;
+}
+
+.competency-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.question-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.question-input-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+}
+
+.question-input-row input {
+  width: 100%;
+  height: 52px;
+  border: 1px solid #d8d8e5;
+  border-radius: 12px;
+  padding: 0 16px;
+  box-sizing: border-box;
+  outline: none;
+  font-size: 14px;
+}
+
+.question-input-row input:focus,
+.interview-section textarea:focus {
+  border-color: #574bc4;
+}
+
+.question-delete-button {
+  height: 52px;
+  padding: 0 17px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.question-add-button {
+  margin-top: 12px;
+  border: none;
+  background: transparent;
+  color: #574bc4;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.interview-section textarea {
+  width: 100%;
+  min-height: 130px;
+  padding: 16px;
+  border: 1px solid #d8d8e5;
+  border-radius: 12px;
+  box-sizing: border-box;
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.interview-error {
+  margin: 24px 0 0;
+  color: #d14343;
+  font-size: 14px;
+  text-align: center;
+}
+
+.interview-button-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 34px;
+}
+
+.cancel-button,
+.submit-button {
+  height: 52px;
+  padding: 0 28px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cancel-button {
+  border: 1px solid #d8d8e5;
+  background: #ffffff;
+  color: #4b5563;
+}
+
+.submit-button {
+  min-width: 130px;
+  border: none;
+  background: #574bc4;
+  color: #ffffff;
+}
+
+.submit-button:hover {
+  background: #342b86;
+}
+
+.submit-button:disabled {
+  opacity: 0.65;
+  cursor: default;
+}
+
+@media (max-width: 700px) {
+  .interview-review-card {
+    padding: 28px 22px;
+  }
+
+  .option-button,
+  .competency-button,
+  .atmosphere-button {
+    flex: 1 1 calc(50% - 10px);
+  }
+
+  .interview-button-row {
+    flex-direction: column-reverse;
+  }
+
+  .cancel-button,
+  .submit-button {
+    width: 100%;
+  }
+}
