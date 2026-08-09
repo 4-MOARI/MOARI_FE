@@ -5,6 +5,8 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import RecruitStatusSection from '../../../components/club/RecruitStatusSection/RecruitStatusSection';
 import { getClubDetail } from '../../../api/clubApi';
 
+import ScheduleSection from '../../../components/club/ScheduleSection/ScheduleSection';
+
 const ClubUpdatePage = () => {
   const { clubId } = useParams();
   const navigate = useNavigate();
@@ -45,7 +47,17 @@ const ClubUpdatePage = () => {
         recruitStartAt: returnedRecruitStartAt,
         recruitEndAt: returnedRecruitEndAt,
       });
-
+      setSchedules(
+        returnedData.schedules && returnedData.schedules.length > 0
+          ? returnedData.schedules
+          : [
+              {
+                dayOfWeek: '',
+                startTime: '',
+                endTime: '',
+              },
+            ]
+      );
       if (returnedData.urlFields && returnedData.urlFields.length > 0) {
         setUrlFields(returnedData.urlFields);
       }
@@ -67,9 +79,19 @@ const ClubUpdatePage = () => {
         setOneLineIntro(data.briefDescription || '');
         setDescription(data.description || '');
         setActivity(data.activity || '');
-
-
         setCategoryId(data.categoryName || '');
+
+        setSchedules(
+          data.schedules && data.schedules.length > 0
+            ? data.schedules
+            : [
+                {
+                  dayOfWeek: '',
+                  startTime: '',
+                  endTime: '',
+                },
+              ]
+        );
 
         setRecruitStatus(data.isRecruiting || '마감');
 
@@ -112,21 +134,28 @@ const ClubUpdatePage = () => {
 
 setUrlFields(restoredUrlFields);
 
-        setOriginalData(
-          normalizeUpdateData({
-            categoryId: data.categoryName || '',
-            oneLineIntro: data.briefDescription || '',
-            description: data.description || '',
-            activity: data.activity || '',
-            recruitInfo: {
-              recruitStartAt,
-              recruitEndAt,
-            },
-            urlFields: restoredUrlFields,
-            coverImage: data.coverImageUrl || null,
-            profileImage: data.profileImageUrl || null,
-          })
-        );
+const initialSchedules = (data.schedules || []).map((schedule) => ({
+  dayOfWeek: schedule.dayOfWeek || '',
+  startTime: schedule.startTime?.slice(0, 8) || '',
+  endTime: schedule.endTime?.slice(0, 8) || '',
+}));
+
+setOriginalData(
+  normalizeUpdateData({
+    categoryId: data.categoryName || '',
+    oneLineIntro: data.briefDescription || '',
+    description: data.description || '',
+    activity: data.activity || '',
+    recruitInfo: {
+      recruitStartAt,
+      recruitEndAt,
+    },
+    schedules: initialSchedules,
+    urlFields: restoredUrlFields,
+    coverImage: data.coverImageUrl || null,
+    profileImage: data.profileImageUrl || null,
+  })
+);
       } catch (error) {
         console.error('수정 페이지 동아리 조회 실패:', error);
         alert('동아리 정보를 불러오지 못했습니다.');
@@ -156,7 +185,13 @@ setUrlFields(restoredUrlFields);
   const [profileImage, setProfileImage] = useState(null);
   const [coverImageFile, setCoverImageFile] = useState(null);
   const [profileImageFile, setProfileImageFile] = useState(null);
-
+  const [schedules, setSchedules] = useState([
+    {
+      dayOfWeek: '',
+      startTime: '',
+      endTime: '',
+    },
+  ]);
   const [originalData, setOriginalData] = useState(null);
   
   const formatLocalDate = (date) => {
@@ -189,18 +224,33 @@ setUrlFields(restoredUrlFields);
     oneLineIntro: data.oneLineIntro || '',
     description: data.description || '',
     activity: data.activity || '',
+
     recruitStartAt: formatLocalDate(data.recruitInfo?.recruitStartAt),
     recruitEndAt: formatLocalDate(data.recruitInfo?.recruitEndAt),
+
+    schedules: (data.schedules || []).map((schedule) => ({
+      dayOfWeek: schedule.dayOfWeek || '',
+      startTime: schedule.startTime?.slice(0, 8) || '',
+      endTime: schedule.endTime?.slice(0, 8) || '',
+    })),
+
     links: (data.urlFields || [])
-      .filter((field) => field.selectedValue && field.selectedValue !== 'URL' && field.urlValue)
+      .filter(
+        (field) =>
+          field.selectedValue &&
+          field.selectedValue !== 'URL' &&
+          field.urlValue
+      )
       .map((field) => ({
         selectedValue: field.selectedValue,
         customLabel: field.customLabel || '',
         urlValue: field.urlValue || '',
       })),
+
     coverImage: data.coverImage || null,
     profileImage: data.profileImage || null,
   });
+
 
   const coverInputRef = useRef(null);
   const profileInputRef = useRef(null);
@@ -358,6 +408,11 @@ setUrlFields(restoredUrlFields);
                 <textarea value={oneLineIntro} onChange={handleIntroChange} placeholder="동아리 한 줄 소개 (25자 제한)" style={{ width: '754px', height: '40px', padding: '10px', borderRadius: '10px', border: '1px solid #D1D5DB', resize: 'none', boxSizing: 'border-box' }} />
                 <span style={{ position: 'absolute', right: '15px', bottom: '10px', fontSize: '12px', color: '#9CA3AF' }}>{oneLineIntro.length}/25</span>
               </div>
+              
+              <ScheduleSection
+                schedules={schedules}
+                setSchedules={setSchedules}
+              />              
               <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="동아리 소개" style={{ width: '754px', height: '100px', padding: '10px', borderRadius: '10px', border: '1px solid #D1D5DB', boxSizing: 'border-box' }} />
               <textarea value={activity} onChange={(e) => setActivity(e.target.value)} placeholder="활동내용"style={{ width: '754px', height: '150px', padding: '10px', borderRadius: '10px', border: '1px solid #D1D5DB', boxSizing: 'border-box' }} />
             </div>
@@ -451,12 +506,14 @@ setUrlFields(restoredUrlFields);
                   urlFields,
                   coverImage,
                   profileImage,
+                  schedules,
                 });
 
                 const hasChanged =
+                  originalData === null ||
                   JSON.stringify(originalData) !== JSON.stringify(currentData) ||
-                  !!coverImageFile ||
-                  !!profileImageFile;
+                  coverImageFile !== null ||
+                  profileImageFile !== null;
 
                 if (!hasChanged) {
                   alert('수정사항이 없습니다.');
@@ -476,8 +533,13 @@ setUrlFields(restoredUrlFields);
 
                     recruitInfo: {
                       ...recruitInfo,
-                      recruitStartAt: formatLocalDate(recruitInfo.recruitStartAt),
-                      recruitEndAt: formatLocalDate(recruitInfo.recruitEndAt),
+                      recruitStartAt: recruitInfo.recruitStartAt
+                        ? String(recruitInfo.recruitStartAt).slice(0, 19)
+                        : null,
+
+                      recruitEndAt: recruitInfo.recruitEndAt
+                        ? String(recruitInfo.recruitEndAt).slice(0, 19)
+                        : null,
                     },
                     status: recruitInfo.isRecruiting ? '모집중' : '마감',
                     recruitStartAt: formatLocalDate(recruitInfo.recruitStartAt),
@@ -487,6 +549,7 @@ setUrlFields(restoredUrlFields);
                     profileImage,
                     coverImageFile,
                     profileImageFile,
+                    schedules,
 
                     id: clubId,
                     name: clubName,

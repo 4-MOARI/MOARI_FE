@@ -81,7 +81,15 @@ const ClubUpdatePreviewPage = () => {
               variant="secondary"
               onClick={() =>
                 navigate(`/club/update/${clubId}`, {
-                  state: clubData,
+                  state: {
+                    ...clubData,
+                    schedules: clubData.schedules || [],
+                    recruitInfo: clubData.recruitInfo || {
+                      isRecruiting: false,
+                      recruitStartAt: null,
+                      recruitEndAt: null,
+                    },
+                  },
                 })
               }
             >
@@ -151,6 +159,15 @@ const ClubUpdatePreviewPage = () => {
                   clubData.recruitEndAt
                 ),
               },
+
+
+              // ★ 이 부분 추가
+              schedules: (clubData.schedules || []).map((schedule) => ({
+                dayOfWeek: schedule.dayOfWeek,
+                startTime: schedule.startTime,
+                endTime: schedule.endTime,
+              })),
+              
                 links:
                   clubData.urlFields
                     ?.filter((field) => {

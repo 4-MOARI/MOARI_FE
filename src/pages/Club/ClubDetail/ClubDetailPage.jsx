@@ -55,6 +55,7 @@ export default function ClubDetailPage() {
           shortDescription: data.briefDescription,
           description: data.description,
           activityContent: data.activity,
+          schedules: data.schedules || [],
           profileImageUrl: data.profileImageUrl,
           coverImageUrl: data.coverImageUrl,
           category: data.categoryName,

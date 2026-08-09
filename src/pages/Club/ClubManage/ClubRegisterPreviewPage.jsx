@@ -31,6 +31,7 @@ const ClubRegisterPreviewPage = () => {
   const clubData = {
     ...state,
     name: state?.name || state?.clubName || '',
+    schedules: state?.schedules || [],
     category: state?.category || state?.categoryId || '',
     schoolName: state?.school || state?.schoolName || '외부',
     description: state?.description || '',
@@ -110,7 +111,7 @@ const ClubRegisterPreviewPage = () => {
                   briefDescription: clubData.oneLineIntro || '',
                   description: clubData.description || '',
                   activity: clubData.activityContent || clubData.activity || '',
-
+                  schedules: clubData.schedules || [],
                   profileImageUrl: await resolveImageUrl(clubData.profileImageFile, clubData.profileImage),
                   coverImageUrl: await resolveImageUrl(clubData.coverImageFile, clubData.coverImage),
 
