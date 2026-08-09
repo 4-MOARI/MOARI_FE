@@ -4,9 +4,9 @@ import { getMyProfile } from '../../../api/userApi';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '../../../components/common/Header/Header';
 import RecruitStatusSection from '../../../components/club/RecruitStatusSection/RecruitStatusSection';
+import ScheduleSection from '../../../components/club/ScheduleSection/ScheduleSection'; //시간선택
 
-
-import StyledButton from '../../../components/common/Button/StyledButton'; // 버튼 컴포넌트
+import StyledButton from '../../../components/common/Button/StyledButton';
 
 const SCHOOL_NAMES = {
   1: '성신여자대학교',
@@ -48,7 +48,7 @@ const ClubRegisterPage = () => {
   
 
 
-  // 🔥 아예 처음 진입할 때(state가 없을 때)의 초기값 설정
+
   const [urlFields, setUrlFields] = useState(
     state?.urlFields ||
     (state?.links && typeof state.links === 'object'
@@ -66,6 +66,16 @@ const ClubRegisterPage = () => {
       recruitEndAt: null,
   });
 
+  const [schedules, setSchedules] = useState(
+    state?.schedules || [
+      {
+        dayOfWeek: '',
+        startTime: '',
+        endTime: '',
+      },
+    ]
+  );
+
   const [clubName, setClubName] = useState(state?.name || '');
   const [categoryId, setCategoryId] = useState(
     state?.categoryId || ''
@@ -78,8 +88,8 @@ const ClubRegisterPage = () => {
         : ''
   );
   const [mySchool, setMySchool] = useState(null);
-  const [description, setDescription] = useState(state?.description || ''); // 수정됨
-  const [activity, setActivity] = useState(state?.activity || ''); // 수정됨
+  const [description, setDescription] = useState(state?.description || '');
+  const [activity, setActivity] = useState(state?.activity || '');
   const [coverImage, setCoverImage] = useState(state?.coverImage || null);
   const [profileImage, setProfileImage] = useState(state?.profileImage || null);
   const [coverImageFile, setCoverImageFile] = useState(state?.coverImageFile || null);
@@ -221,7 +231,7 @@ const ClubRegisterPage = () => {
 
     navigate('/club/register/preview', { 
       state: { 
-        name: clubName,            // 수정: 전달하는 키값 name
+        name: clubName,
         category: categories.find((cat) => String(cat.categoryId) === String(categoryId))?.categoryName || '',
         categoryId: Number(categoryId),
 
@@ -260,12 +270,34 @@ const ClubRegisterPage = () => {
 
         coverImage,
         profileImage,
+        schedules,
         coverImageFile,
         profileImageFile
       } 
     });
   };
-  
+
+  const DAYS = [
+    '월요일',
+    '화요일',
+    '수요일',
+    '목요일',
+    '금요일',
+    '토요일',
+    '일요일',
+  ];
+
+  const TIMES = [];
+
+  for (let h = 0; h < 24; h++) {
+    for (let m = 0; m < 60; m += 30) {
+      TIMES.push(
+        `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00`
+      );
+    }
+  }
+
+
   const schools = [
     ...(mySchool ? [mySchool] : []),
     { label: '외부', value: 'external' },
@@ -344,6 +376,10 @@ const ClubRegisterPage = () => {
                   <textarea value={oneLineIntro} onChange={handleIntroChange} placeholder="동아리 한 줄 소개 (25자 제한)" style={{ width: '754px', height: '40px', padding: '10px', borderRadius: '10px', border: '1px solid #D1D5DB', resize: 'none', boxSizing: 'border-box' }} />
                   <span style={{ position: 'absolute', right: '15px', bottom: '10px', fontSize: '12px', color: '#9CA3AF' }}>{oneLineIntro.length}/25</span>
                 </div>
+                <ScheduleSection
+                  schedules={schedules}
+                  setSchedules={setSchedules}
+                />
                 <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="동아리 소개" style={{ width: '754px', height: '100px', padding: '10px', borderRadius: '10px', border: '1px solid #D1D5DB', boxSizing: 'border-box' }} />
                 <textarea value={activity} onChange={(e) => setActivity(e.target.value)} placeholder="활동내용" style={{ width: '754px', height: '150px', padding: '10px', borderRadius: '10px', border: '1px solid #D1D5DB', boxSizing: 'border-box' }} />
               </div>

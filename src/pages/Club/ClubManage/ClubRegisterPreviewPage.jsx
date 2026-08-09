@@ -2,16 +2,15 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../../components/common/Header/Header';
 import StyledButton from '../../../components/common/Button/StyledButton';
-// 기존 상세 페이지에서 사용하던 컴포넌트를 import 합니다.
 import ClubInfoSection from '../ClubDetail/ClubInfoSection'; 
-import { useLocation } from 'react-router-dom'; // 1. import 추가
+import { useLocation } from 'react-router-dom';
 import { createClub, uploadClubImage } from '../../../api/clubApi';
 
 const ClubRegisterPreviewPage = () => {
   const navigate = useNavigate();
-  const { state } = useLocation(); // 2. 전달받은 state 받기
+  const { state } = useLocation();
   
-  // ★ 수정: 등록페이지에서 넘어온 URL 데이터를 UrlButton이 읽는 형태로 변환
+ 
   const linksFromUrlFields = Array.isArray(state?.urlFields)
     ? state.urlFields.reduce((acc, field) => {
         const url = field?.urlValue || field?.url;
@@ -29,10 +28,10 @@ const ClubRegisterPreviewPage = () => {
       }, {})
     : {};
 
-  // ★ 수정: ClubInfoSection에 넘길 최종 데이터
   const clubData = {
     ...state,
     name: state?.name || state?.clubName || '',
+    schedules: state?.schedules || [],
     category: state?.category || state?.categoryId || '',
     schoolName: state?.school || state?.schoolName || '외부',
     description: state?.description || '',
@@ -84,7 +83,7 @@ const ClubRegisterPreviewPage = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 40px' }}>
             <StyledButton 
               variant="secondary" 
-              onClick={() => navigate('/club/register', { state: clubData })} // 데이터 그대로 들고 이동
+              onClick={() => navigate('/club/register', { state: clubData })}
             >이전</StyledButton>
             <StyledButton
               onClick={async () => {
@@ -112,7 +111,7 @@ const ClubRegisterPreviewPage = () => {
                   briefDescription: clubData.oneLineIntro || '',
                   description: clubData.description || '',
                   activity: clubData.activityContent || clubData.activity || '',
-
+                  schedules: clubData.schedules || [],
                   profileImageUrl: await resolveImageUrl(clubData.profileImageFile, clubData.profileImage),
                   coverImageUrl: await resolveImageUrl(clubData.coverImageFile, clubData.coverImage),
 

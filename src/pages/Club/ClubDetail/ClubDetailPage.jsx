@@ -5,7 +5,8 @@ import { getClubDetail } from '../../../api/clubApi';
 import { getFavoriteStatus } from '../../../api/userApi';
 import { MOCK_CLUBS } from '../../../data/clubs';
 
-import Header from '../../../components/common/Header/Header';
+import Header from "../../../components/common/Header/Header";
+
 import ClubInfoSection from './ClubInfoSection';
 import ReviewSection from '../Review/ReviewSection';
 
@@ -46,6 +47,7 @@ export default function ClubDetailPage() {
           throw new Error('API 응답 데이터 없음');
         }
 
+
         const formattedClub = {
           id: data.clubId,
           clubId: data.clubId,
@@ -58,7 +60,6 @@ export default function ClubDetailPage() {
 
           description: data.description,
           activityContent: data.activity,
-
           profileImageUrl: data.profileImageUrl,
           coverImageUrl: data.coverImageUrl,
 
@@ -119,6 +120,9 @@ export default function ClubDetailPage() {
                 return acc;
               }, {})
             : {},
+          schedules: Array.isArray(data.schedules)
+            ? data.schedules
+            : [],
         };
 
         console.log(

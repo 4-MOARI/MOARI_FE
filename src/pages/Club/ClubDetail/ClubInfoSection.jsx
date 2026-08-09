@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom'; // useNavigate 추가
+import { useParams, useNavigate } from 'react-router-dom'; 
 import CategoryBadge from "../../../components/common/Badge/CategoryBadge/CategoryBadge";
 import RecruitStatusBadge from "../../../components/common/Badge/RecruitStatusBadge/RecruitStatusBadge";
 import UrlButton from "../../../components/common/Button/UrlButton/UrlButton";
@@ -9,11 +9,9 @@ import { addFavoriteClub, deleteFavoriteClub } from '../../../api/userApi';
 
 
 const ClubInfoSection = ({ club, isPreview = false }) => {
-  // useParams를 호출하기 전에 컴포넌트 내부에서 안전하게 사용합니다.
+
   const params = useParams();
   const clubId = params?.clubId;
-
-  // club 데이터가 없으면 MOCK_CLUBS에서 찾고, 그것도 없으면 빈 객체를 반환합니다.
   const displayClub = club || (clubId ? MOCK_CLUBS.find(c => String(c.id) === String(clubId)) : {}) || {};
 
   const navigate = useNavigate();
@@ -224,7 +222,34 @@ const ClubInfoSection = ({ club, isPreview = false }) => {
           <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '10px' }}>활동 내용</h3>
           <p style={{ color: '#6B7280', fontSize: '14px', lineHeight: '1.5', margin: 0, whiteSpace: 'pre-wrap' }}>{displayClub.activityContent}</p>
         </div>
-      
+
+        <div>
+          <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '10px' }}>
+            정기 활동 시간
+          </h3>
+
+          {displayClub.schedules && displayClub.schedules.length > 0 ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {displayClub.schedules.map((schedule, index) => (
+                <div
+                  key={index}
+                  style={{
+                    color: '#534AB7',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                  }}
+                >
+                  {schedule.dayOfWeek} {schedule.startTime.slice(0,5)} ~ {schedule.endTime.slice(0,5)}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p style={{ color: '#6B7280', fontSize: '14px' }}>
+              등록된 활동 시간이 없습니다.
+            </p>
+          )}
+        </div>     
+
         <div>
           <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '10px' }}>외부 링크</h3>
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
