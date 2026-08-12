@@ -25,6 +25,12 @@ import FindAccountPage from "../pages/Auth/FindAccountPage";
 
 import InterviewReviewPage from "../pages/Interview/InterviewReviewPage";
 
+import AiInterviewSetupPage from "../pages/AiInterview/AiInterviewSetupPage";
+import AiInterviewSessionPage from "../pages/AiInterview/AiInterviewSessionPage";
+import AiInterviewCompletePage from "../pages/AiInterview/AiInterviewCompletePage";
+import AiInterviewResultPage from "../pages/AiInterview/AiInterviewResultPage";
+import AiInterviewFeedbackPage from "../pages/AiInterview/AiInterviewFeedbackPage";
+
 export default function Router() {
   return (
     <BrowserRouter>
@@ -130,6 +136,52 @@ export default function Router() {
           element={
             <ProtectedRoute>
               <InterviewReviewPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* AI 모의면접 관련 경로들 */}
+        <Route
+          path="/clubs/:clubId/ai-interview/setup"
+          element={
+            <ProtectedRoute>
+              <AiInterviewSetupPage />
+            </ProtectedRoute>
+          }
+        />
+ 
+        <Route
+          path="/ai-interview/:interviewId"
+          element={
+            <ProtectedRoute>
+              <AiInterviewSessionPage />
+            </ProtectedRoute>
+          }
+        />
+ 
+        <Route
+          path="/ai-interview/:interviewId/complete"
+          element={
+            <ProtectedRoute>
+              <AiInterviewCompletePage />
+            </ProtectedRoute>
+          }
+        />
+ 
+        <Route
+          path="/ai-interview/:interviewId/result"
+          element={
+            <ProtectedRoute>
+              <AiInterviewResultPage />
+            </ProtectedRoute>
+          }
+        />
+ 
+        <Route
+          path="/ai-interview/:interviewId/feedback"
+          element={
+            <ProtectedRoute>
+              <AiInterviewFeedbackPage />
             </ProtectedRoute>
           }
         />
