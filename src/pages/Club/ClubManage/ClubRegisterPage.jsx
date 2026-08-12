@@ -153,7 +153,10 @@ const ClubRegisterPage = () => {
     const fetchCategories = async () => {
       try {
         const categoryList = await getCategories();
-        setCategories(categoryList);
+
+        if (Array.isArray(categoryList) && categoryList.length > 0) {
+          setCategories(categoryList);
+        }
       } catch (error) {
         console.warn('카테고리 조회 실패 → 기본 카테고리 사용:', error);
       }
@@ -161,6 +164,7 @@ const ClubRegisterPage = () => {
 
     fetchCategories();
   }, []);
+
   useEffect(() => {
     const fetchMySchool = async () => {
       try {
