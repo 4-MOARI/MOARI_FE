@@ -1,0 +1,82 @@
+.custom-picker {
+  width: 1134px;
+  box-sizing: border-box;
+
+  background: #eeedfe;
+  border-radius: 20px;
+
+  height: 64px;
+  padding: 0 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin: 16px auto 0;
+}
+
+.custom-picker__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  font-family: Inter, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.custom-picker__controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.custom-picker__clubs {
+  display: flex;
+  gap: 8px;
+}
+
+.club-chip {
+  width: 101px;
+  height: 36px;
+  border-radius: 18px;
+
+  background: #fff;
+  border: 1px solid #cbd5e1;
+
+  font-family: Inter, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #334155;
+  text-align: center;
+
+  cursor: pointer;
+}
+
+.club-chip--selected {
+  background: #ffeded;
+  border: 1px solid #534ab7;
+  color: #534ab7;
+}
+
+.analyze-btn {
+  width: 111px;
+  height: 40px;
+  border-radius: 20px;
+  border: none;
+
+  background: #534ab7;
+  color: #fff;
+
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.analyze-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
