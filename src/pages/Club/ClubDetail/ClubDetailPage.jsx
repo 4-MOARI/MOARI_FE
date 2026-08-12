@@ -38,10 +38,8 @@ export default function ClubDetailPage() {
 
     const fetchClubDetail = async () => {
       try {
-        const [data, favoriteData] = await Promise.all([
-          getClubDetail(clubId),
-          getFavoriteStatus(clubId).catch(() => null),
-        ]);
+        const data = await getClubDetail(clubId);
+        const favoriteData = await getFavoriteStatus(clubId).catch(() => null);
 
         if (!data) {
           throw new Error('API 응답 데이터 없음');
@@ -89,17 +87,14 @@ export default function ClubDetailPage() {
           yearsSinceUpdate: data.yearsSinceUpdate,
           updatedAt: data.updatedAt,
 
-          favoriteCount:
-            data.favoriteCount ??
-            data.likeCount ??
-            0,
+          favoriteCount: Number(data.favoriteCount || 0),
 
-          isFavorite: Boolean(
-            favoriteData?.isFavorite ??
-            data.isFavorite ??
-            data.isLiked ??
-            false
-          ),
+         isFavorite: Boolean(
+          favoriteData?.isFavorite ??
+          favoriteData?.data?.isFavorite ??
+          data.isFavorite ??
+          false
+        ),
 
           links: Array.isArray(data.links)
             ? data.links.reduce((acc, link) => {
@@ -206,7 +201,16 @@ export default function ClubDetailPage() {
             width: '760px',
           }}
         >
-          <ClubInfoSection club={club} />
+          <ClubInfoSection
+            club={club}
+            onFavoriteChange={(isFavorite, favoriteCount) => {
+              setClub((prev) => ({
+                ...prev,
+                isFavorite,
+                favoriteCount,
+              }));
+            }}
+          />
         </div>
 
         <div

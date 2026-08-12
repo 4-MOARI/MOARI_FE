@@ -236,6 +236,9 @@ function FavoritesPage() {
             <MenuItem onClick={() => navigate('/mypage')}>
               내가 등록,수정한 동아리
             </MenuItem>
+            <MenuItem onClick={() => navigate('/mypage/recommendations')}>
+              맞춤 동아리
+            </MenuItem>
             <MenuItem onClick={() => navigate('/mypage/account')}>
               계정 설정
             </MenuItem>

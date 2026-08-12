@@ -8,6 +8,10 @@ import MyPage from "../pages/MyPage/MyPage";
 import MyReviewsPage from "../pages/MyReviews/MyReviewsPage";
 import SearchPage from "../pages/Search/SearchPage";
 
+import RecommendationsPage from "../pages/Recommendations/RecommendationsPage";
+
+import ComparisonPage from "../pages/Recommendations/ComparisonPage";
+
 import HistoryPage from "../pages/Club/History/HistoryPage";
 import ClubDetailPage from "../pages/Club/ClubDetail/ClubDetailPage";
 import ClubRegisterPage from "../pages/Club/ClubManage/ClubRegisterPage";
@@ -61,6 +65,24 @@ export default function Router() {
           element={
             <ProtectedRoute>
               <MyReviewsPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/mypage/recommendations"
+          element={
+            <ProtectedRoute>
+              <RecommendationsPage />
+            </ProtectedRoute>
+          }
+        />
+        
+        <Route
+          path="/recommendations/compare"
+          element={
+            <ProtectedRoute>
+              <ComparisonPage />
             </ProtectedRoute>
           }
         />
