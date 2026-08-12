@@ -113,6 +113,9 @@ function MyPage() {
             </MyPageMenuItem>
             <MyPageMenuItem onClick={() => navigate('/mypage/reviews')}>내가 쓴 리뷰</MyPageMenuItem>
             <MyPageMenuItem active>내가 등록,수정한 동아리</MyPageMenuItem>
+            <MyPageMenuItem onClick={() => navigate('/mypage/recommendations')}>
+              맞춤 동아리
+            </MyPageMenuItem>
             <MyPageMenuItem onClick={() => navigate('/mypage/account')}>
               계정 설정
             </MyPageMenuItem>
