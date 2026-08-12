@@ -1,4 +1,3 @@
-
 /* 모달 뒤 어두운 배경 */
 .review-overlay {
   position: fixed;
@@ -17,131 +16,216 @@
 .review-modal {
   position: relative;
 
-  width: 320px;
-  height: 390px;
+  width: 600px;
+  height: 780px;
 
-  background: var(--color-white);
+  background: #fff;
 
   border-radius: 24px;
 
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 
-  padding: 36px;
+  padding: 44px 48px;
 
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 }
 
 /* 제목 */
 .review-title {
+  font-family: Inter, sans-serif;
   font-size: 22px;
   font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 8px;
+}
 
-  color: var(--color-text-primary);
+/* 동아리 이름 */
+.review-club-name {
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #64748b;
+  margin: 0 0 28px;
+}
 
-  margin-bottom: 24px;
+/* 전체 만족도 + 활동 강도 / 친목 비중 영역 */
+.review-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+}
+
+.review-field-label {
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 10px;
 }
 
 /* 별점 영역 */
 .review-stars {
   display: flex;
   gap: 4px;
-
-  margin-bottom: 14px;
 }
 
-/* 별 기본 스타일 */
 .star {
-  font-size: 38px;
+  font-size: 30px;
+  cursor: pointer;
+  transition: 0.2s;
+  line-height: 1;
+}
+
+.filled {
+  color: var(--color-star, #f5b301);
+}
+
+.empty {
+  color: #d1d5db;
+}
+
+/* 활동 강도 / 친목 비중 슬라이더 두 줄 */
+.review-field--sliders {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.review-slider-row .review-field-label {
+  margin-bottom: 8px;
+}
+
+/* 이런 점이 좋았어요 / 특징이에요 */
+.review-tags-section {
+  margin-bottom: 24px;
+}
+
+.review-tags-title {
+  font-family: Inter, sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 14px;
+}
+
+.review-tags-subtitle {
+  font-family: Inter, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+}
+
+/* 태그 칩 그리드 */
+.review-tags-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 8px;
+}
+
+.tag-chip {
+  width: 115px;
+  height: 38px;
+  border-radius: 19px;
+
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+
+  font-family: Inter, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: #475569;
+  text-align: center;
 
   cursor: pointer;
-
-  transition: 0.2s;
+  transition: 0.15s;
 }
 
-/* 선택된 별 */
-.filled {
-  color: var(--color-star);
-}
-
-/* 선택 안된 별 */
-.empty {
-  color: #D1D5DB;
-}
-
-/* 동아리 이름 */
-.review-club-name {
-  font-size: 14px;
-  font-weight: 400;
-
-  color: var(--color-text-secondary);
-
-  margin-bottom: 26px;
+.tag-chip--selected {
+  background: #eef2ff;
+  border: 1.5px solid #534ab7;
+  font-weight: 700;
+  color: #534ab7;
 }
 
 /* 리뷰 입력창 */
 .review-textarea {
-  width: 100%;
-  height: 92px;
+  width: 504px;
+  height: 280px;
 
-  border: 1px solid #D1D5DB;
-  border-radius: 10px;
+  background: #fafafc;
+  border: 1.2px solid #cbd5e1;
+  border-radius: 14px;
 
-  padding: 14px;
+  padding: 16px;
 
   resize: none;
-
   outline: none;
 
+  font-family: Inter, sans-serif;
   font-size: 14px;
-  font-family: inherit;
+  color: #1e293b;
 
-  color: var(--color-text-primary);
-  margin-bottom: 28px;
+  margin-bottom: 24px;
+  box-sizing: border-box;
 }
 
-/* textarea 포커스 */
+.review-textarea::placeholder {
+  color: #94a3b8;
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+}
+
 .review-textarea:focus {
-  border-color: var(--color-primary);
+  border-color: #534ab7;
 }
 
 /* 버튼 영역 */
 .review-buttons {
   display: flex;
   justify-content: space-between;
-  
-
-  
+  gap: 16px;
+  margin-top: auto;
 }
 
-/* 취소 버튼 */
 .cancel-btn {
-  width: 110px;
-  height: 44px;
+  flex: 1;
+  height: 48px;
 
   border-radius: 10px;
-  border: 1px solid #E5E7EB;
+  border: 1px solid #e5e7eb;
 
-  background: var(--color-white);
+  background: #fff;
 
+  font-family: Inter, sans-serif;
   font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+
   cursor: pointer;
 }
 
-/* 등록 버튼 */
 .submit-btn {
-  width: 110px;
-  height: 44px;
+  flex: 1;
+  height: 48px;
 
   border-radius: 10px;
   border: none;
 
-  background: var(--color-primary);
+  background: #534ab7;
+  color: #fff;
 
-  color: var(--color-white);
-
+  font-family: Inter, sans-serif;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
 
   cursor: pointer;
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
