@@ -4,7 +4,7 @@ import { useState } from 'react';
 import AiRecommendedCombos from './AiRecommendedCombos';
 import CustomCompatibilityPicker from './CustomCompatibilityPicker';
 import CompatibilityReport from './CompatibilityReport';
-import { analyzeCompatibility } from './compatibilityApi';
+import { analyzeCompatibility } from '../../api/compatibilityApi';
 import { LightbulbIcon } from './Icons';
 import './CompatibilitySection.css';
 
