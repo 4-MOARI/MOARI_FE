@@ -102,6 +102,7 @@
 .comparison-page__content {
   width: 1218px;
   margin: 0 auto;
+   margin-top: 40px;
   justify-content: center;
   box-sizing: border-box;
 }

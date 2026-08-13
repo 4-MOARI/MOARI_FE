@@ -25,6 +25,7 @@ const isDateField = (field) => {
 const fieldNameMap = {
   'description': '동아리 소개',
   'activity': '활동 내용',
+  'schedules': '정기 활동 시간',
   'recruitPeriod': '모집 기간',
   'recruitStartAt': '모집 시작일',
   'recruitEndAt': '모집 종료일',
@@ -101,6 +102,72 @@ const renderLinks = (value) => {
           >
             {/* 플랫폼 이름과 URL을 한 줄로 연결 */}
             {displayType}: {link.url}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+const parseSchedules = (value) => {
+  if (!value || value === '-' || value === '[]') {
+    return [];
+  }
+
+  try {
+    const parsed =
+      typeof value === 'string'
+        ? JSON.parse(value)
+        : value;
+
+    return Array.isArray(parsed)
+      ? parsed
+      : [];
+  } catch (error) {
+    return [];
+  }
+};
+
+const renderSchedules = (value) => {
+  const scheduleList = parseSchedules(value);
+
+  if (scheduleList.length === 0) {
+    return <span>없음</span>;
+  }
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '4px',
+      }}
+    >
+      {scheduleList.map((schedule, index) => {
+        const day =
+          schedule.dayOfWeek ??
+          schedule.day ??
+          '';
+
+        const start = schedule.startTime
+          ? String(schedule.startTime).slice(0, 5)
+          : '';
+
+        const end = schedule.endTime
+          ? String(schedule.endTime).slice(0, 5)
+          : '';
+
+        return (
+          <div
+            key={index}
+            className="history-change-text"
+          >
+            {day}
+            {start && end
+              ? ` ${start} ~ ${end}`
+              : start
+                ? ` ${start}`
+                : ''}
           </div>
         );
       })}
@@ -193,6 +260,8 @@ export default function HistoryPage() {
                                   formatDate(item.oldValue)
                                 ) : item.modifiedField === 'links' ? (
                                   renderLinks(item.oldValue)
+                                ) : item.modifiedField === 'schedules' ? (
+                                  renderSchedules(item.oldValue)
                                 ) : (
                                   item.oldValue || '-'
                                 )}
@@ -208,6 +277,8 @@ export default function HistoryPage() {
                                     formatDate(item.newValue)
                                   ) : item.modifiedField === 'links' ? (
                                     renderLinks(item.newValue)
+                                  ) : item.modifiedField === 'schedules' ? (
+                                    renderSchedules(item.newValue)
                                   ) : (
                                     item.newValue || '-'
                                   )}

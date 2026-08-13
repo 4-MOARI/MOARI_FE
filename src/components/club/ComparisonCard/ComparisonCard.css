@@ -6,14 +6,11 @@
 .comparison-card__top {
   position: relative;
 
-  width: 231px;
-  height: 177px;
-  min-height: 177px;
-
-  background: #ffffff;
+  width: 100%;
+  height: 185px;
 
   box-sizing: border-box;
-  flex-shrink: 0;
+  overflow: hidden;
 }
 
 
@@ -122,8 +119,10 @@
 .comparison-card__badges {
   position: absolute;
 
-  left: 137px;
+  left: 50%;
   top: 45px;
+
+  transform: translateX(30px);
 
   width: 75px;
 
@@ -159,16 +158,14 @@
   position: absolute;
 
   left: 0;
-  top: 125px;
+  top: 145px;
 
   width: 100%;
-  height: 32px;
+  height: 28px;
 
   padding: 0 16px;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
 
   box-sizing: border-box;
 
@@ -177,12 +174,15 @@
   font-size: 18px;
   font-weight: 700;
 
-  line-height: 1.2;
+  line-height: 28px;
   text-align: center;
 
-  white-space: nowrap;
+  /* 카드 밖으로 나가지 않음 */
   overflow: hidden;
-  text-overflow: ellipsis;
+
+  /* 긴 이름은 앞부분부터 표시 */
+  white-space: nowrap;
+  text-overflow: clip;
 }
 
 
@@ -248,12 +248,27 @@
   color: #111827;
 }
 
-.comparison-page__rating {
+.comparison-card__image {
+  position: absolute;
+
+  left: 50%;
+  top: 15px;
+
+  width: 102px;
+  height: 106px;
+
+  transform: translateX(-80px);
+
+  background: #eeedfe;
+  border-radius: 14px;
+
+  overflow: hidden;
+
   display: flex;
   align-items: center;
-  gap: 8px;
-  transform: scale(1.3);
-  transform-origin: left center;
+  justify-content: center;
+
+  box-sizing: border-box;
 }
 /* ==================================================
    찜
