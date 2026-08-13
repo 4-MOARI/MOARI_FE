@@ -6,6 +6,7 @@ import ComparisonCard from "../../components/club/ComparisonCard/ComparisonCard"
 
 import { getClubDetail } from "../../api/clubApi";
 import { getClubReviews } from "../../api/reviewApi";
+import { getComparisonData } from "../../api/comparisonApi";
 
 import "./ComparisonPage.css";
 import StarRating from "../../components/common/StarRating/StarRating";
@@ -139,9 +140,11 @@ const normalizeClub = (data) => {
       null,
 
     tags:
-      Array.isArray(data.tags)
-        ? data.tags
-        : [],
+      Array.isArray(data.topKeywords)
+        ? data.topKeywords
+        : Array.isArray(data.tags)
+          ? data.tags
+          : [],
     avgRating:
       data.avgRating ??
       data.averageRating ??
@@ -339,14 +342,49 @@ export default function ComparisonPage() {
           selectedClubs = detailResults.filter(Boolean);
         }
 
-        /*
-         * 선택된 객체가 기본 정보만 가지고 있는 경우
-         * clubId를 이용해서 실제 상세 데이터를 다시 가져옵니다.
-         *
-         * 이렇게 하면 앞 페이지에서
-         * { id, clubName } 정도만 넘겨도
-         * 비교 페이지에서는 상세 API 데이터를 사용할 수 있습니다.
-         */
+        const selectedClubIds = selectedClubs
+          .map(getClubId)
+          .filter(Boolean);
+
+        let comparisonData = [];
+
+        if (selectedClubIds.length >= 2) {
+          try {
+            const comparisonResponse =
+              await getComparisonData(selectedClubIds);
+
+            console.log("비교 API 원본 응답 =", comparisonResponse);
+
+            comparisonData =
+              comparisonResponse?.data?.clubs ??
+              [];
+
+            console.log("비교 API 원본 응답 =", comparisonResponse);
+            console.log("비교 API 최종 데이터 =", comparisonData);
+            console.log(
+              "비교 API 각 동아리 키워드 =",
+              comparisonData.map((item) => ({
+                clubId: item.clubId,
+                topKeywords: item.topKeywords,
+                
+                all: item,
+              }))
+            );
+
+            // 배열이 아니면 빈 배열 처리
+            if (!Array.isArray(comparisonData)) {
+              comparisonData = [];
+            }
+
+            console.log("비교 API 최종 데이터 =", comparisonData);
+          } catch (comparisonError) {
+            console.error(
+              "비교 데이터 조회 실패:",
+              comparisonError
+            );
+          }
+        }
+        
         const detailedClubs = await Promise.all(
           selectedClubs.map(async (club) => {
             const clubId = getClubId(club);
@@ -398,14 +436,34 @@ export default function ComparisonPage() {
                 averageRating
               );
 
+              const activityIntensity =
+                reviewData?.activityIntensity ??
+                reviewData?.data?.activityIntensity ??
+                null;
+
+              const friendshipRatio =
+                reviewData?.friendshipRatio ??
+                reviewData?.data?.friendshipRatio ??
+                null;
+
+              const comparisonClub =
+                comparisonData.find(
+                  (item) => Number(item.clubId) === Number(clubId)
+                );
+
               return normalizeClub({
                 ...club,
                 ...detail,
 
-                // 리뷰 API의 평균 별점을 비교 페이지에 저장
+                topKeywords:
+                  comparisonClub?.topKeywords ?? [],
+
                 avgRating: averageRating,
                 averageRating: averageRating,
                 rating: averageRating,
+
+                activityIntensity: activityIntensity,
+                friendshipRatio: friendshipRatio,
 
                 clubId,
                 id: clubId,
@@ -636,12 +694,40 @@ function ComparisonLabel({
 function getComparisonValue(club, key) {
   switch (key) {
     case "tags":
+  return Array.isArray(club.tags) && club.tags.length > 0 ? (
+    <div className="comparison-page__tags">
+      {club.tags.map((tag, index) => {
+        const tagName =
+          typeof tag === "string"
+            ? tag
+            : tag?.name ??
+              tag?.tagName ??
+              tag?.label ??
+              tag?.keywordName ??
+              "";
+
+        if (!tagName) return null;
+
+        return (
+          <span
+            key={`${tagName}-${index}`}
+            className="comparison-page__tag-chip"
+          >
+            {tagName}
+          </span>
+        );
+      })}
+    </div>
+  ) : (
+    "-"
+  );
       return Array.isArray(club.tags)
         ? club.tags
             .map((tag) =>
               typeof tag === "string"
                 ? tag
-                : tag?.name ??
+                : tag?.keywordName ??
+                  tag?.name ??
                   tag?.tagName ??
                   tag?.label
             )
@@ -657,26 +743,65 @@ function getComparisonValue(club, key) {
         0
       );
 
-      console.log(
-        `비교 화면 ${club.clubName} 별점 =`,
-        rating
-      );
-
       return (
-        <div className="comparison-page__rating">
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+            gap: "6px",
+          }}
+        >
           <StarRating
             value={rating}
             showScore={false}
-            size={18}
+            size={20}
           />
-          <span className="comparison-page__rating-score">
+
+          <span
+            style={{
+              fontSize: "19px",
+              fontWeight: 700,
+              color: "var(--color-star)",
+              whiteSpace: "nowrap",
+              transform: "translateY(2.5px)",
+            }}
+          >
             {rating.toFixed(1)}
           </span>
         </div>
       );
     }
-
     case "favoriteCount":
+  return (
+    <div className="comparison-page__favorite">
+      <svg
+        width="22"
+        height="21"
+        viewBox="0 0 24 21"
+        fill="#D4537E"
+        stroke="#D4537E"
+        strokeWidth="2"
+        
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path d="M12 19.5L10.55 18.18C5.4 13.56 2 10.5 2 6.75C2 3.72 4.42 1.5 7.5 1.5C9.24 1.5 10.91 2.33 12 3.65C13.09 2.33 14.76 1.5 16.5 1.5C19.58 1.5 22 3.72 22 6.75C22 10.5 18.6 13.56 13.45 18.19L12 19.5Z" />
+      </svg>
+
+      <span
+        style={{
+          fontSize: "19px",
+          fontWeight: 700,
+          color: "#D4537E",
+          whiteSpace: "nowrap",
+          transform: "translateY(1px)",
+        }}
+      >
+        {club.favoriteCount ?? 0}
+      </span>
+    </div>
+  );
       return (
         <div className="comparison-page__favorite">
           <svg

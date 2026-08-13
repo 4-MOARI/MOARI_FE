@@ -52,6 +52,17 @@ export default function ReviewModal({ clubId, clubName, onClose, onSuccess }) {
 
     try {
       setIsLoading(true);
+      
+      const reviewData = {
+        rating,
+        content,
+        activityIntensity,
+        friendshipRatio,
+        keywordIds: selectedTagIds,
+      };
+
+      console.log('리뷰 등록 keywordIds =', selectedTagIds);
+      console.log('리뷰 등록 keywordIds JSON =', JSON.stringify(selectedTagIds));
 
       await createReview(clubId, {
         rating,
