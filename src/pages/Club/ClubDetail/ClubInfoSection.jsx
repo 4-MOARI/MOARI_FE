@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom'; // useNavigate 추가
+import { useParams, useNavigate } from 'react-router-dom'; 
 import CategoryBadge from "../../../components/common/Badge/CategoryBadge/CategoryBadge";
 import RecruitStatusBadge from "../../../components/common/Badge/RecruitStatusBadge/RecruitStatusBadge";
 import UrlButton from "../../../components/common/Button/UrlButton/UrlButton";
@@ -8,18 +8,26 @@ import { MOCK_CLUBS } from "../../../data/clubs";
 import { addFavoriteClub, deleteFavoriteClub } from '../../../api/userApi';
 
 
-const ClubInfoSection = ({ club, isPreview = false }) => {
-  // useParams를 호출하기 전에 컴포넌트 내부에서 안전하게 사용합니다.
+  const ClubInfoSection = ({
+    club,
+    isPreview = false,
+    onFavoriteChange,
+  }) => {
+
   const params = useParams();
   const clubId = params?.clubId;
-
-  // club 데이터가 없으면 MOCK_CLUBS에서 찾고, 그것도 없으면 빈 객체를 반환합니다.
   const displayClub = club || (clubId ? MOCK_CLUBS.find(c => String(c.id) === String(clubId)) : {}) || {};
 
   const navigate = useNavigate();
   
-  const [isLiked, setIsLiked] = useState(Boolean(displayClub.isFavorite));
-  const [favoriteCount, setFavoriteCount] = useState(Number(displayClub.favoriteCount || displayClub.likeCount || 0));
+  const [isLiked, setIsLiked] = useState(
+    Boolean(displayClub.isFavorite ?? displayClub.isLiked)
+  );
+
+  const [favoriteCount, setFavoriteCount] = useState(
+    Number(displayClub.favoriteCount ?? 0)
+  );
+
   const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
   const [modalImage, setModalImage] = useState(null);
   const recruitStartDate =
@@ -77,8 +85,13 @@ const ClubInfoSection = ({ club, isPreview = false }) => {
 
   useEffect(() => {
     setIsLiked(Boolean(displayClub.isFavorite));
-    setFavoriteCount(Number(displayClub.favoriteCount || displayClub.likeCount || 0));
-  }, [displayClub.isFavorite, displayClub.favoriteCount, displayClub.likeCount]);
+    setFavoriteCount(
+      Number(displayClub.favoriteCount ?? 0)
+    );
+  }, [
+    displayClub.isFavorite,
+    displayClub.favoriteCount,
+  ]);
 
   const handleFavoriteToggle = async () => {
     if (!clubId) {
@@ -86,12 +99,20 @@ const ClubInfoSection = ({ club, isPreview = false }) => {
       return;
     }
 
-    const nextIsLiked = !isLiked;
-    const favoriteDelta = nextIsLiked ? 1 : -1;
+    const previousIsLiked = isLiked;
+    const previousCount = favoriteCount;
+
+    const nextIsLiked = !previousIsLiked;
+    const nextCount = Math.max(
+      Number(previousCount || 0) + (nextIsLiked ? 1 : -1),
+      0
+    );
 
     setIsFavoriteLoading(true);
+
     setIsLiked(nextIsLiked);
-    setFavoriteCount((prevCount) => Math.max(Number(prevCount || 0) + favoriteDelta, 0));
+    setFavoriteCount(nextCount);
+    onFavoriteChange?.(nextIsLiked, nextCount);
 
     try {
       if (nextIsLiked) {
@@ -100,18 +121,29 @@ const ClubInfoSection = ({ club, isPreview = false }) => {
         await deleteFavoriteClub(clubId);
       }
     } catch (error) {
-      const errorCode = error.response?.data?.error?.code || '';
+      const errorCode =
+        error.response?.data?.error?.code || '';
 
       if (
-        (nextIsLiked && errorCode === 'FAVORITE_ALREADY_EXISTS') ||
-        (!nextIsLiked && errorCode === 'FAVORITE_NOT_FOUND')
+        (nextIsLiked &&
+          errorCode === 'FAVORITE_ALREADY_EXISTS') ||
+        (!nextIsLiked &&
+          errorCode === 'FAVORITE_NOT_FOUND')
       ) {
         return;
       }
 
-      setIsLiked(!nextIsLiked);
-      setFavoriteCount((prevCount) => Math.max(Number(prevCount || 0) - favoriteDelta, 0));
-      alert(error.response?.data?.error?.message || '찜 처리에 실패했습니다.');
+      setIsLiked(previousIsLiked);
+      setFavoriteCount(previousCount);
+      onFavoriteChange?.(
+        previousIsLiked,
+        previousCount
+      );
+
+      alert(
+        error.response?.data?.error?.message ||
+        '찜 처리에 실패했습니다.'
+      );
     } finally {
       setIsFavoriteLoading(false);
     }
@@ -224,7 +256,34 @@ const ClubInfoSection = ({ club, isPreview = false }) => {
           <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '10px' }}>활동 내용</h3>
           <p style={{ color: '#6B7280', fontSize: '14px', lineHeight: '1.5', margin: 0, whiteSpace: 'pre-wrap' }}>{displayClub.activityContent}</p>
         </div>
-      
+
+        <div>
+          <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '10px' }}>
+            정기 활동 시간
+          </h3>
+
+          {displayClub.schedules && displayClub.schedules.length > 0 ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {displayClub.schedules.map((schedule, index) => (
+                <div
+                  key={index}
+                  style={{
+                    color: '#534AB7',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                  }}
+                >
+                  {schedule.dayOfWeek} {schedule.startTime.slice(0,5)} ~ {schedule.endTime.slice(0,5)}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p style={{ color: '#6B7280', fontSize: '14px' }}>
+              등록된 활동 시간이 없습니다.
+            </p>
+          )}
+        </div>     
+
         <div>
           <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '10px' }}>외부 링크</h3>
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>

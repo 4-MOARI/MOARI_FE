@@ -1,0 +1,278 @@
+.time-table {
+  width: 386px;
+  height: 554px;
+
+  position: relative;
+
+  user-select: none;
+  font-family: var(--font-family);
+
+  /* 전체 타임테이블 영역 */
+  padding: 0;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   요일 헤더
+   ========================================================= */
+
+.time-table-header {
+  width: 386px;
+  height: 36px;
+
+  display: grid;
+  grid-template-columns: 28px repeat(7, 1fr);
+  align-items: center;
+
+  background-color: #f4f3fc;
+
+  border: 1px solid #e0def7;
+  border-radius: 10px;
+
+  box-sizing: border-box;
+}
+
+
+.time-table-header-spacer {
+  width: 28px;
+}
+
+
+/* 요일 */
+
+.time-table-day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #6b7280;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  height: 100%;
+}
+
+
+.time-table-day.day-0 {
+  color: #534ab7;
+}
+
+
+.time-table-day.day-5 {
+  color: #0d9488;
+}
+
+
+.time-table-day.day-6 {
+  color: #e11d48;
+}
+
+
+/* =========================================================
+   요일 ↔ 시간표 사이 간격
+   ========================================================= */
+
+.time-table-body {
+  display: flex;
+
+  width: 386px;
+  height: 508px;
+
+  margin-top: 10px;
+}
+
+
+/* =========================================================
+   시간 라벨
+   ========================================================= */
+
+.time-table-labels {
+  width: 28px;
+  flex: 0 0 28px;
+
+  /* 실제 시간표와 라벨 사이 여백 */
+  padding-right: 0;
+
+  box-sizing: border-box;
+}
+
+
+.time-table-label {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+
+  padding-top: 0px;
+  transform: translateY(-3px);
+  padding-right: 3px;
+
+  box-sizing: border-box;
+
+  color: #9ca3af;
+
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+
+/* =========================================================
+   실제 시간표
+   ========================================================= */
+
+.time-table-grid {
+  position: relative;
+
+  display: grid;
+
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(26, 19.5px);
+
+  width: 358px;
+  height: 508px;
+
+  background-color: #fafafc;
+
+  border: 1px solid #e0def7;
+  border-radius: 8px;
+
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   시간표 칸
+   ========================================================= */
+
+.time-table-cell {
+  position: relative;
+  z-index: 1;
+}
+
+.time-table-club-schedule {
+  position: absolute;
+  z-index: 2;
+}
+
+.time-table-my-selection-overlay {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  box-sizing: border-box;
+  border: 1.5px dashed #534ab7;
+}
+
+/* 1시간 단위 경계는 실선 */
+.time-table-cell:nth-child(7n + 1),
+.time-table-cell:nth-child(7n + 2),
+.time-table-cell:nth-child(7n + 3),
+.time-table-cell:nth-child(7n + 4),
+.time-table-cell:nth-child(7n + 5),
+.time-table-cell:nth-child(7n + 6),
+.time-table-cell:nth-child(7n) {
+  border-bottom: 1px dashed #e8e7f1;
+}
+
+/* 짝수 번째 30분 행 = 1시간 경계 → 실선 */
+.time-table-cell:nth-child(n + 8):nth-child(-n + 14),
+.time-table-cell:nth-child(n + 22):nth-child(-n + 28),
+.time-table-cell:nth-child(n + 36):nth-child(-n + 42),
+.time-table-cell:nth-child(n + 50):nth-child(-n + 56),
+.time-table-cell:nth-child(n + 64):nth-child(-n + 70),
+.time-table-cell:nth-child(n + 78):nth-child(-n + 84),
+.time-table-cell:nth-child(n + 92):nth-child(-n + 98),
+.time-table-cell:nth-child(n + 106):nth-child(-n + 112),
+.time-table-cell:nth-child(n + 120):nth-child(-n + 126),
+.time-table-cell:nth-child(n + 134):nth-child(-n + 140),
+.time-table-cell:nth-child(n + 148):nth-child(-n + 154),
+.time-table-cell:nth-child(n + 162):nth-child(-n + 168),
+.time-table-cell:nth-child(n + 176):nth-child(-n + 182) {
+  border-bottom: 1px solid #e8e7f1;
+}
+
+.time-table-cell:nth-child(7n) {
+  border-right: none;
+}
+
+
+/* 마지막 줄의 아래 선 제거 */
+
+.time-table-cell:nth-last-child(-n + 7) {
+  border-bottom: none;
+}
+
+
+/* =========================================================
+   선택 상태
+   ========================================================= */
+
+.time-table-cell.my-selected {
+  background-color: rgba(83, 74, 183, 0.3);
+  box-sizing: border-box;
+}
+
+.time-table-cell.my-selected:hover {
+  border: 1.5px dashed #534ab7;
+}
+
+
+.time-table-cell.selected:hover {
+  background-color: rgba(83, 74, 183, 0.4);
+}
+
+.time-table-club-schedule {
+  position: absolute;
+  z-index: 2;
+
+  pointer-events: none;
+
+  box-sizing: border-box;
+
+  opacity: 0.45;
+
+  border-radius: 2px;
+}
+
+.time-table-selected-range {
+  position: absolute;
+
+  box-sizing: border-box;
+
+  border: 2px dashed #534ab7;
+  border-radius: 4px;
+
+  background-color: transparent;
+
+  pointer-events: none;
+
+  z-index: 20;
+}
+
+.time-table-club-schedule--overlap {
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(80, 80, 80, 0.28) 0,
+    rgba(80, 80, 80, 0.28) 2px,
+    transparent 2px,
+    transparent 7px
+  );
+}
+
+.time-table-overlap {
+  position: absolute;
+  z-index: 5;
+
+  pointer-events: none;
+
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(80, 80, 80, 0.35) 0,
+    rgba(80, 80, 80, 0.35) 2px,
+    transparent 2px,
+    transparent 7px
+  );
+}

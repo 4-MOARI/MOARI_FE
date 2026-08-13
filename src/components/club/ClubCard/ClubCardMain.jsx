@@ -18,11 +18,44 @@ const ClubCardMain = ({
   const shouldShowImage = imageUrl && failedImageUrl !== imageUrl;
 
   const toggleLike = (e) => {
+
     e.stopPropagation(); // 핵심: 이벤트가 카드 전체로 퍼지는 것을 막음
+
     if (!isFavoriteLoading) {
       onFavoriteToggle?.(club);
     }
   };
+  const recruitStartDate =
+    club.recruitStartAt || club.recruitPeriod?.start;
+
+  const recruitEndDate =
+    club.recruitEndAt || club.recruitPeriod?.end;
+
+  const getRecruitStatusByDate = (startDate, endDate) => {
+    if (!startDate || !endDate) return '마감';
+
+    const now = new Date();
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (
+      Number.isNaN(start.getTime()) ||
+      Number.isNaN(end.getTime())
+    ) {
+      return '마감';
+    }
+
+    end.setHours(23, 59, 59, 999);
+
+    return now >= start && now <= end
+      ? '모집중'
+      : '마감';
+  };
+
+  const statusToDisplay = getRecruitStatusByDate(
+    recruitStartDate,
+    recruitEndDate
+  );
 
   return (
     <article className="club-card-main">
@@ -39,7 +72,7 @@ const ClubCardMain = ({
       
       <div className="club-card-badges">
         <CategoryBadge>{club.category || club.categoryName || '기타'}</CategoryBadge>
-        <RecruitStatusBadge status={club.status} />
+        <RecruitStatusBadge status={statusToDisplay} />
       </div>
 
       <h3>{club.name || club.clubName}</h3>

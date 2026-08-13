@@ -1,0 +1,343 @@
+.comparison-page {
+  min-height: calc(100vh - 80px);
+  background: #f8f8fb;
+  padding: 0 0 100px;
+  box-sizing: border-box;
+  overflow-x: auto;
+}
+
+/* ----------------------------------------
+   상단
+---------------------------------------- */
+
+.comparison-page__top {
+  width: 1218px;
+  height: 82px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  box-sizing: border-box;
+}
+
+.comparison-page__back {
+  position: absolute;
+  left: 31px;
+  top: 16px;
+
+  width: 30px;
+  height: 30px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: #eeedfe;
+  color: #534ab7;
+
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
+
+  font-size: 18px;
+  font-weight: 700;
+
+  cursor: pointer;
+  z-index: 2;
+}
+
+.comparison-page__tab {
+  position: absolute;
+  left: 78px;
+  top: 12px;
+
+  width: 180px;
+  height: 38px;
+
+  box-sizing: border-box;
+
+  padding: 10px 20px;
+
+  border-radius: 12px;
+
+  background: #eeedfe;
+  color: #534ab7;
+
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/*비교항목라벨 */
+.comparison-page__label {
+  width: 170px;
+  height: 44px;
+
+  border-radius: 24px;
+  background: #ffffff;
+
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.1);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #000000;
+  font-size: 18px;
+  font-weight: 700;
+
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.comparison-page__label--active {
+  background: rgba(209, 213, 219, 0.6);
+}
+
+/* ----------------------------------------
+비교 영역
+---------------------------------------- */
+
+.comparison-page__content {
+  width: 1218px;
+  margin: 0 auto;
+
+  box-sizing: border-box;
+}
+
+.comparison-page__comparison {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 14px;
+
+  box-sizing: border-box;
+}
+
+.comparison-page__row {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    170px
+    repeat(var(--club-count), 231px);
+
+  column-gap: 25px;
+
+  align-items: stretch;
+
+  box-sizing: border-box;
+}
+
+.comparison-page__club-header {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    170px
+    repeat(var(--club-count), 231px);
+
+  column-gap: 25px;
+
+  align-items: start;
+
+  box-sizing: border-box;
+}
+
+
+/* 비교 카드가 각각 한 칸씩 차지하도록 고정 */
+.comparison-page__club-header > .comparison-card {
+  width: 231px;
+  min-width: 231px;
+  max-width: 231px;
+
+  grid-column: auto;
+}
+
+
+.comparison-page__club-header {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    170px
+    repeat(var(--club-count), 231px);
+
+  column-gap: 25px;
+
+  align-items: start;
+
+  box-sizing: border-box;
+}
+
+
+/* 동아리 비교 카드 */
+.comparison-page__club-header .comparison-card {
+  width: 231px;
+}
+
+.comparison-page__empty-label {
+  width: 170px;
+  height: 177px;
+}
+
+
+.comparison-page__value {
+  width: 231px;
+  min-height: 56px;
+
+  padding: 14px 16px;
+
+  background: #ffffff;
+
+  border-bottom: 1px solid #e5e7eb;
+
+  display: flex;
+  align-items: center;
+
+  box-sizing: border-box;
+
+  color: #374151;
+
+  font-size: 13px;
+  line-height: 1.45;
+
+  word-break: break-word;
+}
+
+/* ----------------------------------------
+   궁합 영역
+---------------------------------------- */
+
+.comparison-page__compatibility {
+  width: 1215px;
+  min-height: 300px;
+
+  margin: 45px auto 0;
+
+  background: #ffffff;
+  border-radius: 24px;
+
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.1);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #000000;
+  font-size: 48px;
+  font-weight: 400;
+
+  box-sizing: border-box;
+}
+
+/* ----------------------------------------
+   로딩 / 오류
+---------------------------------------- */
+
+.comparison-page__loading,
+.comparison-page__message {
+  width: 1215px;
+  min-height: 300px;
+
+  margin: 40px auto;
+
+  background: #ffffff;
+  border-radius: 24px;
+
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.1);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  color: #374151;
+  font-size: 16px;
+}
+
+.comparison-page__message p {
+  margin: 0 0 20px;
+}
+
+.comparison-page__message button {
+  height: 42px;
+  padding: 0 18px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: #534ab7;
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+/* ----------------------------------------
+   1280px 기준 Figma 화면
+---------------------------------------- */
+
+@media (max-width: 1250px) {
+  .comparison-page__top,
+  .comparison-page__content,
+  .comparison-page__compatibility {
+    margin-left: 30px;
+    margin-right: 30px;
+  }
+}
+
+/* ==============================
+   비교 페이지 - 별점
+============================== */
+
+.comparison-page__rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.comparison-page__rating-number {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+
+/* ==============================
+   비교 페이지 - 찜
+============================== */
+
+.comparison-page__favorite {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.comparison-page__favorite svg {
+  flex-shrink: 0;
+}
+
+.comparison-page__favorite span {
+  font-size: 15px;
+  font-weight: 600;
+  color: #D4537E
+}
+
+.comparison-page__rating {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.comparison-page__rating-score {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
