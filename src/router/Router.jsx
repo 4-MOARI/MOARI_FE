@@ -8,6 +8,10 @@ import MyPage from "../pages/MyPage/MyPage";
 import MyReviewsPage from "../pages/MyReviews/MyReviewsPage";
 import SearchPage from "../pages/Search/SearchPage";
 
+import RecommendationsPage from "../pages/Recommendations/RecommendationsPage";
+
+import ComparisonPage from "../pages/Recommendations/ComparisonPage";
+
 import HistoryPage from "../pages/Club/History/HistoryPage";
 import ClubDetailPage from "../pages/Club/ClubDetail/ClubDetailPage";
 import ClubRegisterPage from "../pages/Club/ClubManage/ClubRegisterPage";
@@ -20,6 +24,12 @@ import SignupPage from "../pages/Auth/SignupPage";
 import FindAccountPage from "../pages/Auth/FindAccountPage";
 
 import InterviewReviewPage from "../pages/Interview/InterviewReviewPage";
+
+import AiInterviewSetupPage from "../pages/AiInterview/AiInterviewSetupPage";
+import AiInterviewSessionPage from "../pages/AiInterview/AiInterviewSessionPage";
+import AiInterviewCompletePage from "../pages/AiInterview/AiInterviewCompletePage";
+import AiInterviewResultPage from "../pages/AiInterview/AiInterviewResultPage";
+import AiInterviewFeedbackPage from "../pages/AiInterview/AiInterviewFeedbackPage";
 
 export default function Router() {
   return (
@@ -61,6 +71,24 @@ export default function Router() {
           element={
             <ProtectedRoute>
               <MyReviewsPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/mypage/recommendations"
+          element={
+            <ProtectedRoute>
+              <RecommendationsPage />
+            </ProtectedRoute>
+          }
+        />
+        
+        <Route
+          path="/recommendations/compare"
+          element={
+            <ProtectedRoute>
+              <ComparisonPage />
             </ProtectedRoute>
           }
         />
@@ -108,6 +136,52 @@ export default function Router() {
           element={
             <ProtectedRoute>
               <InterviewReviewPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* AI 모의면접 관련 경로들 */}
+        <Route
+          path="/clubs/:clubId/ai-interview/setup"
+          element={
+            <ProtectedRoute>
+              <AiInterviewSetupPage />
+            </ProtectedRoute>
+          }
+        />
+ 
+        <Route
+          path="/ai-interview/:interviewId"
+          element={
+            <ProtectedRoute>
+              <AiInterviewSessionPage />
+            </ProtectedRoute>
+          }
+        />
+ 
+        <Route
+          path="/ai-interview/:interviewId/complete"
+          element={
+            <ProtectedRoute>
+              <AiInterviewCompletePage />
+            </ProtectedRoute>
+          }
+        />
+ 
+        <Route
+          path="/ai-interview/:interviewId/result"
+          element={
+            <ProtectedRoute>
+              <AiInterviewResultPage />
+            </ProtectedRoute>
+          }
+        />
+ 
+        <Route
+          path="/ai-interview/:interviewId/feedback"
+          element={
+            <ProtectedRoute>
+              <AiInterviewFeedbackPage />
             </ProtectedRoute>
           }
         />

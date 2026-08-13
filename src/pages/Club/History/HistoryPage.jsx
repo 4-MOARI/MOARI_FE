@@ -90,7 +90,7 @@ const renderLinks = (value) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
       {linkList.map((link, index) => {
-        // 사전에 정의된 값이면 한국어로 바꾸고, 없으면 입력값 그대로 활용
+      
         const displayType = linkTypeMap[link.type] || link.type || '기타';
 
         return (
@@ -142,7 +142,7 @@ export default function HistoryPage() {
 
     useEffect(() => {
     fetchHistory();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  
     }, [clubId, currentPage]);
 
   return (

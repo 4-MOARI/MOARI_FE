@@ -1,19 +1,50 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import Header from '../../components/common/Header/Header';
 import { createInterviewReview } from '../../api/interviewReviewApi';
 import './InterviewReviewPage.css';
 
-const competencyOptions = [
-  { value: 'MOTIVATION', label: '지원 동기' },
+const METHOD_OPTIONS = [
+  { value: 'FACE_TO_FACE', label: '대면' },
+  { value: 'ONLINE', label: '비대면' },
+  { value: 'MIXED', label: '혼합' },
+];
+
+const TYPE_OPTIONS = [
+  { value: 'INDIVIDUAL', label: '개인' },
+  { value: 'GROUP', label: '그룹' },
+  { value: 'MANY_TO_ONE', label: '다대일' },
+  { value: 'MANY_TO_MANY', label: '다대다' },
+];
+
+const ATMOSPHERE_OPTIONS = [
+  { value: 'COMFORTABLE', label: '😊 편안했어요' },
+  { value: 'NORMAL', label: '😐 보통이었어요' },
+  { value: 'PRESSURE', label: '😨 압박 면접이었어요' },
+];
+
+const DIFFICULTY_OPTIONS = [
+  { value: 'EASY', label: '쉬움' },
+  { value: 'NORMAL', label: '보통' },
+  { value: 'HARD', label: '어려움' },
+];
+
+const DURATION_OPTIONS = [
+  { value: 'UNDER_10', label: '10분 미만' },
+  { value: 'MIN_10_20', label: '10~20분' },
+  { value: 'MIN_20_30', label: '20~30분' },
+  { value: 'OVER_30', label: '30분 이상' },
+];
+
+const COMPETENCY_OPTIONS = [
+  { value: 'MOTIVATION', label: '지원동기' },
   { value: 'TEAMWORK', label: '협업' },
   { value: 'PROJECT_EXPERIENCE', label: '프로젝트 경험' },
   { value: 'PROBLEM_SOLVING', label: '문제 해결' },
-  { value: 'COMMUNICATION', label: '의사소통' },
+  { value: 'COMMUNICATION', label: '소통' },
   { value: 'RESPONSIBILITY', label: '책임감' },
   { value: 'ACTIVENESS', label: '적극성' },
   { value: 'LEADERSHIP', label: '리더십' },
-  { value: 'MAJOR_KNOWLEDGE', label: '전공지식' },
+  { value: 'MAJOR_KNOWLEDGE', label: '전공 지식' },
   { value: 'CREATIVITY', label: '창의성' },
 ];
 
@@ -22,161 +53,101 @@ export default function InterviewReviewPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  /*
-   * 상세페이지에서 navigate 할 때 state로 clubName을 넘기면
-   * 여기서 바로 표시할 수 있음.
-   *
-   * 예:
-   * navigate(`/clubs/${clubId}/interview-review`, {
-   *   state: { clubName: club.clubName }
-   * });
-   */
   const clubName = location.state?.clubName || '동아리';
 
-  const [form, setForm] = useState({
-    hasInterview: true,
-    interviewMethod: '',
-    interviewType: '',
-    atmosphere: '',
-    difficulty: '',
-    duration: '',
-    competencies: [],
-    questions: [''],
-    tip: '',
-  });
-
-  const [errorMessage, setErrorMessage] = useState('');
+  const [hasInterview, setHasInterview] = useState(true);
+  const [interviewMethod, setInterviewMethod] = useState('FACE_TO_FACE');
+  const [interviewType, setInterviewType] = useState('INDIVIDUAL');
+  const [atmosphere, setAtmosphere] = useState('COMFORTABLE');
+  const [difficulty, setDifficulty] = useState('NORMAL');
+  const [duration, setDuration] = useState('MIN_10_20');
+  const [competencies, setCompetencies] = useState([]);
+  const [questions, setQuestions] = useState(['']);
+  const [tip, setTip] = useState('');
+  const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const selectValue = (name, value) => {
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  const validQuestions = useMemo(
+    () => questions.map((question) => question.trim()).filter(Boolean),
+    [questions]
+  );
 
   const toggleCompetency = (value) => {
-    setForm((prev) => {
-      const selected = prev.competencies.includes(value);
-
-      return {
-        ...prev,
-        competencies: selected
-          ? prev.competencies.filter((item) => item !== value)
-          : [...prev.competencies, value],
-      };
-    });
+    setCompetencies((prev) =>
+      prev.includes(value)
+        ? prev.filter((competency) => competency !== value)
+        : [...prev, value]
+    );
   };
 
-  const handleQuestionChange = (index, value) => {
-    setForm((prev) => {
-      const questions = [...prev.questions];
-      questions[index] = value;
-
-      return {
-        ...prev,
-        questions,
-      };
-    });
+  const updateQuestion = (index, value) => {
+    setQuestions((prev) =>
+      prev.map((question, questionIndex) =>
+        questionIndex === index ? value : question
+      )
+    );
   };
 
   const addQuestion = () => {
-    setForm((prev) => ({
-      ...prev,
-      questions: [...prev.questions, ''],
-    }));
+    setQuestions((prev) => [...prev, '']);
   };
 
   const removeQuestion = (index) => {
-    setForm((prev) => {
-      if (prev.questions.length === 1) {
-        return prev;
-      }
-
-      return {
-        ...prev,
-        questions: prev.questions.filter((_, i) => i !== index),
-      };
-    });
+    setQuestions((prev) =>
+      prev.length === 1
+        ? ['']
+        : prev.filter((_, questionIndex) => questionIndex !== index)
+    );
   };
 
-  const validateForm = () => {
-    if (!form.hasInterview) {
-      return true;
-    }
-
-    if (!form.interviewMethod) {
-      setErrorMessage('면접 방식을 선택해주세요.');
-      return false;
-    }
-
-    if (!form.interviewType) {
-      setErrorMessage('면접 형태를 선택해주세요.');
-      return false;
-    }
-
-    if (!form.atmosphere) {
-      setErrorMessage('면접 분위기를 선택해주세요.');
-      return false;
-    }
-
-    if (!form.difficulty) {
-      setErrorMessage('면접 난이도를 선택해주세요.');
-      return false;
-    }
-
-    if (!form.duration) {
-      setErrorMessage('면접 시간을 선택해주세요.');
-      return false;
-    }
-
-    return true;
-  };
+  const renderOptions = (options, selectedValue, onSelect, className = '') => (
+    <div className="option-row">
+      {options.map((option) => (
+        <button
+          key={option.value}
+          type="button"
+          className={`option-button ${className} ${
+            selectedValue === option.value ? 'active' : ''
+          }`}
+          onClick={() => onSelect(option.value)}
+        >
+          {option.label}
+        </button>
+      ))}
+    </div>
+  );
 
   const handleSubmit = async () => {
-    setErrorMessage('');
+    if (isSubmitting) return;
 
-    if (!validateForm()) {
+    if (hasInterview && validQuestions.length === 0) {
+      setError('면접에서 받은 질문을 1개 이상 입력해주세요.');
       return;
     }
 
     try {
       setIsSubmitting(true);
+      setError('');
 
-      const questions = form.questions
-        .map((question) => question.trim())
-        .filter(Boolean);
-
-      const data = form.hasInterview
-        ? {
-            ...form,
-            questions,
-          }
-        : {
-            hasInterview: false,
-            interviewMethod: null,
-            interviewType: null,
-            atmosphere: null,
-            difficulty: null,
-            duration: null,
-            competencies: [],
-            questions: [],
-            tip: null,
-          };
-
-      await createInterviewReview(clubId, data);
+      await createInterviewReview(Number(clubId), {
+        hasInterview,
+        interviewMethod: hasInterview ? interviewMethod : null,
+        interviewType: hasInterview ? interviewType : null,
+        atmosphere: hasInterview ? atmosphere : null,
+        difficulty: hasInterview ? difficulty : null,
+        duration: hasInterview ? duration : null,
+        competencies: hasInterview ? competencies : [],
+        questions: hasInterview ? validQuestions : [],
+        tip: hasInterview ? tip.trim() || null : null,
+      });
 
       alert('면접 후기가 등록되었습니다.');
-
-      navigate(`/clubs/${clubId}`);
-    } catch (error) {
-      console.error(error);
-
-      setErrorMessage(
-        error.response?.data?.error?.message ||
-          error.response?.data?.message ||
-          '면접 후기 등록에 실패했습니다.'
-      );
+      navigate(`/club/${clubId}`);
+    } catch (submitError) {
+      const message =
+        submitError.response?.data?.error?.message ||
+        '면접 후기 등록에 실패했습니다. 다시 시도해주세요.';
+      setError(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -184,302 +155,141 @@ export default function InterviewReviewPage() {
 
   return (
     <div className="interview-review-page">
-      <Header />
-
       <main className="interview-review-container">
         <div className="interview-review-heading">
           <h1>면접 후기 작성</h1>
-          <p>
-            실제 면접 경험을 공유해 다음 지원자에게 도움을 주세요.
-          </p>
+          <p>실제 면접 경험을 공유해 다음 지원자에게 도움을 주세요.</p>
         </div>
 
         <section className="interview-review-card">
-          {/* 동아리명 */}
           <div className="club-name-box">
             <span className="club-name-label">동아리</span>
             <strong>{clubName}</strong>
           </div>
 
-          {/* 면접 여부 */}
-          <div className="interview-section">
+          <section className="interview-section">
             <h2>면접 여부 *</h2>
-
             <div className="option-row">
               <button
                 type="button"
-                className={`option-button ${
-                  form.hasInterview === true ? 'active' : ''
-                }`}
-                onClick={() => selectValue('hasInterview', true)}
+                className={`option-button ${hasInterview ? 'active' : ''}`}
+                onClick={() => setHasInterview(true)}
               >
                 면접 있음
               </button>
-
               <button
                 type="button"
-                className={`option-button ${
-                  form.hasInterview === false ? 'active' : ''
-                }`}
-                onClick={() => selectValue('hasInterview', false)}
+                className={`option-button ${!hasInterview ? 'active' : ''}`}
+                onClick={() => setHasInterview(false)}
               >
                 면접 없음
               </button>
             </div>
-          </div>
+          </section>
 
-          {form.hasInterview && (
+          {hasInterview && (
             <>
-              {/* 면접 방식 */}
-              <div className="interview-section">
+              <section className="interview-section">
                 <h2>면접 방식 *</h2>
+                {renderOptions(METHOD_OPTIONS, interviewMethod, setInterviewMethod)}
+              </section>
 
-                <div className="option-row">
-                  {[
-                    ['FACE_TO_FACE', '대면'],
-                    ['ONLINE', '비대면'],
-                    ['MIXED', '혼합'],
-                  ].map(([value, label]) => (
-                    <button
-                      key={value}
-                      type="button"
-                      className={`option-button ${
-                        form.interviewMethod === value ? 'active' : ''
-                      }`}
-                      onClick={() =>
-                        selectValue('interviewMethod', value)
-                      }
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* 면접 형태 */}
-              <div className="interview-section">
+              <section className="interview-section">
                 <h2>면접 형태 *</h2>
+                {renderOptions(TYPE_OPTIONS, interviewType, setInterviewType)}
+              </section>
 
-                <div className="option-row">
-                  {[
-                    ['INDIVIDUAL', '개인'],
-                    ['GROUP', '그룹'],
-                    ['MANY_TO_ONE', '다대일'],
-                    ['MANY_TO_MANY', '다대다'],
-                  ].map(([value, label]) => (
-                    <button
-                      key={value}
-                      type="button"
-                      className={`option-button ${
-                        form.interviewType === value ? 'active' : ''
-                      }`}
-                      onClick={() =>
-                        selectValue('interviewType', value)
-                      }
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* 분위기 */}
-              <div className="interview-section">
+              <section className="interview-section">
                 <h2>면접 분위기 *</h2>
+                {renderOptions(
+                  ATMOSPHERE_OPTIONS,
+                  atmosphere,
+                  setAtmosphere,
+                  'atmosphere-button'
+                )}
+              </section>
 
-                <div className="option-row atmosphere-row">
-                  {[
-                    ['COMFORTABLE', '😊 편안했어요'],
-                    ['NORMAL', '😐 보통이었어요'],
-                    ['PRESSURE', '😨 압박 면접이었어요'],
-                  ].map(([value, label]) => (
-                    <button
-                      key={value}
-                      type="button"
-                      className={`option-button atmosphere-button ${
-                        form.atmosphere === value ? 'active' : ''
-                      }`}
-                      onClick={() =>
-                        selectValue('atmosphere', value)
-                      }
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* 난이도 */}
-              <div className="interview-section">
+              <section className="interview-section">
                 <h2>면접 난이도 *</h2>
+                {renderOptions(DIFFICULTY_OPTIONS, difficulty, setDifficulty)}
+              </section>
 
-                <div className="option-row">
-                  {[
-                    ['EASY', '쉬움'],
-                    ['NORMAL', '보통'],
-                    ['HARD', '어려움'],
-                  ].map(([value, label]) => (
-                    <button
-                      key={value}
-                      type="button"
-                      className={`option-button ${
-                        form.difficulty === value ? 'active' : ''
-                      }`}
-                      onClick={() =>
-                        selectValue('difficulty', value)
-                      }
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* 시간 */}
-              <div className="interview-section">
+              <section className="interview-section">
                 <h2>면접 시간 *</h2>
+                {renderOptions(DURATION_OPTIONS, duration, setDuration)}
+              </section>
 
-                <div className="option-row">
-                  {[
-                    ['UNDER_10', '10분 이하'],
-                    ['MIN_10_20', '10~20분'],
-                    ['MIN_20_30', '20~30분'],
-                    ['OVER_30', '30분 이상'],
-                  ].map(([value, label]) => (
-                    <button
-                      key={value}
-                      type="button"
-                      className={`option-button ${
-                        form.duration === value ? 'active' : ''
-                      }`}
-                      onClick={() =>
-                        selectValue('duration', value)
-                      }
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* 역량 */}
-              <div className="interview-section">
+              <section className="interview-section">
                 <h2>
-                  중요하게 본 역량
-                  <span className="optional-text">복수 선택 가능</span>
+                  평가 역량
+                  <span className="optional-text">복수 선택</span>
                 </h2>
-
                 <div className="competency-grid">
-                  {competencyOptions.map((item) => (
+                  {COMPETENCY_OPTIONS.map((option) => (
                     <button
-                      key={item.value}
+                      key={option.value}
                       type="button"
                       className={`competency-button ${
-                        form.competencies.includes(item.value)
-                          ? 'active'
-                          : ''
+                        competencies.includes(option.value) ? 'active' : ''
                       }`}
-                      onClick={() =>
-                        toggleCompetency(item.value)
-                      }
+                      onClick={() => toggleCompetency(option.value)}
                     >
-                      {item.label}
+                      {option.label}
                     </button>
                   ))}
                 </div>
-              </div>
+              </section>
 
-              {/* 질문 */}
-              <div className="interview-section">
-                <h2>
-                  실제 면접 질문
-                  <span className="optional-text">선택사항</span>
-                </h2>
-
-                <p className="section-description">
-                  기억나는 실제 면접 질문을 입력해주세요.
-                </p>
-
+              <section className="interview-section">
+                <h2>받은 면접 질문 *</h2>
+                <p className="section-description">기억나는 질문을 하나씩 입력해주세요.</p>
                 <div className="question-list">
-                  {form.questions.map((question, index) => (
-                    <div
-                      className="question-input-row"
-                      key={index}
-                    >
+                  {questions.map((question, index) => (
+                    <div className="question-input-row" key={`${index}-${questions.length}`}>
                       <input
-                        type="text"
                         value={question}
-                        onChange={(e) =>
-                          handleQuestionChange(
-                            index,
-                            e.target.value
-                          )
-                        }
-                        placeholder={
-                          index === 0
-                            ? '예) 지원 동기를 말해주세요.'
-                            : '면접 질문을 입력해주세요.'
-                        }
+                        onChange={(event) => updateQuestion(index, event.target.value)}
+                        placeholder="예: 우리 동아리에 지원한 이유는 무엇인가요?"
                       />
-
-                      {form.questions.length > 1 && (
-                        <button
-                          type="button"
-                          className="question-delete-button"
-                          onClick={() =>
-                            removeQuestion(index)
-                          }
-                        >
-                          삭제
-                        </button>
-                      )}
+                      <button
+                        type="button"
+                        className="question-delete-button"
+                        onClick={() => removeQuestion(index)}
+                      >
+                        삭제
+                      </button>
                     </div>
                   ))}
                 </div>
-
-                <button
-                  type="button"
-                  className="question-add-button"
-                  onClick={addQuestion}
-                >
+                <button type="button" className="question-add-button" onClick={addQuestion}>
                   + 질문 추가
                 </button>
-              </div>
+              </section>
 
-              {/* 팁 */}
-              <div className="interview-section">
+              <section className="interview-section">
                 <h2>
                   면접 팁
-                  <span className="optional-text">선택사항</span>
+                  <span className="optional-text">선택</span>
                 </h2>
-
                 <textarea
-                  value={form.tip}
-                  onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      tip: e.target.value,
-                    }))
-                  }
-                  placeholder="예) 프로젝트 경험과 지원 동기를 구체적으로 준비하면 도움이 됩니다."
+                  value={tip}
+                  onChange={(event) => setTip(event.target.value)}
+                  placeholder="면접 준비 팁이나 기억나는 분위기를 자유롭게 적어주세요."
                 />
-              </div>
+              </section>
             </>
           )}
 
-          {errorMessage && (
-            <p className="interview-error">{errorMessage}</p>
-          )}
+          {error && <p className="interview-error">{error}</p>}
 
           <div className="interview-button-row">
             <button
               type="button"
               className="cancel-button"
-              onClick={() => navigate(-1)}
+              onClick={() => navigate(`/club/${clubId}`)}
             >
               취소
             </button>
-
             <button
               type="button"
               className="submit-button"

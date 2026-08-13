@@ -51,18 +51,38 @@ function ClubCard({
     club.oneLineIntro ||
     club.description ||
     '동아리 소개가 아직 등록되지 않았습니다.';
-  const isRecruiting = (() => {
-    if (recruiting !== undefined) return recruiting;
-    if (club.isRecruiting !== undefined) return club.isRecruiting;
-    if (club.recruitStartAt && club.recruitEndAt) {
-      const now = new Date();
-      const start = new Date(club.recruitStartAt);
-      const end = new Date(club.recruitEndAt);
-      end.setHours(23, 59, 59, 999);
-      return now >= start && now <= end;
+  const recruitStartDate =
+    club.recruitStartAt || club.recruitPeriod?.start;
+
+  const recruitEndDate =
+    club.recruitEndAt || club.recruitPeriod?.end;
+
+  const getRecruitStatusByDate = (startDate, endDate) => {
+    if (!startDate || !endDate) return '마감';
+
+    const now = new Date();
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (
+      Number.isNaN(start.getTime()) ||
+      Number.isNaN(end.getTime())
+    ) {
+      return '마감';
     }
-    return false;
-  })();
+
+    end.setHours(23, 59, 59, 999);
+
+    return now >= start && now <= end
+      ? '모집중'
+      : '마감';
+  };
+
+  const statusToDisplay = getRecruitStatusByDate(
+    recruitStartDate,
+    recruitEndDate
+  );
   const cardRating =
     rating ??
     club.avgRating ??
@@ -90,7 +110,7 @@ function ClubCard({
             <CategoryBadge>{cardCategory}</CategoryBadge>
           )}
           {recruitStatusBadge || (
-            <RecruitStatusBadge status={isRecruiting ? '모집중' : '마감'} />
+            <RecruitStatusBadge status={statusToDisplay} />
           )}
         </div>
 

@@ -1,21 +1,59 @@
 import React, { useEffect, useState } from 'react';
-import {
-  useParams,
-  useNavigate,
-  useLocation,
-} from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 
 import { getClubDetail } from '../../../api/clubApi';
 import { getFavoriteStatus } from '../../../api/userApi';
-import {
-  getInterviewReviews,
-} from '../../../api/interviewReviewApi';
-
+import { getInterviewReviews } from '../../../api/interviewReviewApi';
 import { MOCK_CLUBS } from '../../../data/clubs';
 
-import Header from '../../../components/common/Header/Header';
+import Header from "../../../components/common/Header/Header";
+
 import ClubInfoSection from './ClubInfoSection';
 import ReviewSection from '../Review/ReviewSection';
+
+const DIFFICULTY_SCORES = {
+  EASY: 2.0,
+  NORMAL: 3.5,
+  HARD: 5.0,
+};
+
+const METHOD_LABELS = {
+  FACE_TO_FACE: '대면',
+  OFFLINE: '대면',
+  ONLINE: '비대면',
+  MIXED: '혼합',
+};
+
+const ATMOSPHERE_LABELS = {
+  COMFORTABLE: '편안함',
+  NORMAL: '보통',
+  PRESSURE: '압박 있음',
+};
+
+const DIFFICULTY_LABELS = {
+  EASY: '쉬움',
+  NORMAL: '보통',
+  HARD: '어려움',
+};
+
+const maskUserName = (name = '') => {
+  if (!name) return '익명';
+  if (name.length <= 1) return `${name}**`;
+  return `${name[0]}**`;
+};
+
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) return '';
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}.${month}.${day}`;
+};
 
 export default function ClubDetailPage() {
   const { clubId } = useParams();
@@ -24,6 +62,7 @@ export default function ClubDetailPage() {
 
   const [club, setClub] = useState(null);
   const [interviewReviews, setInterviewReviews] = useState([]);
+  const [visibleInterviewReviewCount, setVisibleInterviewReviewCount] = useState(2);
 
   useEffect(() => {
     const getFallbackClub = () => {
@@ -31,9 +70,7 @@ export default function ClubDetailPage() {
         return location.state;
       }
 
-      const savedClub = localStorage.getItem(
-        `club-${clubId}`
-      );
+      const savedClub = localStorage.getItem(`club-${clubId}`);
 
       if (savedClub) {
         return JSON.parse(savedClub);
@@ -48,19 +85,13 @@ export default function ClubDetailPage() {
 
     const fetchClubDetail = async () => {
       try {
-        const [data, favoriteData] =
-          await Promise.all([
-            getClubDetail(clubId),
-            getFavoriteStatus(clubId).catch(
-              () => null
-            ),
-          ]);
+        const data = await getClubDetail(clubId);
+        const favoriteData = await getFavoriteStatus(clubId).catch(() => null);
 
         if (!data) {
-          throw new Error(
-            'API 응답 데이터 없음'
-          );
+          throw new Error('API 응답 데이터 없음');
         }
+
 
         const formattedClub = {
           id: data.clubId,
@@ -69,22 +100,16 @@ export default function ClubDetailPage() {
           name: data.clubName,
           clubName: data.clubName,
 
-          oneLineIntro:
-            data.briefDescription,
-          shortDescription:
-            data.briefDescription,
+          oneLineIntro: data.briefDescription,
+          shortDescription: data.briefDescription,
 
           description: data.description,
           activityContent: data.activity,
-
-          profileImageUrl:
-            data.profileImageUrl,
-          coverImageUrl:
-            data.coverImageUrl,
+          profileImageUrl: data.profileImageUrl,
+          coverImageUrl: data.coverImageUrl,
 
           category: data.categoryName,
-          categoryName:
-            data.categoryName,
+          categoryName: data.categoryName,
 
           schoolType: data.schoolType,
 
@@ -92,76 +117,85 @@ export default function ClubDetailPage() {
             data.schoolName ||
             (
               data.schoolType === '외부' ||
-              data.schoolType ===
-                'external'
+              data.schoolType === 'external'
                 ? '외부'
                 : ''
             ),
 
           status: data.isRecruiting,
-          isRecruiting:
-            data.isRecruiting,
+          isRecruiting: data.isRecruiting,
 
-          recruitPeriod:
-            data.recruitPeriod,
+          recruitPeriod: data.recruitPeriod,
+          recruitStartAt: data.recruitPeriod?.start,
+          recruitEndAt: data.recruitPeriod?.end,
 
-          recruitStartAt:
-            data.recruitPeriod?.start,
-
-          recruitEndAt:
-            data.recruitPeriod?.end,
-
-          warningMessage:
-            data.warningMessage,
-
-          displayWarning: Boolean(
-            data.displayWarning
-          ),
-
-          yearsSinceUpdate:
-            data.yearsSinceUpdate,
-
+          warningMessage: data.warningMessage,
+          displayWarning: Boolean(data.displayWarning),
+          yearsSinceUpdate: data.yearsSinceUpdate,
           updatedAt: data.updatedAt,
 
-          favoriteCount:
-            data.favoriteCount ??
-            data.likeCount ??
-            0,
+          favoriteCount: Number(data.favoriteCount || 0),
 
-          isFavorite: Boolean(
-            favoriteData?.isFavorite ??
-            data.isFavorite ??
-            data.isLiked ??
-            false
-          ),
+         isFavorite: Boolean(
+          favoriteData?.isFavorite ??
+          favoriteData?.data?.isFavorite ??
+          data.isFavorite ??
+          false
+        ),
 
           links: Array.isArray(data.links)
-            ? data.links.reduce(
-                (acc, link) => {
-                  const type =
-                    link.type ||
-                    link.linkType ||
-                    link.title ||
-                    link.linkTitle;
+            ? data.links.reduce((acc, link) => {
+                const type =
+                  link.type ||
+                  link.linkType ||
+                  link.title ||
+                  link.linkTitle;
 
-                  const url =
-                    link.url ||
-                    link.linkUrl;
+                const url =
+                  link.url ||
+                  link.linkUrl;
 
-                  if (type && url) {
-                    acc[
-                      String(
-                        type
-                      ).toLowerCase()
-                    ] = url;
-                  }
+                if (type && url) {
+                  acc[String(type).toLowerCase()] = url;
+                }
 
-                  return acc;
-                },
-                {}
-              )
+                return acc;
+              }, {})
             : {},
+          schedules: Array.isArray(data.schedules)
+            ? data.schedules
+            : [],
         };
+
+        console.log(
+          '상세 GET 원본 data.links =',
+          data.links
+        );
+
+        console.log(
+          '상세 변환 후 formattedClub.links =',
+          formattedClub.links
+        );
+
+        console.log(
+          '상세 경고 원본 data =',
+          {
+            updatedAt: data.updatedAt,
+            yearsSinceUpdate: data.yearsSinceUpdate,
+            displayWarning: data.displayWarning,
+            warningMessage: data.warningMessage,
+          }
+        );
+
+        console.log(
+          '상세 경고 변환 formattedClub =',
+          {
+            updatedAt: formattedClub.updatedAt,
+            yearsSinceUpdate: formattedClub.yearsSinceUpdate,
+            displayWarning: formattedClub.displayWarning,
+            warningMessage: formattedClub.warningMessage,
+          }
+        );
 
         setClub(formattedClub);
       } catch (error) {
@@ -170,58 +204,41 @@ export default function ClubDetailPage() {
           error
         );
 
-        const fallbackClub =
-          getFallbackClub();
+        const fallbackClub = getFallbackClub();
 
         setClub(fallbackClub);
       }
     };
 
+    fetchClubDetail();
+  }, [clubId, location.state]);
+
+  useEffect(() => {
+    let ignore = false;
+
     const fetchInterviewReviews = async () => {
       try {
-        const response =
-          await getInterviewReviews(clubId);
+        const response = await getInterviewReviews(clubId);
 
-        console.log(
-          '면접 후기 전체 응답:',
-          response
-        );
-
-        console.log(
-          '면접 후기 데이터:',
-          response?.data
-        );
-
-        console.log(
-          '면접 후기 reviews:',
-          response?.data?.data?.reviews
-        );
-
-        const reviews =
-          response?.data?.data?.reviews ||
-          [];
-
-        setInterviewReviews(reviews);
+        if (!ignore) {
+          setInterviewReviews(response.data?.data?.reviews || []);
+        }
       } catch (error) {
-        console.error(
-          '면접 후기 조회 실패:',
-          error
-        );
-
-        setInterviewReviews([]);
+        if (!ignore) {
+          setInterviewReviews([]);
+        }
       }
     };
 
-    fetchClubDetail();
     fetchInterviewReviews();
-  }, [clubId, location.state]);
+
+    return () => {
+      ignore = true;
+    };
+  }, [clubId]);
 
   if (!club) {
-    return (
-      <div>
-        데이터를 불러오는 중입니다...
-      </div>
-    );
+    return <div>데이터를 불러오는 중입니다...</div>;
   }
 
   const handleInterviewReview = () => {
@@ -238,36 +255,20 @@ export default function ClubDetailPage() {
   };
 
   const handleAiInterview = () => {
-    navigate(
-      `/club/${clubId}/ai-interview`,
-      {
-        state: {
-          clubName:
-            club.clubName ||
-            club.name,
-        },
-      }
-    );
+    navigate(`/clubs/${clubId}/ai-interview/setup`);
   };
 
-  const difficultyLabel = {
-    EASY: '쉬움',
-    NORMAL: '보통',
-    HARD: '어려움',
-  };
+  const interviewDifficulty =
+    interviewReviews.length > 0
+      ? (
+          interviewReviews.reduce(
+            (sum, review) => sum + (DIFFICULTY_SCORES[review.difficulty] || 0),
+            0
+          ) / interviewReviews.length
+        ).toFixed(1)
+      : '0.0';
 
-  const atmosphereLabel = {
-    COMFORTABLE: '편안했어요',
-    NORMAL: '보통이었어요',
-    PRESSURE: '압박 면접이었어요',
-  };
-
-  const durationLabel = {
-    UNDER_10: '10분 이하',
-    MIN_10_20: '10~20분',
-    MIN_20_30: '20~30분',
-    OVER_30: '30분 이상',
-  };
+  const visibleInterviewReviews = interviewReviews.slice(0, visibleInterviewReviewCount);
 
   return (
     <>
@@ -287,7 +288,16 @@ export default function ClubDetailPage() {
             width: '760px',
           }}
         >
-          <ClubInfoSection club={club} />
+          <ClubInfoSection
+            club={club}
+            onFavoriteChange={(isFavorite, favoriteCount) => {
+              setClub((prev) => ({
+                ...prev,
+                isFavorite,
+                favoriteCount,
+              }));
+            }}
+          />
         </div>
 
         <div
@@ -322,16 +332,42 @@ export default function ClubDetailPage() {
               면접 후기
             </h2>
 
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'flex-end',
+                gap: '10px',
+                marginBottom: '10px',
+              }}
+            >
+              <span
+                style={{
+                  color: '#111827',
+                  fontSize: '15px',
+                  fontWeight: '800',
+                }}
+              >
+                난이도
+              </span>
+              <strong
+                style={{
+                  color: '#111827',
+                  fontSize: '44px',
+                  fontWeight: '900',
+                  lineHeight: 1,
+                }}
+              >
+                {interviewDifficulty}
+              </strong>
+            </div>
+
             <button
               type="button"
-              onClick={
-                handleInterviewReview
-              }
+              onClick={handleInterviewReview}
               style={{
                 width: '100%',
                 height: '44px',
-                border:
-                  '1px solid #574bc4',
+                border: '1px solid #574bc4',
                 borderRadius: '9px',
                 background: '#ffffff',
                 color: '#574bc4',
@@ -345,9 +381,7 @@ export default function ClubDetailPage() {
 
             <button
               type="button"
-              onClick={
-                handleAiInterview
-              }
+              onClick={handleAiInterview}
               style={{
                 width: '100%',
                 height: '44px',
@@ -364,180 +398,144 @@ export default function ClubDetailPage() {
               AI 모의면접 시작하기
             </button>
 
-            {interviewReviews.length >
-              0 && (
+            {visibleInterviewReviews.length > 0 && (
               <div
                 style={{
-                  marginTop: '16px',
                   display: 'flex',
-                  flexDirection:
-                    'column',
-                  gap: '10px',
+                  flexDirection: 'column',
+                  gap: '12px',
+                  maxHeight: '300px',
+                  marginTop: '12px',
+                  paddingRight: '4px',
+                  overflowY: 'auto',
                 }}
               >
-                {interviewReviews
-                  .slice(0, 2)
-                  .map((review) => (
+                {visibleInterviewReviews.map((review) => (
+                  <div
+                    key={review.interviewReviewId}
+                    style={{
+                      padding: '14px 16px',
+                      border: '1px solid #dedee8',
+                      borderRadius: '14px',
+                      background: '#ffffff',
+                    }}
+                  >
                     <div
-                      key={
-                        review.interviewReviewId
-                      }
                       style={{
-                        border:
-                          '1px solid #dddddd',
-                        borderRadius:
-                          '14px',
-                        padding: '14px',
-                        background:
-                          '#ffffff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        marginBottom: '10px',
                       }}
                     >
-                      <div
+                      <strong
                         style={{
-                          display: 'flex',
-                          justifyContent:
-                            'space-between',
-                          alignItems:
-                            'center',
-                          marginBottom:
-                            '8px',
+                          color: '#111827',
+                          fontSize: '14px',
+                          fontWeight: '800',
                         }}
                       >
-                        <strong
-                          style={{
-                            fontSize:
-                              '14px',
-                          }}
-                        >
-                          {review.userName ||
-                            '면접 후기'}
-                        </strong>
-
-                        {review.difficulty && (
-                          <span
-                            style={{
-                              fontSize:
-                                '12px',
-                              fontWeight:
-                                '700',
-                              color:
-                                '#574bc4',
-                              background:
-                                '#f1efff',
-                              padding:
-                                '4px 8px',
-                              borderRadius:
-                                '12px',
-                            }}
-                          >
-                            {
-                              difficultyLabel[
-                                review
-                                  .difficulty
-                              ]
-                            }
-                          </span>
-                        )}
-                      </div>
-
-                      {review.atmosphere && (
-                        <div
-                          style={{
-                            fontSize:
-                              '12px',
-                            color:
-                              '#666666',
-                            marginBottom:
-                              '6px',
-                          }}
-                        >
-                          분위기:{' '}
-                          {atmosphereLabel[
-                            review
-                              .atmosphere
-                          ] ||
-                            review.atmosphere}
-                        </div>
-                      )}
-
-                      {review.duration && (
-                        <div
-                          style={{
-                            fontSize:
-                              '12px',
-                            color:
-                              '#666666',
-                            marginBottom:
-                              '8px',
-                          }}
-                        >
-                          면접 시간:{' '}
-                          {durationLabel[
-                            review.duration
-                          ] ||
-                            review.duration}
-                        </div>
-                      )}
-
-                      {Array.isArray(
-                        review.questions
-                      ) &&
-                        review.questions
-                          .length >
-                          0 && (
-                          <div
-                            style={{
-                              fontSize:
-                                '13px',
-                              color:
-                                '#4f5563',
-                              lineHeight:
-                                '1.5',
-                            }}
-                          >
-                            Q.{' '}
-                            {
-                              review
-                                .questions[0]
-                            }
-                          </div>
-                        )}
-
-                      {review.tip && (
-                        <div
-                          style={{
-                            marginTop:
-                              '8px',
-                            fontSize:
-                              '12px',
-                            color:
-                              '#777777',
-                            lineHeight:
-                              '1.5',
-                          }}
-                        >
-                          팁. {review.tip}
-                        </div>
-                      )}
+                        {maskUserName(review.userName)}
+                      </strong>
                     </div>
-                  ))}
+
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: '6px',
+                        marginBottom: '10px',
+                      }}
+                    >
+                      {[
+                        METHOD_LABELS[review.interviewMethod],
+                        ATMOSPHERE_LABELS[review.atmosphere],
+                        DIFFICULTY_LABELS[review.difficulty],
+                      ]
+                        .filter(Boolean)
+                        .map((label) => (
+                          <span
+                            key={label}
+                            style={{
+                              padding: '4px 8px',
+                              borderRadius: '999px',
+                              background: '#f0edff',
+                              color: '#574bc4',
+                              fontSize: '11px',
+                              fontWeight: '800',
+                            }}
+                          >
+                            {label}
+                          </span>
+                        ))}
+                    </div>
+
+                    {review.questions?.[0] && (
+                      <p
+                        style={{
+                          margin: '0 0 6px',
+                          color: '#111827',
+                          fontSize: '13px',
+                          fontWeight: '800',
+                          lineHeight: 1.45,
+                        }}
+                      >
+                        Q. {review.questions[0]}
+                      </p>
+                    )}
+
+                    <p
+                      style={{
+                        display: '-webkit-box',
+                        margin: '0 0 8px',
+                        overflow: 'hidden',
+                        color: '#6b7280',
+                        fontSize: '13px',
+                        lineHeight: 1.45,
+                        WebkitBoxOrient: 'vertical',
+                        WebkitLineClamp: 4,
+                      }}
+                    >
+                      {review.tip || review.questions?.slice(1).join(' / ') || '등록된 면접 팁은 없습니다.'}
+                    </p>
+                    <span
+                      style={{
+                        color: '#9ca3af',
+                        fontSize: '12px',
+                      }}
+                    >
+                      {formatDate(review.createdAt)}
+                    </span>
+                  </div>
+                ))}
               </div>
             )}
 
-            {interviewReviews.length ===
-              0 && (
-              <div
+            {interviewReviews.length > visibleInterviewReviewCount && (
+              <button
+                type="button"
+                onClick={() =>
+                  setVisibleInterviewReviewCount((count) =>
+                    Math.min(count + 3, interviewReviews.length)
+                  )
+                }
                 style={{
-                  marginTop: '16px',
-                  textAlign: 'center',
-                  color: '#999999',
-                  fontSize: '13px',
-                  padding: '8px 0',
+                  width: '80%',
+                  height: '38px',
+                  margin: '16px auto 0',
+                  display: 'block',
+                  border: 'none',
+                  borderRadius: '999px',
+                  background: '#f0edff',
+                  boxShadow: '0 3px 7px rgba(31, 24, 80, 0.18)',
+                  color: '#574bc4',
+                  fontSize: '14px',
+                  fontWeight: '800',
+                  cursor: 'pointer',
                 }}
               >
-                아직 등록된 면접 후기가
-                없습니다.
-              </div>
+                후기 더보기 ▼ (총 {interviewReviews.length}개)
+              </button>
             )}
           </div>
         </div>
