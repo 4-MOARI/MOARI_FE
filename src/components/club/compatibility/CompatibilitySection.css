@@ -1,0 +1,65 @@
+.compat-section {
+  width: 1215px;
+  box-sizing: border-box;
+
+  background: #f8fafc;
+  border: 2px solid #ede9fe;
+  border-radius: 24px;
+
+  padding: 24px;
+}
+
+/* AI 추천 꿀조합 헤더 (접기/펼치기) */
+.compat-section__ai-header {
+  width: 1134px;
+  height: 64px;
+  box-sizing: border-box;
+
+  background: #eeedfe;
+  border-radius: 20px;
+
+  margin: 0 auto;
+  padding: 0 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.compat-section__ai-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  font-family: Inter, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #534ab7;
+}
+
+.compat-section__toggle-btn {
+  width: 89px;
+  height: 28px;
+  border-radius: 14px;
+  border: none;
+
+  background: #fff;
+
+  font-family: Inter, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #534ab7;
+  text-align: center;
+
+  cursor: pointer;
+}
+
+.compat-section__error {
+  width: 1134px;
+  margin: 12px auto 0;
+
+  font-family: Inter, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #dc2626;
+}

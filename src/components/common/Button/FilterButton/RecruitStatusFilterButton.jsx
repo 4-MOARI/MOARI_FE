@@ -6,8 +6,8 @@ const RecruitStatusFilterButton = ({ status, isActive, onClick }) => {
     <button
       onClick={onClick}
       style={{
-        width: '44px',           // 디자인 요구사항 고정 너비
-        height: '25px',          // 디자인 요구사항 고정 높이
+        width: '44px',           
+        height: '25px',         
         borderRadius: '17px',
         border: 'none',
         cursor: 'pointer',
@@ -16,7 +16,7 @@ const RecruitStatusFilterButton = ({ status, isActive, onClick }) => {
         alignItems: 'center',
         padding: '0',            // 내부 패딩 대신 중앙 정렬 사용
         fontWeight: '700',
-        fontSize: '12px',        // 텍스트 크기
+        fontSize: '12px',        
         fontFamily: 'Inter',
         // transition을 세분화하여 transform 애니메이션이 부드럽게 적용되도록 수정
         transition: 'background 0.2s ease, color 0.2s ease, transform 0.1s ease',

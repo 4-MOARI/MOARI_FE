@@ -6,12 +6,12 @@ import './ReviewModal.css';
 
 // "이런 점이 좋았어요 / 특징이에요" 복수 선택 태그 목록
 const TAG_OPTIONS = [
-  '친목 많아요',
-  '개인적이에요',
-  '뒷풀이 잦아요',
-  '추가비용 있어요',
-  '소규모예요',
-  '체계적이에요',
+  { id: 1, name: '친목 많아요' },
+  { id: 2, name: '개인적이에요' },
+  { id: 3, name: '뒷풀이 잦아요' },
+  { id: 4, name: '추가비용 있어요' },
+  { id: 5, name: '소규모예요' },
+  { id: 6, name: '체계적이에요' },
 ];
 
 export default function ReviewModal({ clubId, clubName, onClose, onSuccess }) {
@@ -26,14 +26,14 @@ export default function ReviewModal({ clubId, clubName, onClose, onSuccess }) {
   const [friendshipRatio, setFriendshipRatio] = useState(3);
 
   // 이런 점이 좋았어요 / 특징이에요 (복수 선택)
-  const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedTagIds, setSelectedTagIds] = useState([]);
 
   // 로딩 상태
   const [isLoading, setIsLoading] = useState(false);
 
-  const toggleTag = (tag) => {
-    setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+  const toggleTag = (id) => {
+    setSelectedTagIds((prev) =>
+      prev.includes(id) ? prev.filter((tId) => tId !== id) : [...prev, id]
     );
   };
 
@@ -52,13 +52,24 @@ export default function ReviewModal({ clubId, clubName, onClose, onSuccess }) {
 
     try {
       setIsLoading(true);
+      
+      const reviewData = {
+        rating,
+        content,
+        activityRating: activityIntensity,
+        sociabilityRating: friendshipRatio,
+        keywordIds: selectedTagIds,
+      };
+
+      console.log('리뷰 등록 keywordIds =', selectedTagIds);
+      console.log('리뷰 등록 keywordIds JSON =', JSON.stringify(selectedTagIds));
 
       await createReview(clubId, {
         rating,
         content,
-        activityIntensity,
-        friendshipRatio,
-        tags: selectedTags,
+        activityRating: activityIntensity,
+        sociabilityRating: friendshipRatio,
+        keywordIds: selectedTagIds,
       });
 
       alert('리뷰 등록 완료');
@@ -110,11 +121,16 @@ export default function ReviewModal({ clubId, clubName, onClose, onSuccess }) {
           {/* 활동 강도 / 친목 비중 슬라이더 */}
           <div className="review-field review-field--sliders">
             <div className="review-slider-row">
-              <p className="review-field-label">활동 강도</p>
+              <p className="review-field-label">
+                활동 강도 <span className="review-slider-value">{activityIntensity}</span>
+              </p>
               <DiscreteSlider value={activityIntensity} onChange={setActivityIntensity} />
             </div>
+
             <div className="review-slider-row">
-              <p className="review-field-label">친목 비중</p>
+              <p className="review-field-label">
+                친목 비중 <span className="review-slider-value">{friendshipRatio}</span>
+              </p>
               <DiscreteSlider value={friendshipRatio} onChange={setFriendshipRatio} />
             </div>
           </div>
@@ -129,15 +145,15 @@ export default function ReviewModal({ clubId, clubName, onClose, onSuccess }) {
 
           <div className="review-tags-grid">
             {TAG_OPTIONS.map((tag) => {
-              const selected = selectedTags.includes(tag);
+              const selected = selectedTagIds.includes(tag.id);
               return (
                 <button
-                  key={tag}
+                  key={tag.id}
                   type="button"
                   className={selected ? 'tag-chip tag-chip--selected' : 'tag-chip'}
-                  onClick={() => toggleTag(tag)}
+                  onClick={() => toggleTag(tag.id)}
                 >
-                  {tag}
+                  {tag.name}
                 </button>
               );
             })}
