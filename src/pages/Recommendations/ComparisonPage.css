@@ -354,3 +354,77 @@
   white-space: nowrap;
   box-sizing: border-box;
 }
+
+.comparison-page__slider-value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.comparison-page__slider-value .discrete-slider {
+  width: 160px;
+  flex-shrink: 0;
+}
+
+.comparison-page__slider-score {
+  min-width: 32px;
+  font-size: 19px;
+  font-weight: 700;
+  color: #333;
+  text-align: left;
+}
+
+.comparison-page__schedule-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  white-space: pre-line;
+  line-height: 1.7;
+}
+
+.comparison-page__schedule-text,
+.comparison-page__info-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.7;
+}
+
+.comparison-page__activity-time {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.comparison-page__activity-time .comparison-page__info-text {
+  width: 100%;
+  display: block;
+  text-align: center;
+}
+
+.comparison-page__availability {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.comparison-page__availability--available {
+  color: #4caf50;
+}
+
+.comparison-page__availability--adjust {
+  color: #d99b00;
+}
+
+.comparison-page__availability--unavailable {
+  color: #e05252;
+}

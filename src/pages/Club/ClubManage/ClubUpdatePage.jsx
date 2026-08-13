@@ -79,7 +79,7 @@ const ClubUpdatePage = () => {
         setOneLineIntro(data.briefDescription || '');
         setDescription(data.description || '');
         setActivity(data.activity || '');
-        setCategoryId(data.categoryName || '');
+        setCategoryId(data.categoryId || '');
 
         setSchedules(
           data.schedules && data.schedules.length > 0
@@ -159,6 +159,7 @@ setOriginalData(
       } catch (error) {
         console.error('수정 페이지 동아리 조회 실패:', error);
         alert('동아리 정보를 불러오지 못했습니다.');
+        console.log('백엔드 에러 상세:', JSON.stringify(error.response?.data, null, 2));
       }
     };
 

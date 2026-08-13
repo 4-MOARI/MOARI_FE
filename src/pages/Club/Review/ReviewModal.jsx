@@ -56,8 +56,8 @@ export default function ReviewModal({ clubId, clubName, onClose, onSuccess }) {
       const reviewData = {
         rating,
         content,
-        activityIntensity,
-        friendshipRatio,
+        activityRating: activityIntensity,
+        sociabilityRating: friendshipRatio,
         keywordIds: selectedTagIds,
       };
 
@@ -67,8 +67,8 @@ export default function ReviewModal({ clubId, clubName, onClose, onSuccess }) {
       await createReview(clubId, {
         rating,
         content,
-        activityIntensity,
-        friendshipRatio,
+        activityRating: activityIntensity,
+        sociabilityRating: friendshipRatio,
         keywordIds: selectedTagIds,
       });
 
@@ -121,11 +121,16 @@ export default function ReviewModal({ clubId, clubName, onClose, onSuccess }) {
           {/* 활동 강도 / 친목 비중 슬라이더 */}
           <div className="review-field review-field--sliders">
             <div className="review-slider-row">
-              <p className="review-field-label">활동 강도</p>
+              <p className="review-field-label">
+                활동 강도 <span className="review-slider-value">{activityIntensity}</span>
+              </p>
               <DiscreteSlider value={activityIntensity} onChange={setActivityIntensity} />
             </div>
+
             <div className="review-slider-row">
-              <p className="review-field-label">친목 비중</p>
+              <p className="review-field-label">
+                친목 비중 <span className="review-slider-value">{friendshipRatio}</span>
+              </p>
               <DiscreteSlider value={friendshipRatio} onChange={setFriendshipRatio} />
             </div>
           </div>
