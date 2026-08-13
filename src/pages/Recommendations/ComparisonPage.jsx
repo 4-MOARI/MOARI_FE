@@ -10,6 +10,8 @@ import { getClubReviews } from "../../api/reviewApi";
 import "./ComparisonPage.css";
 import StarRating from "../../components/common/StarRating/StarRating";
 
+import CompatibilitySection from '../../components/club/compatibility/CompatibilitySection'; 
+
 const MAX_COMPARE_COUNT = 4;
 
 // [추가] 파일 상단 MAX_COMPARE_COUNT 바로 아래에 넣기
@@ -606,7 +608,8 @@ export default function ComparisonPage() {
 
 
         <section className="comparison-page__compatibility">
-          궁합 부분 들어갈 자리
+          {/* 궁합 부분 들어갈 자리 */}
+          <CompatibilitySection clubs={clubs}/>
         </section>
       </main>
     </>

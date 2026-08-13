@@ -27,7 +27,7 @@ function StarRating({
         />
       ))}
       {showScore && (
-        <span className="start-rating-score"> 
+        <span className="star-rating-score"> 
           ({rating.toFixed(1)})
         </span>
       )}
