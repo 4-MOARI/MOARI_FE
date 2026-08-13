@@ -6,9 +6,11 @@ import ComparisonCard from "../../components/club/ComparisonCard/ComparisonCard"
 
 import { getClubDetail } from "../../api/clubApi";
 import { getClubReviews } from "../../api/reviewApi";
+import { getComparisonData } from "../../api/comparisonApi";
 
 import "./ComparisonPage.css";
 import StarRating from "../../components/common/StarRating/StarRating";
+import DiscreteSlider from "../Club/Review/DiscreteSlider";
 
 import CompatibilitySection from '../../components/club/compatibility/CompatibilitySection'; 
 
@@ -43,11 +45,386 @@ const getClubId = (club) => {
   );
 };
 
-/**
- * 상세 API 응답을 비교 카드에서 사용할 형태로 통일합니다.
- *
- * 실제 API에 없는 값은 임의로 만들지 않고 null로 둡니다.
- */
+const getActivityPurpose = (data) => {
+  if (!data) return "";
+
+  const field =
+    data.field ??
+    data.categoryName ??
+    data.category?.name ??
+    data.activityField ??
+    "";
+
+  const fieldText =
+    typeof field === "string"
+      ? field.trim()
+      : "";
+
+  const mainActivity = extractMajorActivity(data);
+
+  const purpose =
+    data.activityPurpose ??
+    data.purpose ??
+    "";
+
+  // API에 명확한 활동 목적이 이미 존재하면 그대로 사용
+  if (
+    typeof purpose === "string" &&
+    purpose.trim()
+  ) {
+    return purpose.trim();
+  }
+
+  const activityText =
+    typeof mainActivity === "string"
+      ? mainActivity.trim()
+      : "";
+
+  if (!activityText && !fieldText) {
+    return "";
+  }
+
+  const text =
+    `${fieldText} ${activityText}`.toLowerCase();
+
+  // 금융
+  if (
+    text.includes("금융") ||
+    text.includes("재무") ||
+    text.includes("투자")
+  ) {
+    return "금융 분야의 지식과 역량을 쌓기 위한 모임";
+  }
+
+  // 농구
+  if (text.includes("농구")) {
+    if (
+      text.includes("대회") ||
+      text.includes("경기") ||
+      text.includes("리그") ||
+      text.includes("출전")
+    ) {
+      return "농구 경기와 대회 참여를 위한 모임";
+    }
+
+    return "농구를 함께 즐기고 실력을 향상하기 위한 모임";
+  }
+
+  // 축구 / 풋살
+  if (
+    text.includes("축구") ||
+    text.includes("풋살")
+  ) {
+    if (
+      text.includes("대회") ||
+      text.includes("경기") ||
+      text.includes("리그") ||
+      text.includes("출전")
+    ) {
+      return "축구·풋살 경기와 대회 참여를 위한 모임";
+    }
+
+    return "축구·풋살을 함께 즐기고 실력을 향상하기 위한 모임";
+  }
+
+  // 음악 / 밴드
+  if (
+    text.includes("밴드") ||
+    text.includes("음악") ||
+    text.includes("연주")
+  ) {
+    return `${fieldText || "음악"} 활동과 공연을 위한 모임`;
+  }
+
+  // 풍물 / 국악 / 전통문화
+  if (
+    text.includes("풍물") ||
+    text.includes("국악") ||
+    text.includes("전통") ||
+    text.includes("무형문화재") ||
+    text.includes("탈춤") ||
+    text.includes("농악")
+  ) {
+    if (text.includes("고성오광대")) {
+      return "풍물패 활동과 고성오광대 전수 및 공연을 위한 모임";
+    }
+
+    if (
+      text.includes("전수") ||
+      text.includes("공연")
+    ) {
+      return `${fieldText || "전통문화"}를 배우고 공연하기 위한 모임`;
+    }
+
+    return `${fieldText || "전통문화"}를 배우고 함께 활동하기 위한 모임`;
+  }
+
+  // 봉사
+  if (
+    text.includes("봉사") ||
+    text.includes("사회공헌") ||
+    text.includes("기부")
+  ) {
+    return "봉사와 사회공헌 활동을 위한 모임";
+  }
+
+  // 학술 / 연구
+  if (
+    text.includes("학술") ||
+    text.includes("스터디") ||
+    text.includes("연구") ||
+    text.includes("전공")
+  ) {
+    return `${fieldText || "학술"} 분야의 지식과 역량을 쌓기 위한 모임`;
+  }
+
+  // 독서 / 독서토론
+  if (
+    text.includes("독서") ||
+    text.includes("독서토론") ||
+    text.includes("독서 모임")
+  ) {
+    return "독서토론을 위한 모임";
+  }
+
+  // 일반적인 경우
+  if (activityText) {
+    return `${activityText}을 위한 모임`;
+  }
+
+  if (fieldText) {
+    return `${fieldText} 분야의 활동을 위한 모임`;
+  }
+
+  return "";
+};
+
+const extractField = (data) => {
+  if (!data) return null;
+
+  const text =
+    data.field ??
+    data.categoryName ??
+    data.category?.name ??
+    data.activityField ??
+    "";
+
+  if (typeof text !== "string") {
+    return null;
+  }
+
+  const match = text.match(/분야\s*:\s*([^]+?)(?=\s*(?:동아리실|동아리\s*지위|주요\s*활동)\s*:|$)/);
+
+  return match?.[1]?.trim() || text.trim() || null;
+};
+
+const extractMajorActivity = (data) => {
+  if (!data) return null;
+
+  // 가장 우선: 상세페이지의 "동아리 소개"
+  // 예: "매주 독서토론"
+  const briefDescription =
+    data.briefDescription ??
+    data.introduction ??
+    data.intro ??
+    "";
+
+  if (
+    typeof briefDescription === "string" &&
+    briefDescription.trim()
+  ) {
+    return briefDescription.trim();
+  }
+
+  const candidates = [
+    data.mainActivity,
+    data.majorActivity,
+    data.mainActivities,
+    data.activityContent,
+    data.activityDescription,
+    data.activity,
+  ];
+
+  for (const candidate of candidates) {
+    if (typeof candidate !== "string" || !candidate.trim()) {
+      continue;
+    }
+
+    let text = candidate.trim();
+
+    // "활동기간", "회비"가 시작되는 지점부터 제거
+    text = text
+      .replace(
+        /\s*(?:활동기간|활동\s*기간)\s*:?.*$/s,
+        ""
+      )
+      .replace(
+        /\s*(?:회비|가입비|등록비)\s*:?.*$/s,
+        ""
+      )
+      .trim();
+
+    if (text) {
+      return text;
+    }
+  }
+
+  return null;
+};
+const extractActivityPeriod = (data) => {
+  if (!data) return null;
+
+  // 이미 별도 필드가 있다면 최우선 사용
+  const directValue =
+    data.activityPeriod ??
+    data.activityDuration ??
+    data.duration ??
+    data.period ??
+    null;
+
+  if (
+    directValue !== null &&
+    directValue !== undefined &&
+    String(directValue).trim()
+  ) {
+    return String(directValue).trim();
+  }
+
+  const activity =
+    typeof data.activity === "string"
+      ? data.activity
+      : "";
+
+  if (!activity) {
+    return null;
+  }
+
+  // 예:
+  // 활동기간 1년
+  // 활동 기간: 1년
+  const match = activity.match(
+    /(?:활동기간|활동\s*기간)\s*:?\s*([^\n,]+?)(?=\s*(?:회비|가입비|등록비)\s*:?\s*|$)/i
+  );
+
+  return match?.[1]?.trim() || null;
+};
+
+
+const extractFee = (data) => {
+  if (!data) return null;
+
+  // 이미 별도 필드가 있다면 최우선 사용
+  const directValue =
+    data.fee ??
+    data.clubFee ??
+    data.membershipFee ??
+    data.registrationFee ??
+    null;
+
+  if (
+    directValue !== null &&
+    directValue !== undefined &&
+    String(directValue).trim()
+  ) {
+    return directValue;
+  }
+
+  const activity =
+    typeof data.activity === "string"
+      ? data.activity
+      : "";
+
+  if (!activity) {
+    return null;
+  }
+
+  // 예:
+  // 회비 연 2만원
+  // 회비: 연 2만원
+  const match = activity.match(
+    /(?:회비|가입비|등록비)\s*:?\s*([^\n,]+)/i
+  );
+
+  return match?.[1]?.trim() || null;
+};
+
+const getTimeInMinutes = (time) => {
+  if (!time) return null;
+
+  const [hour, minute] = String(time)
+    .slice(0, 5)
+    .split(":")
+    .map(Number);
+
+  if (
+    !Number.isFinite(hour) ||
+    !Number.isFinite(minute)
+  ) {
+    return null;
+  }
+
+  return hour * 60 + minute;
+};
+
+const isActivityTimeAvailable = (clubSchedule, availableTimes) => {
+  if (!clubSchedule || !Array.isArray(availableTimes)) {
+    return false;
+  }
+
+  const clubDay =
+    clubSchedule.dayOfWeek ??
+    clubSchedule.day ??
+    "";
+
+  const clubStart = getTimeInMinutes(
+    clubSchedule.startTime
+  );
+
+  const clubEnd = getTimeInMinutes(
+    clubSchedule.endTime
+  );
+
+  if (
+    !clubDay ||
+    clubStart === null ||
+    clubEnd === null
+  ) {
+    return false;
+  }
+
+  return availableTimes.some((available) => {
+    const availableDay =
+      available.dayOfWeek ??
+      available.day ??
+      "";
+
+    if (availableDay !== clubDay) {
+      return false;
+    }
+
+    const availableStart = getTimeInMinutes(
+      available.startTime
+    );
+
+    const availableEnd = getTimeInMinutes(
+      available.endTime
+    );
+
+    if (
+      availableStart === null ||
+      availableEnd === null
+    ) {
+      return false;
+    }
+
+    // 시간대가 조금이라도 겹치면 활동 가능
+    return (
+      clubStart < availableEnd &&
+      clubEnd > availableStart
+    );
+  });
+};
+
 const normalizeClub = (data) => {
   if (!data) return null;
 
@@ -64,32 +441,62 @@ const normalizeClub = (data) => {
 
   const activityTime =
     schedules.length > 0
-      ? schedules
-          .map((schedule) => {
-            const day = schedule.dayOfWeek ?? "";
-            const start = schedule.startTime
-              ? String(schedule.startTime).slice(0, 5)
-              : "";
-            const end = schedule.endTime
-              ? String(schedule.endTime).slice(0, 5)
-              : "";
+      ? (() => {
+          const totalMinutes = schedules.reduce(
+            (total, schedule) => {
+              if (!schedule.startTime || !schedule.endTime) {
+                return total;
+              }
 
-            if (!day && !start && !end) {
-              return null;
-            }
+              const [startHour, startMinute] = String(
+                schedule.startTime
+              )
+                .split(":")
+                .map(Number);
 
-            if (start && end) {
-              return `${day} ${start}-${end}`;
-            }
+              const [endHour, endMinute] = String(
+                schedule.endTime
+              )
+                .split(":")
+                .map(Number);
 
-            return `${day} ${start || end}`.trim();
-          })
-          .filter(Boolean)
-          .join(" / ")
-      : data.activityTime ??
-        data.meetingTime ??
-        data.activity ??
-        null;
+              if (
+                !Number.isFinite(startHour) ||
+                !Number.isFinite(startMinute) ||
+                !Number.isFinite(endHour) ||
+                !Number.isFinite(endMinute)
+              ) {
+                return total;
+              }
+
+              const startTotal =
+                startHour * 60 + startMinute;
+
+              const endTotal =
+                endHour * 60 + endMinute;
+
+              let duration = endTotal - startTotal;
+
+              if (duration < 0) {
+                duration += 24 * 60;
+              }
+
+              return total + duration;
+            },
+            0
+          );
+
+          if (totalMinutes === 0) {
+            return null;
+          }
+
+          const hours = totalMinutes / 60;
+
+          return Number.isInteger(hours)
+            ? `${hours}시간`
+            : `${hours.toFixed(1)}시간`;
+        })()
+      : null;
 
   return {
     ...data,
@@ -139,9 +546,11 @@ const normalizeClub = (data) => {
       null,
 
     tags:
-      Array.isArray(data.tags)
-        ? data.tags
-        : [],
+      Array.isArray(data.topKeywords)
+        ? data.topKeywords
+        : Array.isArray(data.tags)
+          ? data.tags
+          : [],
     avgRating:
       data.avgRating ??
       data.averageRating ??
@@ -173,19 +582,13 @@ const normalizeClub = (data) => {
       data.likes ??
       0,
 
-    activityPeriod:
-      data.activityPeriod ??
-      data.activityDuration ??
-      data.period ??
-      null,
+  activityPeriod:
+    extractActivityPeriod(data),
 
-    activityTime,
+  activityTime,
 
-    fee:
-      data.fee ??
-      data.clubFee ??
-      data.membershipFee ??
-      null,
+  fee:
+    extractFee(data),
 
     recruitmentPeriod:
       recruitPeriod,
@@ -211,10 +614,14 @@ const normalizeClub = (data) => {
 
     schedules,
 
+    field:
+      extractField(data),
+
     activityPurpose:
-      data.activityPurpose ??
-      data.purpose ??
-      null,
+      getActivityPurpose(data),
+
+    mainActivity:
+      extractMajorActivity(data),
 
     activityIntensity:
       data.activityIntensity ??
@@ -223,10 +630,10 @@ const normalizeClub = (data) => {
 
     networkingRatio:
       data.networkingRatio ??
-      data.socialRatio ??
       data.friendshipRatio ??
+      data.socialRatio ??
       null,
-  };
+      };
 };
 
 /**
@@ -273,11 +680,39 @@ const getInitialClubIds = (locationState) => {
   return [];
 };
 
+
 export default function ComparisonPage() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // 내가 선택한 활동 가능 시간
+  const [selectedTimes] = useState(() => {
+    // 비교 페이지로 직접 전달된 값이 있으면 우선 사용
+    if (Array.isArray(location.state?.selectedTimes)) {
+      return location.state.selectedTimes;
+    }
+
+    // 없으면 저장된 시간 사용
+    try {
+      const savedTimes = localStorage.getItem(
+        'matchingSelectedTimes'
+      );
+
+      return savedTimes
+        ? JSON.parse(savedTimes)
+        : [];
+    } catch (error) {
+      console.error(
+        '활동 가능 시간 불러오기 실패:',
+        error
+      );
+
+      return [];
+    }
+  });
+
   const [clubs, setClubs] = useState([]);
+  
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -339,14 +774,49 @@ export default function ComparisonPage() {
           selectedClubs = detailResults.filter(Boolean);
         }
 
-        /*
-         * 선택된 객체가 기본 정보만 가지고 있는 경우
-         * clubId를 이용해서 실제 상세 데이터를 다시 가져옵니다.
-         *
-         * 이렇게 하면 앞 페이지에서
-         * { id, clubName } 정도만 넘겨도
-         * 비교 페이지에서는 상세 API 데이터를 사용할 수 있습니다.
-         */
+        const selectedClubIds = selectedClubs
+          .map(getClubId)
+          .filter(Boolean);
+
+        let comparisonData = [];
+
+        if (selectedClubIds.length >= 2) {
+          try {
+            const comparisonResponse =
+              await getComparisonData(selectedClubIds);
+
+            console.log("비교 API 원본 응답 =", comparisonResponse);
+
+            comparisonData =
+              comparisonResponse?.data?.clubs ??
+              [];
+
+            console.log("비교 API 원본 응답 =", comparisonResponse);
+            console.log("비교 API 최종 데이터 =", comparisonData);
+            console.log(
+              "비교 API 각 동아리 키워드 =",
+              comparisonData.map((item) => ({
+                clubId: item.clubId,
+                topKeywords: item.topKeywords,
+                
+                all: item,
+              }))
+            );
+
+            // 배열이 아니면 빈 배열 처리
+            if (!Array.isArray(comparisonData)) {
+              comparisonData = [];
+            }
+
+            console.log("비교 API 최종 데이터 =", comparisonData);
+          } catch (comparisonError) {
+            console.error(
+              "비교 데이터 조회 실패:",
+              comparisonError
+            );
+          }
+        }
+        
         const detailedClubs = await Promise.all(
           selectedClubs.map(async (club) => {
             const clubId = getClubId(club);
@@ -371,6 +841,15 @@ export default function ComparisonPage() {
                 console.log("reviewData.averageRating =", reviewData?.averageRating);
                 console.log("reviewData.data =", reviewData?.data);
                 console.log(
+                  "reviewData.activityIntensity =",
+                  reviewData?.activityIntensity
+                );
+
+                console.log(
+                  "reviewData.friendshipRatio =",
+                  reviewData?.friendshipRatio
+                );
+                console.log(
                   "reviewData.data?.averageRating =",
                   reviewData?.data?.averageRating
                 );
@@ -388,24 +867,41 @@ export default function ComparisonPage() {
                 reviewData?.data?.averageRating ??
                 null;
 
-              console.log(
-                "최종 averageRating =",
-                averageRating
-              );
+              const activityIntensity =
+                reviewData?.activityIntensity ??
+                reviewData?.data?.activityIntensity ??
+                null;
 
-              console.log(
-                `동아리 ${clubId} 최종 비교용 별점 =`,
-                averageRating
-              );
+              const friendshipRatio =
+                reviewData?.friendshipRatio ??
+                reviewData?.data?.friendshipRatio ??
+                null;
+
+              console.log("=================================");
+              console.log(`동아리 ${clubId} 리뷰 데이터 최종 확인`);
+              console.log("평균 별점 =", averageRating);
+              console.log("활동 강도 =", activityIntensity);
+              console.log("친목 비중 =", friendshipRatio);
+              console.log("=================================");
+
+              const comparisonClub =
+                comparisonData.find(
+                  (item) => Number(item.clubId) === Number(clubId)
+                );
 
               return normalizeClub({
                 ...club,
                 ...detail,
 
-                // 리뷰 API의 평균 별점을 비교 페이지에 저장
+                topKeywords:
+                  comparisonClub?.topKeywords ?? [],
+
                 avgRating: averageRating,
                 averageRating: averageRating,
                 rating: averageRating,
+
+                activityIntensity: activityIntensity,
+                networkingRatio: friendshipRatio,
 
                 clubId,
                 id: clubId,
@@ -533,21 +1029,23 @@ export default function ComparisonPage() {
     <>
       <Header />
 
-      <main className="comparison-page">
-        <div className="comparison-page__top">
-          <button
-            type="button"
-            className="comparison-page__back"
-            onClick={handleBack}
-            aria-label="뒤로가기"
-          >
-            ←
-          </button>
+      <main className="matching-page comparison-page">
 
-          <div className="comparison-page__tab">
-            맞춤 동아리
-          </div>
+        {/* 뒤로가기 */}
+        <button
+          type="button"
+          className="matching-back-button"
+          onClick={handleBack}
+          aria-label="뒤로가기"
+        >
+          ←
+        </button>
+
+        {/* 상단 탭 */}
+        <div className="matching-title-tab">
+          맞춤 동아리
         </div>
+
 
       <section className="comparison-page__content">
         <div
@@ -595,7 +1093,8 @@ export default function ComparisonPage() {
                 >
                   {getComparisonValue(
                     club,
-                    item.key
+                    item.key,
+                    selectedTimes
                   )}
                 </div>
               ))}
@@ -616,6 +1115,7 @@ export default function ComparisonPage() {
   );
 }
 
+
 function ComparisonLabel({
   text,
   active = false,
@@ -633,21 +1133,226 @@ function ComparisonLabel({
   );
 }
 
-function getComparisonValue(club, key) {
+const DAY_TO_INDEX = {
+  월요일: 0,
+  화요일: 1,
+  수요일: 2,
+  목요일: 3,
+  금요일: 4,
+  토요일: 5,
+  일요일: 6,
+};
+
+const getActivityAvailability = (
+  schedules,
+  selectedTimes
+) => {
+  if (
+    !Array.isArray(schedules) ||
+    schedules.length === 0 ||
+    !Array.isArray(selectedTimes) ||
+    selectedTimes.length === 0
+  ) {
+    return {
+      status: 'unavailable',
+      text: '활동 불가능',
+    };
+  }
+
+  let hasAnyOverlap = false;
+
+  /*
+   * 동아리 일정 하나하나를 확인
+   *
+   * 하나라도 내가 선택한 시간 안에
+   * 완전히 들어오면 활동 가능
+   */
+  for (const schedule of schedules) {
+    const dayIndex =
+      DAY_TO_INDEX[
+        schedule.dayOfWeek ?? schedule.day
+      ];
+
+    if (
+      dayIndex === undefined ||
+      !schedule.startTime ||
+      !schedule.endTime
+    ) {
+      continue;
+    }
+
+    const [
+      startHour,
+      startMinute,
+    ] = String(schedule.startTime)
+      .slice(0, 5)
+      .split(':')
+      .map(Number);
+
+    const [
+      endHour,
+      endMinute,
+    ] = String(schedule.endTime)
+      .slice(0, 5)
+      .split(':')
+      .map(Number);
+
+    const scheduleStart =
+      startHour * 60 + startMinute;
+
+    const scheduleEnd =
+      endHour * 60 + endMinute;
+
+    /*
+     * 해당 요일에 내가 선택한 시간만 추출
+     */
+    const selectedDaySlots = selectedTimes
+      .filter((key) =>
+        key.startsWith(`${dayIndex}-`)
+      )
+      .map((key) => {
+        const [, hour, minute] =
+          key.split('-');
+
+        const start =
+          Number(hour) * 60 +
+          Number(minute);
+
+        return {
+          start,
+          end: start + 30,
+        };
+      });
+
+    if (selectedDaySlots.length === 0) {
+      continue;
+    }
+
+    /*
+     * --------------------------------
+     * 1. 조금이라도 겹치는지 확인
+     * --------------------------------
+     */
+    const scheduleHasOverlap =
+      selectedDaySlots.some(
+        (slot) =>
+          slot.start < scheduleEnd &&
+          slot.end > scheduleStart
+      );
+
+    if (scheduleHasOverlap) {
+      hasAnyOverlap = true;
+    }
+
+    /*
+     * --------------------------------
+     * 2. 동아리 활동시간 전체가
+     *    내가 선택한 시간 안에 있는지 확인
+     * --------------------------------
+     *
+     * 예:
+     * 동아리 18:00~20:00
+     *
+     * 내가
+     * 18:00~18:30
+     * 18:30~19:00
+     * 19:00~19:30
+     * 19:30~20:00
+     *
+     * 선택했다면 → 완전 포함 → 활동 가능
+     */
+    let fullyCovered = true;
+
+    for (
+      let currentTime = scheduleStart;
+      currentTime < scheduleEnd;
+      currentTime += 30
+    ) {
+      const slotEnd = Math.min(
+        currentTime + 30,
+        scheduleEnd
+      );
+
+      const isCovered =
+        selectedDaySlots.some(
+          (slot) =>
+            slot.start <= currentTime &&
+            slot.end >= slotEnd
+        );
+
+      if (!isCovered) {
+        fullyCovered = false;
+        break;
+      }
+    }
+
+    /*
+     * 하나의 동아리 활동시간이라도
+     * 내가 전부 커버하면 활동 가능
+     */
+    if (fullyCovered) {
+      return {
+        status: 'available',
+        text: '활동 가능!',
+      };
+    }
+  }
+
+  /*
+   * 완전히 포함되지는 않았지만
+   * 조금이라도 겹쳤다면
+   */
+  if (hasAnyOverlap) {
+    return {
+      status: 'adjust',
+      text: '시간 조정 필요',
+    };
+  }
+
+  /*
+   * 아예 겹치지 않음
+   */
+  return {
+    status: 'unavailable',
+    text: '활동 불가능',
+  };
+};
+
+
+function getComparisonValue(
+  club,
+  key,
+  selectedTimes
+) {
   switch (key) {
     case "tags":
-      return Array.isArray(club.tags)
-        ? club.tags
-            .map((tag) =>
+      return Array.isArray(club.tags) && club.tags.length > 0 ? (
+        <div className="comparison-page__tags">
+          {club.tags.map((tag, index) => {
+            const tagName =
               typeof tag === "string"
                 ? tag
                 : tag?.name ??
                   tag?.tagName ??
-                  tag?.label
-            )
-            .filter(Boolean)
-            .join(", ")
-        : "-";
+                  tag?.label ??
+                  tag?.keywordName ??
+                  "";
+
+            if (!tagName) return null;
+
+            return (
+              <span
+                key={`${tagName}-${index}`}
+                className="comparison-page__tag-chip"
+              >
+                {tagName}
+              </span>
+            );
+          })}
+        </div>
+      ) : (
+        "-"
+      );
 
     case "rating": {
       const rating = Number(
@@ -657,19 +1362,31 @@ function getComparisonValue(club, key) {
         0
       );
 
-      console.log(
-        `비교 화면 ${club.clubName} 별점 =`,
-        rating
-      );
-
       return (
-        <div className="comparison-page__rating">
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+            gap: "6px",
+          }}
+        >
           <StarRating
             value={rating}
             showScore={false}
-            size={18}
+            size={20}
           />
-          <span className="comparison-page__rating-score">
+
+          <span
+            style={{
+              fontSize: "19px",
+              fontWeight: 700,
+              color: "var(--color-star)",
+              whiteSpace: "nowrap",
+              transform: "translateY(2.5px)",
+            }}
+          >
             {rating.toFixed(1)}
           </span>
         </div>
@@ -680,7 +1397,7 @@ function getComparisonValue(club, key) {
       return (
         <div className="comparison-page__favorite">
           <svg
-            width="24"
+            width="22"
             height="21"
             viewBox="0 0 24 21"
             fill="#D4537E"
@@ -691,100 +1408,240 @@ function getComparisonValue(club, key) {
             <path d="M12 19.5L10.55 18.18C5.4 13.56 2 10.5 2 6.75C2 3.72 4.42 1.5 7.5 1.5C9.24 1.5 10.91 2.33 12 3.65C13.09 2.33 14.76 1.5 16.5 1.5C19.58 1.5 22 3.72 22 6.75C22 10.5 18.6 13.56 13.45 18.19L12 19.5Z" />
           </svg>
 
-          <span>{club.favoriteCount ?? 0}</span>
+          <span
+            style={{
+              fontSize: "19px",
+              fontWeight: 700,
+              color: "#D4537E",
+              whiteSpace: "nowrap",
+              transform: "translateY(1px)",
+            }}
+          >
+            {club.favoriteCount ?? 0}
+          </span>
         </div>
       );
 
     case "activityPurpose":
-      return club.activityPurpose ?? "-";
-
-    case "mainActivity":
       return (
+        <span className="comparison-page__info-text">
+          {club.activityPurpose ?? "-"}
+        </span>
+      );
+
+    case "mainActivity": {
+      const mainActivity =
+        club.mainActivity ??
         club.activityContent ??
         club.activity ??
         club.activityDescription ??
-        "-"
+        "";
+
+      return (
+        <span className="comparison-page__info-text">
+          {mainActivity}
+        </span>
       );
+    }
 
-    case "activityIntensity":
-      return club.activityIntensity ?? "-";
+    case "activityIntensity": {
+      const value = Number(club.activityIntensity);
 
-    case "networkingRatio":
-      return club.networkingRatio ?? "-";
-
-    case "schedules":
-      return Array.isArray(club.schedules)
-        ? club.schedules
-            .map((schedule) => {
-              const day =
-                schedule.dayOfWeek ??
-                schedule.day ??
-                "";
-
-              const start = schedule.startTime
-                ? String(schedule.startTime).slice(0, 5)
-                : "";
-
-              const end = schedule.endTime
-                ? String(schedule.endTime).slice(0, 5)
-                : "";
-
-              if (day && start && end) {
-                return `${day} ${start}-${end}`;
-              }
-
-              return `${day} ${start || end}`.trim();
-            })
-            .filter(Boolean)
-            .join(" / ")
-        : "-";
-
-    case "activityTime":
-      return club.activityTime ?? "-";
-
-    case "activityPeriod":
-      return club.activityPeriod ?? "-";
-
-    case "fee":
-      return club.fee != null
-        ? typeof club.fee === "number"
-          ? `${club.fee.toLocaleString("ko-KR")}원`
-          : club.fee
-        : "-";
-
-    case "recruitmentPeriod":
-      if (!club.recruitmentPeriod) {
+      if (!Number.isFinite(value) || value <= 0) {
         return "-";
       }
 
-      if (typeof club.recruitmentPeriod === "string") {
-        return club.recruitmentPeriod;
+      return (
+        <div className="comparison-page__slider-value">
+          <DiscreteSlider
+            value={Math.max(1, Math.min(5, value))}
+            min={1}
+            max={5}
+            onChange={() => {}}
+          />
+
+          <span className="comparison-page__slider-score">
+            {value.toFixed(1)}
+          </span>
+        </div>
+      );
+    }
+
+    case "networkingRatio": {
+      const value = Number(club.networkingRatio);
+
+      if (!Number.isFinite(value) || value <= 0) {
+        return "-";
       }
 
-      const start =
-        club.recruitmentPeriod.start ??
-        club.recruitmentPeriod.recruitStartAt;
+      return (
+        <div className="comparison-page__slider-value">
+          <DiscreteSlider
+            value={Math.max(1, Math.min(5, value))}
+            min={1}
+            max={5}
+            onChange={() => {}}
+          />
 
-      const end =
-        club.recruitmentPeriod.end ??
-        club.recruitmentPeriod.recruitEndAt;
+          <span className="comparison-page__slider-score">
+            {value.toFixed(1)}
+          </span>
+        </div>
+      );
+    }
 
-      if (start && end) {
-        return `${formatComparisonDate(start)} ~ ${formatComparisonDate(end)}`;
+    case "schedules": {
+      const schedules = Array.isArray(club.schedules)
+        ? club.schedules
+        : [];
+
+      const availability = getActivityAvailability(
+        schedules,
+        selectedTimes
+      );
+
+      return (
+        <div className="comparison-page__schedule-wrapper">
+
+          {/* 정기 모임 시간 */}
+          <span className="comparison-page__info-text comparison-page__schedule-text">
+            {schedules.length > 0
+              ? schedules
+                  .map((schedule) => {
+                    const day =
+                      schedule.dayOfWeek ??
+                      schedule.day ??
+                      "";
+
+                    const startTime = schedule.startTime
+                      ? String(schedule.startTime).slice(0, 5)
+                      : "";
+
+                    const endTime = schedule.endTime
+                      ? String(schedule.endTime).slice(0, 5)
+                      : "";
+
+                    if (day && startTime && endTime) {
+                      return `${day} ${startTime}-${endTime}`;
+                    }
+
+                    return `${day} ${
+                      startTime || endTime
+                    }`.trim();
+                  })
+                  .filter(Boolean)
+                  .map((text, index) => (
+                    <React.Fragment key={index}>
+                      {index > 0 && <br />}
+                      {text}
+                    </React.Fragment>
+                  ))
+              : "-"}
+          </span>
+
+          {/* 활동 가능 여부 */}
+          {schedules.length > 0 && (
+            <span
+              className={`comparison-page__availability comparison-page__availability--${availability.status}`}
+            >
+              {availability.text}
+            </span>
+          )}
+
+        </div>
+      );
+    }
+
+    case "activityTime":
+  return (
+    <span className="comparison-page__info-text">
+      {club.activityTime ?? "-"}
+    </span>
+  );
+
+    case "activityPeriod":
+      return (
+        <span className="comparison-page__info-text">
+          {club.activityPeriod ?? "-"}
+        </span>
+      );
+
+    case "fee":
+      return (
+        <span className="comparison-page__info-text">
+          {club.fee != null
+            ? typeof club.fee === "number"
+              ? `${club.fee.toLocaleString("ko-KR")}원`
+              : club.fee
+            : "-"}
+        </span>
+      );
+
+    case "recruitmentPeriod": {
+      const recruitmentPeriod = club.recruitmentPeriod;
+
+      if (!recruitmentPeriod) {
+        return (
+          <span className="comparison-page__info-text">
+            -
+          </span>
+        );
       }
 
-      if (start) {
-        return `${formatComparisonDate(start)} ~`;
+      if (typeof recruitmentPeriod === "string") {
+        return (
+          <span className="comparison-page__info-text">
+            {recruitmentPeriod}
+          </span>
+        );
       }
 
-      if (end) {
-        return `~ ${formatComparisonDate(end)}`;
+      const recruitStart =
+        recruitmentPeriod.start ??
+        recruitmentPeriod.recruitStartAt;
+
+      const recruitEnd =
+        recruitmentPeriod.end ??
+        recruitmentPeriod.recruitEndAt;
+
+      if (recruitStart && recruitEnd) {
+        return (
+          <span className="comparison-page__info-text">
+            {formatComparisonDate(recruitStart)} ~{" "}
+            {formatComparisonDate(recruitEnd)}
+          </span>
+        );
       }
 
-      return "-";
+      if (recruitStart) {
+        return (
+          <span className="comparison-page__info-text">
+            {formatComparisonDate(recruitStart)} ~
+          </span>
+        );
+      }
+
+      if (recruitEnd) {
+        return (
+          <span className="comparison-page__info-text">
+            ~ {formatComparisonDate(recruitEnd)}
+          </span>
+        );
+      }
+
+      return (
+        <span className="comparison-page__info-text">
+          -
+        </span>
+      );
+    }
 
     case "interviewDifficulty":
-      return club.interviewDifficulty ?? "-";
+      return (
+        <span className="comparison-page__info-text">
+          {club.interviewDifficulty ?? "-"}
+        </span>
+      );
 
     default:
       return "-";

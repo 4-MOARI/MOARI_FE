@@ -229,3 +229,8 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+.review-slider-value {
+  color: #534ab7;
+  font-weight: 700;
+}
