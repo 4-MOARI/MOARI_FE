@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getAiInterview, getAiInterviewResult } from '../../api/aiInterview';
+import { completeAiInterview, getAiInterview, getAiInterviewResult } from '../../api/aiInterview';
 import useAiInterviewStore from '../../store/useAiInterviewStore';
 import './AiInterviewResultPage.css';
 
@@ -27,7 +27,15 @@ export default function AiInterviewResultPage() {
         setIsLoading(true);
         setError(null);
 
-        const resultRes = await getAiInterviewResult(Number(interviewId));
+        let resultRes;
+
+        try {
+          resultRes = await getAiInterviewResult(Number(interviewId));
+        } catch (resultError) {
+          await completeAiInterview(Number(interviewId));
+          resultRes = await getAiInterviewResult(Number(interviewId));
+        }
+
         if (ignore) return;
         setResult(resultRes.data.data);
         store.setResult(resultRes.data.data);
