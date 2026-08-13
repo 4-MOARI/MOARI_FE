@@ -1,6 +1,6 @@
 //궁합 분석 결과 리포트
 import { LightbulbIcon } from './Icons';
-import StarRating from './StarRating';
+import StarRating from '../../common/StarRating/StarRating';
 import './CompatibilityReport.css';
 
 // data: analyzeCompatibility() 응답의 data 필드

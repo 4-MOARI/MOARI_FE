@@ -1,6 +1,6 @@
 //AI추천 꿀조합 카드 2개짜리 그리드
 import { CheckIcon, LightbulbIcon } from './Icons';
-import StarRating from './StarRating';
+import StarRating from '../../common/StarRating/StarRating';
 import './AiRecommendedCombos.css';
 
 // combos: [{

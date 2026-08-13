@@ -10,7 +10,7 @@ import { getClubReviews } from "../../api/reviewApi";
 import "./ComparisonPage.css";
 import StarRating from "../../components/common/StarRating/StarRating";
 
-import CompatibilitySection from '../../components/compatibility/CompatibilitySection'; 
+import CompatibilitySection from '../../components/club/compatibility/CompatibilitySection'; 
 
 const MAX_COMPARE_COUNT = 4;
 
