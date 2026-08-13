@@ -30,6 +30,7 @@ export default function CustomCompatibilityPicker({
                 type="button"
                 className={selected ? 'club-chip club-chip--selected' : 'club-chip'}
                 onClick={() => onToggle(club.id)}
+                title={club.label} //호버 시 전체 이름 노출
               >
                 {club.label}
               </button>

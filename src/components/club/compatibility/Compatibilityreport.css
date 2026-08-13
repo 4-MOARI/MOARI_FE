@@ -37,13 +37,17 @@
   margin: 0 0 4px;
 }
 
+/* 라벨을 고정폭으로 둬서 모든 행의 별점 시작 x좌표를 통일 */
 .compat-report__row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
 }
 
 .compat-report__label {
+  width: 160px;
+  flex-shrink: 0;
   font-family: Inter, sans-serif;
   font-size: 14px;
   font-weight: 700;
@@ -51,6 +55,8 @@
 }
 
 .compat-report__value {
+  flex: 1;
+  min-width: 0;
   font-family: Inter, sans-serif;
   font-size: 14px;
   font-weight: 700;
@@ -60,11 +66,20 @@
   gap: 6px;
 }
 
+.compat-report__value-desc {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .compat-report__badge-row {
   display: flex;
   align-items: center;
   gap: 16px;
   margin-top: 6px;
+  flex-wrap: wrap;
 }
 
 .compat-report__badge {
@@ -72,6 +87,11 @@
   min-width: 141px;
   height: 32px;
   border-radius: 16px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+
+  background: #fff;
+  border: 1.5px solid var(--badge-color, #534AB7);
 
   display: flex;
   align-items: center;
@@ -82,25 +102,50 @@
   font-family: Inter, sans-serif;
   font-size: 14px;
   font-weight: 700;
-  color: #fff;
+  color: var(--badge-color, #534AB7);
 }
 
 .compat-report__caution {
   font-family: Inter, sans-serif;
   font-size: 14px;
   font-weight: 700;
-  color: #991b1b;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 480px;
 }
 
 .compat-report__comment {
   display: flex;
   align-items: flex-start;
   gap: 6px;
+  min-width: 0;
 
   font-family: Inter, sans-serif;
   font-size: 13px;
   font-weight: 400;
   color: #4b5563;
 
-  margin: 6px 0 0;
+  margin: 0;
+}
+
+.compat-report__comment-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@keyframes skeleton-pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.45; }
+  100% { opacity: 1; }
+}
+
+.skeleton-block {
+  background: #e5e7eb;
+  border-radius: 6px;
+  animation: skeleton-pulse 1.3s ease-in-out infinite;
 }

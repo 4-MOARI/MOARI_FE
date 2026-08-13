@@ -609,7 +609,7 @@ export default function ComparisonPage() {
 
         <section className="comparison-page__compatibility">
           {/* 궁합 부분 들어갈 자리 */}
-          <CompatibilitySection />
+          <CompatibilitySection clubs={clubs}/>
         </section>
       </main>
     </>

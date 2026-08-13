@@ -1,6 +1,6 @@
 .ai-combos-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
   gap: 16px;
   padding: 20px 24px 24px;
 }
@@ -25,6 +25,7 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 16px;
+  min-width: 0;
 }
 
 .ai-combo-card__title {
@@ -33,6 +34,11 @@
   font-weight: 700;
   color: #1f1235;
   margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  flex: 1;
 }
 
 .ai-combo-card__metrics {
@@ -42,13 +48,17 @@
   margin-bottom: 16px;
 }
 
+/* 라벨을 고정폭으로 두고, 값 영역이 남은 공간을 모두 차지하게 해서
+   모든 행의 별점 시작 x좌표가 항상 동일하게 정렬되도록 함 */
 .ai-combo-card__metric-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  min-width: 0;
 }
 
 .ai-combo-card__metric-label {
+  width: 96px;
+  flex-shrink: 0;
   font-family: Inter, sans-serif;
   font-size: 13px;
   font-weight: 700;
@@ -56,6 +66,8 @@
 }
 
 .ai-combo-card__metric-value {
+  flex: 1;
+  min-width: 0;
   font-family: Inter, sans-serif;
   font-size: 13px;
   font-weight: 700;
@@ -70,6 +82,11 @@
   min-width: 131px;
   height: 28px;
   border-radius: 14px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+
+  background: #fff;
+  border: 1.5px solid #F59E0B;
 
   display: flex;
   align-items: center;
@@ -80,15 +97,25 @@
   font-family: Inter, sans-serif;
   font-size: 13px;
   font-weight: 700;
-  color: #fff;
+  color: #B45309;
 
   margin-bottom: 14px;
+}
+
+/* 설명 텍스트는 한 줄로 말줄임 처리, title 속성으로 전체 내용 툴팁 제공 */
+.ai-combo-card__desc {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .ai-combo-card__reason {
   display: flex;
   align-items: flex-start;
   gap: 6px;
+  min-width: 0;
 
   font-family: Inter, sans-serif;
   font-size: 12px;
@@ -96,4 +123,29 @@
   color: #4b5563;
 
   margin: 0;
+}
+
+.ai-combo-card__reason-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 스켈레톤 */
+@keyframes skeleton-pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.45; }
+  100% { opacity: 1; }
+}
+
+.skeleton-block {
+  background: #e5e7eb;
+  border-radius: 6px;
+  animation: skeleton-pulse 1.3s ease-in-out infinite;
+}
+
+.ai-combo-card--skeleton {
+  border-style: dashed;
 }

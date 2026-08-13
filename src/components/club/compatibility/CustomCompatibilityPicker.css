@@ -35,10 +35,13 @@
 .custom-picker__clubs {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;         /* 칩 많아지면 줄바꿈 */
+  max-width: 620px;
 }
 
 .club-chip {
-  width: 101px;
+  min-width: 70px;
+  max-width: 140px;
   height: 36px;
   border-radius: 18px;
 
