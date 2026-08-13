@@ -85,13 +85,19 @@ export default function ClubDetailPage() {
 
     const fetchClubDetail = async () => {
       try {
-        const data = await getClubDetail(clubId);
-        const favoriteData = await getFavoriteStatus(clubId).catch(() => null);
+
+        // API 상세 조회
+        const [data, favoriteData] = await Promise.all([
+          getClubDetail(clubId),
+          getFavoriteStatus(clubId).catch(() => null),
+        ]);
+
 
         if (!data) {
           throw new Error('API 응답 데이터 없음');
         }
 
+        // 백엔드 데이터 → 기존 ClubInfoSection용 데이터로 변환
 
         const formattedClub = {
           id: data.clubId,

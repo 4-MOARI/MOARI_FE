@@ -18,7 +18,9 @@ const ClubCardMain = ({
   const shouldShowImage = imageUrl && failedImageUrl !== imageUrl;
 
   const toggleLike = (e) => {
-    e.stopPropagation();
+
+    e.stopPropagation(); // 핵심: 이벤트가 카드 전체로 퍼지는 것을 막음
+
     if (!isFavoriteLoading) {
       onFavoriteToggle?.(club);
     }
