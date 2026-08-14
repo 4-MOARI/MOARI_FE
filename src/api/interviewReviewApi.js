@@ -12,3 +12,15 @@ export const getInterviewReviews = (clubId) => {
     `/clubs/${clubId}/interview-reviews`
   );
 };
+
+export const getMyInterviewReviews = () => {
+  return apiClient.get(
+    '/users/me/interview-reviews'
+  );
+};
+
+export const deleteInterviewReview = (interviewReviewId) => {
+  return apiClient.delete(
+    `/interview-reviews/${interviewReviewId}`
+  );
+};
