@@ -7,6 +7,7 @@ import ComparisonCard from "../../components/club/ComparisonCard/ComparisonCard"
 import { getClubDetail } from "../../api/clubApi";
 import { getClubReviews } from "../../api/reviewApi";
 import { getComparisonData } from "../../api/comparisonApi";
+import { getInterviewReviews } from "../../api/interviewReviewApi";
 
 import "./ComparisonPage.css";
 import StarRating from "../../components/common/StarRating/StarRating";
@@ -48,155 +49,185 @@ const getClubId = (club) => {
 const getActivityPurpose = (data) => {
   if (!data) return "";
 
-  const field =
-    data.field ??
-    data.categoryName ??
-    data.category?.name ??
-    data.activityField ??
-    "";
-
-  const fieldText =
-    typeof field === "string"
-      ? field.trim()
-      : "";
-
-  const mainActivity = extractMajorActivity(data);
-
-  const purpose =
+  // API에 활동 목적이 따로 있으면 우선 사용
+  const directPurpose =
     data.activityPurpose ??
     data.purpose ??
+    data.activityPurposeText ??
     "";
 
-  // API에 명확한 활동 목적이 이미 존재하면 그대로 사용
   if (
-    typeof purpose === "string" &&
-    purpose.trim()
+    typeof directPurpose === "string" &&
+    directPurpose.trim()
   ) {
-    return purpose.trim();
+    return directPurpose.trim();
   }
 
-  const activityText =
-    typeof mainActivity === "string"
-      ? mainActivity.trim()
-      : "";
+  // 상세페이지의 주요 활동 가져오기
+  let text = extractMajorActivity(data);
 
-  if (!activityText && !fieldText) {
-    return "";
-  }
-
-  const text =
-    `${fieldText} ${activityText}`.toLowerCase();
-
-  // 금융
   if (
-    text.includes("금융") ||
-    text.includes("재무") ||
-    text.includes("투자")
+    typeof text !== "string" ||
+    !text.trim()
   ) {
-    return "금융 분야의 지식과 역량을 쌓기 위한 모임";
+    return "-";
   }
 
-  // 농구
-  if (text.includes("농구")) {
+  text = text
+    .replace(/\s+/g, " ")
+    .trim();
+
+  /*
+   * 주요 활동 뒤에 붙어 있는 상세 정보 제거
+   *
+   * 예:
+   * 주요 활동: 컴퓨터 스터디 및 자격증 취득
+   * 활동기간: 1년
+   * 회비: 연 2만원
+   *
+   * → 컴퓨터 스터디 및 자격증 취득
+   */
+
+  text = text
+    .replace(
+      /\s*(?:활동기간|활동\s*기간)\s*:?.*$/i,
+      ""
+    )
+    .replace(
+      /\s*(?:회비|가입비|등록비|비용)\s*:?.*$/i,
+      ""
+    )
+    .replace(
+      /\s*(?:동아리실|동아리\s*지위)\s*:?.*$/i,
+      ""
+    )
+    .trim();
+
+  if (!text) {
+    return "-";
+  }
+
+  /*
+   * 활동 목적에 해당하는 핵심 내용만 추출
+   *
+   * "컴퓨터에 대한 이해를 높이는 스터디 활동과
+   * 자격증 취득 및 친목 모임"
+   *
+   * → "컴퓨터에 대한 이해를 높이고 자격증 취득 및
+   * 친목 활동을 위한 모임"
+   */
+
+  // 이미 목적 표현이 있는 경우
+  const purposeMatch = text.match(
+    /^(.+?)(?:하기\s*위해|하기\s*위한|을\s*위해|를\s*위해|을\s*목표로|를\s*목표로)/
+  );
+
+  if (purposeMatch?.[1]) {
+    const purpose = purposeMatch[1].trim();
+
+    if (purpose.length >= 5) {
+      return `${purpose}을 위한 모임`;
+    }
+  }
+
+  /*
+   * 주요 활동을 구성하는 핵심 활동만 남김
+   */
+  const parts = text
+    .split(
+      /\s*(?:,|，|;|하며|하면서|하고|하여)\s*/
+    )
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  let summary = text;
+
+  if (parts.length >= 2) {
+    summary = parts
+      .slice(0, 2)
+      .join(" 및 ");
+  }
+
+  /*
+   * 너무 긴 경우 45자 정도에서 정리
+   */
+  if (summary.length > 45) {
+    summary = summary.slice(0, 45).trim();
+  }
+
+  return `${summary}을 위한 모임`;
+};
+
+const extractMainActivityOnly = (data) => {
+  if (!data) return null;
+
+  // 대표 활동으로 사용할 원본 후보
+  const sources = [
+    data.mainActivity,
+    data.majorActivity,
+    data.mainActivities,
+    data.activity,
+  ];
+
+  for (const source of sources) {
     if (
-      text.includes("대회") ||
-      text.includes("경기") ||
-      text.includes("리그") ||
-      text.includes("출전")
+      typeof source !== "string" ||
+      !source.trim()
     ) {
-      return "농구 경기와 대회 참여를 위한 모임";
+      continue;
     }
 
-    return "농구를 함께 즐기고 실력을 향상하기 위한 모임";
-  }
+    let text = source
+      .replace(/\r/g, " ")
+      .replace(/\n/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
 
-  // 축구 / 풋살
-  if (
-    text.includes("축구") ||
-    text.includes("풋살")
-  ) {
-    if (
-      text.includes("대회") ||
-      text.includes("경기") ||
-      text.includes("리그") ||
-      text.includes("출전")
-    ) {
-      return "축구·풋살 경기와 대회 참여를 위한 모임";
+    // "주요 활동:" 앞부분 제거
+    const majorIndex = text.search(
+      /주요\s*활동\s*:?\s*/i
+    );
+
+    if (majorIndex !== -1) {
+      text = text
+        .slice(
+          majorIndex +
+            text.match(/주요\s*활동\s*:?\s*/i)[0].length
+        )
+        .trim();
     }
 
-    return "축구·풋살을 함께 즐기고 실력을 향상하기 위한 모임";
-  }
+    /*
+     * 대표 활동 뒤에 붙을 수 있는
+     * 상세정보를 무조건 제거
+     *
+     * 콜론이 있든 없든 모두 인식
+     */
+    const stopPattern =
+      /\s+(?:회비|가입비|등록비|활동기간|활동\s*기간|모집기간|모집\s*기간|동아리실|동아리\s*지위|정기\s*활동\s*시간|정기활동시간|활동\s*시간)\s*(?::|：)?/i;
 
-  // 음악 / 밴드
-  if (
-    text.includes("밴드") ||
-    text.includes("음악") ||
-    text.includes("연주")
-  ) {
-    return `${fieldText || "음악"} 활동과 공연을 위한 모임`;
-  }
+    const stopMatch = text.match(stopPattern);
 
-  // 풍물 / 국악 / 전통문화
-  if (
-    text.includes("풍물") ||
-    text.includes("국악") ||
-    text.includes("전통") ||
-    text.includes("무형문화재") ||
-    text.includes("탈춤") ||
-    text.includes("농악")
-  ) {
-    if (text.includes("고성오광대")) {
-      return "풍물패 활동과 고성오광대 전수 및 공연을 위한 모임";
+    if (stopMatch) {
+      text = text.slice(0, stopMatch.index).trim();
     }
 
-    if (
-      text.includes("전수") ||
-      text.includes("공연")
-    ) {
-      return `${fieldText || "전통문화"}를 배우고 공연하기 위한 모임`;
+    /*
+     * 혹시 "회비" 등이 공백 없이 붙어 있는 경우도 제거
+     */
+    text = text
+      .replace(
+        /(?:회비|가입비|등록비|활동기간|활동\s*기간|모집기간|모집\s*기간|동아리실|동아리\s*지위|정기\s*활동\s*시간|정기활동시간|활동\s*시간).*$/i,
+        ""
+      )
+      .trim();
+
+    if (text) {
+      return text;
     }
-
-    return `${fieldText || "전통문화"}를 배우고 함께 활동하기 위한 모임`;
   }
 
-  // 봉사
-  if (
-    text.includes("봉사") ||
-    text.includes("사회공헌") ||
-    text.includes("기부")
-  ) {
-    return "봉사와 사회공헌 활동을 위한 모임";
-  }
-
-  // 학술 / 연구
-  if (
-    text.includes("학술") ||
-    text.includes("스터디") ||
-    text.includes("연구") ||
-    text.includes("전공")
-  ) {
-    return `${fieldText || "학술"} 분야의 지식과 역량을 쌓기 위한 모임`;
-  }
-
-  // 독서 / 독서토론
-  if (
-    text.includes("독서") ||
-    text.includes("독서토론") ||
-    text.includes("독서 모임")
-  ) {
-    return "독서토론을 위한 모임";
-  }
-
-  // 일반적인 경우
-  if (activityText) {
-    return `${activityText}을 위한 모임`;
-  }
-
-  if (fieldText) {
-    return `${fieldText} 분야의 활동을 위한 모임`;
-  }
-
-  return "";
+  return null;
 };
 
 const extractField = (data) => {
@@ -221,56 +252,59 @@ const extractField = (data) => {
 const extractMajorActivity = (data) => {
   if (!data) return null;
 
-  // 가장 우선: 상세페이지의 "동아리 소개"
-  // 예: "매주 독서토론"
-  const briefDescription =
-    data.briefDescription ??
-    data.introduction ??
-    data.intro ??
-    "";
-
-  if (
-    typeof briefDescription === "string" &&
-    briefDescription.trim()
-  ) {
-    return briefDescription.trim();
-  }
-
-  const candidates = [
+  // API에 주요 활동이 별도 필드로 오는 경우
+  const directCandidates = [
     data.mainActivity,
     data.majorActivity,
     data.mainActivities,
     data.activityContent,
     data.activityDescription,
-    data.activity,
   ];
 
-  for (const candidate of candidates) {
-    if (typeof candidate !== "string" || !candidate.trim()) {
-      continue;
+  for (const candidate of directCandidates) {
+    if (typeof candidate === "string" && candidate.trim()) {
+      return candidate.trim();
     }
+  }
 
-    let text = candidate.trim();
+  // 상세페이지의 "활동 내용" 전체 문자열에서
+  // "주요 활동:" 뒤의 내용을 추출
+  const activityText =
+    typeof data.activity === "string"
+      ? data.activity
+      : typeof data.briefDescription === "string"
+        ? data.briefDescription
+        : typeof data.introduction === "string"
+          ? data.introduction
+          : "";
 
-    // "활동기간", "회비"가 시작되는 지점부터 제거
-    text = text
-      .replace(
-        /\s*(?:활동기간|활동\s*기간)\s*:?.*$/s,
-        ""
-      )
-      .replace(
-        /\s*(?:회비|가입비|등록비)\s*:?.*$/s,
-        ""
-      )
-      .trim();
+  if (activityText.trim()) {
+    const majorActivityMatch = activityText.match(
+      /주요\s*활동\s*:\s*([\s\S]*?)(?=\s*(?:정기\s*활동\s*시간|활동\s*시간|활동기간|활동\s*기간|회비|가입비|등록비)\s*:|$)/
+    );
 
-    if (text) {
-      return text;
+    if (majorActivityMatch?.[1]?.trim()) {
+      return majorActivityMatch[1].trim();
+    }
+  }
+
+  // 마지막 fallback
+  const fallbackCandidates = [
+    data.activity,
+    data.briefDescription,
+    data.introduction,
+    data.intro,
+  ];
+
+  for (const candidate of fallbackCandidates) {
+    if (typeof candidate === "string" && candidate.trim()) {
+      return candidate.trim();
     }
   }
 
   return null;
 };
+
 const extractActivityPeriod = (data) => {
   if (!data) return null;
 
@@ -621,7 +655,7 @@ const normalizeClub = (data) => {
       getActivityPurpose(data),
 
     mainActivity:
-      extractMajorActivity(data),
+      extractMainActivityOnly(data),
 
     activityIntensity:
       data.activityIntensity ??
@@ -829,6 +863,23 @@ export default function ComparisonPage() {
               // 동아리 상세 정보와 리뷰 정보를 각각 조회
               const detail = await getClubDetail(clubId);
 
+              let interviewReviewData = null;
+
+              try {
+                interviewReviewData = await getInterviewReviews(clubId);
+
+                console.log("=================================");
+                console.log("비교 페이지 면접 후기 API");
+                console.log("clubId =", clubId);
+                console.log("interviewReviewData =", interviewReviewData);
+                console.log("=================================");
+              } catch (interviewError) {
+                console.error(
+                  `동아리 ${clubId} 면접 후기 조회 실패:`,
+                  interviewError
+                );
+              }
+
               let reviewData = null;
 
               try {
@@ -867,15 +918,59 @@ export default function ComparisonPage() {
                 reviewData?.data?.averageRating ??
                 null;
 
+              const reviews =
+                reviewData?.reviews ??
+                reviewData?.data?.reviews ??
+                [];
+              
+              const interviewReviews =
+                interviewReviewData?.data?.data?.reviews ??
+                interviewReviewData?.data?.reviews ??
+                interviewReviewData?.reviews ??
+                [];
+
+              const difficultyCount = interviewReviews.reduce(
+                (count, review) => {
+                  if (review?.hasInterview && review?.difficulty) {
+                    count[review.difficulty] =
+                      (count[review.difficulty] || 0) + 1;
+                  }
+
+                  return count;
+                },
+                {}
+              );
+
+              const interviewDifficulty =
+                Object.keys(difficultyCount).length > 0
+                  ? Object.entries(difficultyCount).sort(
+                      (a, b) => b[1] - a[1]
+                    )[0][0]
+                  : null;
+
+              const interviewDifficultyText = {
+                EASY: "쉬움",
+                NORMAL: "보통",
+                HARD: "어려움",
+              }[interviewDifficulty] ?? null;
+
               const activityIntensity =
-                reviewData?.activityIntensity ??
-                reviewData?.data?.activityIntensity ??
-                null;
+                reviews.length > 0
+                  ? reviews.reduce(
+                      (sum, review) =>
+                        sum + Number(review.activityRating || 0),
+                      0
+                    ) / reviews.length
+                  : null;
 
               const friendshipRatio =
-                reviewData?.friendshipRatio ??
-                reviewData?.data?.friendshipRatio ??
-                null;
+                reviews.length > 0
+                  ? reviews.reduce(
+                      (sum, review) =>
+                        sum + Number(review.sociabilityRating || 0),
+                      0
+                    ) / reviews.length
+                  : null;
 
               console.log("=================================");
               console.log(`동아리 ${clubId} 리뷰 데이터 최종 확인`);
@@ -905,6 +1000,9 @@ export default function ComparisonPage() {
 
                 clubId,
                 id: clubId,
+
+                interviewDifficulty: interviewDifficultyText,
+              
               });
             } catch (error) {
               console.warn(
