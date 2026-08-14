@@ -96,30 +96,26 @@ function ReviewSection({ clubId, clubName }) {
       </button>
 
       <div className="review-list">
-        {/* {visibleReviews.map((review) => (
-          <ReviewCard
-            key={review.reviewId}
-            userId={review.userId}
-            rating={review.rating}
-            content={review.content}
-            createdAt={review.createdAt}
-            isMine={review.isMine}
-            onDelete={()=>
-                handleDeleteReview(review.reviewId)
-            }
-          />
-        ))} */}
+
+        
+        
         {visibleReviews.map((review) => {
-  console.log("review =", review);
+           console.log("review =", review);
+ 
 
   return (
+     
     <ReviewCard
+  
       key={review.reviewId}
       userId={review.userId}
       rating={review.rating}
       content={review.content}
       createdAt={review.createdAt}
       isMine={review.isMine}
+      activityRating={review.activityRating}
+      sociabilityRating={review.sociabilityRating}
+      keywords={review.keywords}
       onDelete={() =>
         handleDeleteReview(review.reviewId)
       }
