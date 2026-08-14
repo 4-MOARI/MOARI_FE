@@ -22,18 +22,27 @@
   align-items: center;
 }
 
-/* 아이디 + 별점 */
-.review-user-rating {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
 .review-user-id {
   color: #111827;
 
   font-size: 16px;
   font-weight: 600;
+}
+
+/* 별점 + 삭제버튼 묶음 (우측) */
+.review-card-top-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 별점 wrapper - 위치/크기 조정용 */
+.review-star-rating {
+  display: flex;
+  width: 79.955px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
 }
 
 /* 삭제 버튼 */
@@ -57,6 +66,118 @@
 .review-delete-button:disabled {
   opacity: 0.5;
   cursor: default;
+}
+
+/* 활동 강도 / 친목 비중 */
+.review-rating-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.review-rating-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.review-rating-bar-label {
+  min-width: 52px;
+
+  color: #6B7280;
+  font-family: Inter, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: normal;
+
+  white-space: nowrap;
+}
+
+.review-rating-bar-track {
+  position: relative;
+
+  width: 100px;
+  height: 6px;
+
+  background-color: #E5E7EB;
+  border-radius: 3px;
+}
+
+.review-rating-bar-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  height: 6px;
+
+  background-color: #6366F1;
+  border-radius: 3px;
+
+  transition: width 0.2s ease;
+}
+
+.review-rating-bar-tooltip {
+  position: absolute;
+  bottom: 12px;
+  left: 0;
+  transform: translateX(-50%);
+
+  background-color: #374151;
+  color: #FFFFFF;
+
+  font-size: 10px;
+  font-weight: 500;
+
+  padding: 2px 6px;
+  border-radius: 4px;
+
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* 키워드 뱃지 슬라이더 */
+.review-keyword-list {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  overflow-x: auto;
+
+  cursor: grab;
+  user-select: none;
+
+  scrollbar-width: none; /* firefox */
+  -ms-overflow-style: none; /* IE, Edge */
+}
+
+.review-keyword-list::-webkit-scrollbar {
+  display: none; /* chrome, safari */
+}
+
+.review-keyword-list.dragging {
+  cursor: grabbing;
+}
+
+.review-keyword-badge {
+  flex: 0 0 auto;
+
+  display: inline-flex;
+  align-items: center;
+
+  height: 22px;
+  padding: 0 12px;
+
+  background-color: #EEF2FF;
+  border-radius: 11px;
+
+  color: #4F46E5;
+  font-family: Inter, sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: normal;
+
+  white-space: nowrap;
 }
 
 /* 리뷰 내용 */
