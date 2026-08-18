@@ -207,7 +207,7 @@ cd MOARI_FE
 npm install
 
 # 3. 루트에 .env 파일 생성 후 아래 내용 입력
-VITE_API_BASE_URL=http://34.50.19.72:3000/api
+VITE_API_BASE_URL=http://34.47.124.144:3000/api
 
 # 4. 개발 서버 실행
 npm run dev
